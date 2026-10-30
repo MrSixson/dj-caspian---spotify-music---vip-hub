@@ -19,7 +19,7 @@ import { VipModal } from './components/VipModal';
 import { VisualizerModal } from './components/VisualizerModal';
 import { ToastContainer, ToastMessage } from './components/Toast';
 import { Track, VipTicket, Playlist, UserAccount } from './types';
-import { INITIAL_TRACKS, INITIAL_PLAYLISTS, INITIAL_TICKETS, INITIAL_USERS } from './data/initialData';
+import { INITIAL_TICKETS, INITIAL_USERS } from './data/initialData';
 import { audioEngine } from './utils/audioEngine';
 import { getCurrentSupabaseUser, signOutSupabaseUser } from './lib/auth';
 import { supabase } from './lib/supabase';
@@ -45,9 +45,9 @@ export default function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // 2. Persistent tracks & library (Clean initial slate without legacy mock tracks)
-  const [tracks, setTracks] = useState<Track[]>(INITIAL_TRACKS);
+  const [tracks, setTracks] = useState<Track[]>([]);
 
-  const [playlists, setPlaylists] = useState<Playlist[]>(INITIAL_PLAYLISTS);
+  const [playlists, setPlaylists] = useState<Playlist[]>([]);
 
   // 3. Persistent VIP Tickets
   const [tickets, setTickets] = useState<VipTicket[]>(() => {
@@ -90,14 +90,6 @@ export default function App() {
 
   // LocalStorage Synchronization
   useEffect(() => {
-    localStorage.setItem('caspian_tracks', JSON.stringify(tracks));
-  }, [tracks]);
-
-  useEffect(() => {
-    localStorage.setItem('caspian_playlists', JSON.stringify(playlists));
-  }, [playlists]);
-
-  useEffect(() => {
     localStorage.setItem('caspian_tickets', JSON.stringify(tickets));
   }, [tickets]);
 
@@ -106,6 +98,7 @@ export default function App() {
   }, [users]);
 
   useEffect(() => {
+    if (authLoading) return;
     let active = true;
     loadCatalog(currentUser?.id)
       .then((catalog) => {
@@ -120,7 +113,7 @@ export default function App() {
         if (active) showToast(error instanceof Error ? error.message : 'دریافت کتابخانه از سرور ناموفق بود.', 'error');
       });
     return () => { active = false; };
-  }, [currentUser?.id]);
+  }, [currentUser?.id, authLoading]);
 
   useEffect(() => {
     let active = true;
