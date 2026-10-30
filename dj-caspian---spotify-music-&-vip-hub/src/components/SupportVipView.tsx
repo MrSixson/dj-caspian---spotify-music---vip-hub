@@ -6,17 +6,20 @@ import {
 import { DJ_CASPIAN_INFO } from '../data/initialData';
 import { VipTicket } from '../types';
 import confetti from 'canvas-confetti';
+import { supabase } from '../lib/supabase';
 
 interface SupportVipViewProps {
   onAddTicket: (ticket: VipTicket) => void;
   onShowToast: (text: string, type?: 'success' | 'error' | 'info') => void;
   isUserVip: boolean;
+  userId: string | null;
 }
 
 export const SupportVipView: React.FC<SupportVipViewProps> = ({
   onAddTicket,
   onShowToast,
   isUserVip,
+  userId,
 }) => {
   const [activeTab, setActiveTab] = useState<'card' | 'crypto'>('card');
   const [cryptoNetwork, setCryptoNetwork] = useState<'TRC-20' | 'BEP-20' | 'TON'>('TRC-20');
@@ -58,8 +61,12 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
     }
   };
 
-  const handleSubmitTicket = (e: React.FormEvent) => {
+  const handleSubmitTicket = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!userId) {
+      onShowToast('برای ثبت درخواست VIP ابتدا وارد حساب کاربری شوید.', 'error');
+      return;
+    }
     if (!userName.trim()) {
       onShowToast('لطفاً نام خود را وارد کنید', 'error');
       return;
@@ -74,40 +81,24 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
     }
 
     setIsSubmitting(true);
-
-    const ticketId = 'VIP-' + Math.floor(1000 + Math.random() * 9000);
-    const newTicket: VipTicket = {
-      id: ticketId,
-      userName: userName.trim(),
-      userContact: userContact.trim(),
-      method: selectedMethod,
-      amount: selectedMethod === 'crypto' ? '10 USDT' : '3,۰۰۰,۰۰۰ تومان',
-      cryptoNetwork: selectedMethod === 'crypto' ? cryptoNetwork : undefined,
-      txHashOrReceiptNo: txHash.trim(),
-      receiptImageData: receiptImage || undefined,
-      notes: notes.trim() || undefined,
-      status: 'pending',
-      createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
-    };
-
-    setTimeout(() => {
-      onAddTicket(newTicket);
-      setIsSubmitting(false);
-      setSubmittedTicketId(ticketId);
-
-      // Confetti celebration
-      try {
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
-      } catch {
-        // ignore
+    try {
+      let receiptPath: string | undefined;
+      if (receiptImage) {
+        const response = await fetch(receiptImage);
+        const blob = await response.blob();
+        const extension = blob.type.includes('png') ? 'png' : 'jpg';
+        receiptPath = userId + '/' + crypto.randomUUID() + '.' + extension;
+        const { error: uploadError } = await supabase.storage.from('receipts').upload(receiptPath, blob, { contentType: blob.type || 'image/jpeg', upsert: false });
+        if (uploadError) throw new Error('آپلود رسید ناموفق بود: ' + uploadError.message);
       }
-
-      onShowToast(`تیکت شما با شناسه ${ticketId} ثبت شد`, 'success');
-    }, 600);
+      const newTicket: VipTicket = { id: '', userId, userName: userName.trim(), userContact: userContact.trim(), method: selectedMethod, amount: selectedMethod === 'crypto' ? '10 USDT' : '3,000,000 Toman', cryptoNetwork: selectedMethod === 'crypto' ? cryptoNetwork : undefined, txHashOrReceiptNo: txHash.trim(), receiptPath, notes: notes.trim() || undefined, status: 'pending', createdAt: new Date().toISOString() };
+      const created = await onAddTicket(newTicket);
+      setSubmittedTicketId(created.id);
+      try { confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } }); } catch { /* ignore */ }
+      onShowToast('تیکت شما با شناسه ' + created.id + ' ثبت شد', 'success');
+    } catch (error) {
+      onShowToast(error instanceof Error ? error.message : 'ثبت تیکت ناموفق بود.', 'error');
+    } finally { setIsSubmitting(false); }
   };
 
   const getCryptoAddress = () => {
