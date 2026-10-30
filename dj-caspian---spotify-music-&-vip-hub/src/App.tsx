@@ -299,6 +299,7 @@ export default function App() {
   };
 
   const handleSeek = (seconds: number) => {
+    audioEngine.seek(seconds);
     setCurrentTime(seconds);
   };
 
