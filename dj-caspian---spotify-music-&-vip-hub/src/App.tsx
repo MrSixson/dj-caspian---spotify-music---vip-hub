@@ -88,7 +88,7 @@ export default function App() {
   useEffect(() => {
     if (authLoading || currentUser?.role !== 'admin') { setTickets([]); return; }
     let active = true;
-    supabase.from('vip_tickets').select('*').order('created_at', { ascending: false }).then(({ data, error }) => {
+    supabase.from('vip_tickets').select('*').order('created_at', { ascending: false }).then(async ({ data, error }) => {
       if (!active) return;
       if (error) { showToast('دریافت تیکت‌های VIP ناموفق بود: ' + error.message, 'error'); return; }
       const mapped = await Promise.all((data || []).map(async (row: any) => {
