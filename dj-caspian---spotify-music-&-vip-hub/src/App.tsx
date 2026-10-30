@@ -91,13 +91,21 @@ export default function App() {
     supabase.from('vip_tickets').select('*').order('created_at', { ascending: false }).then(({ data, error }) => {
       if (!active) return;
       if (error) { showToast('دریافت تیکت‌های VIP ناموفق بود: ' + error.message, 'error'); return; }
-      setTickets((data || []).map((row: any) => ({
-        id: row.id, userId: row.user_id, userName: row.user_name, userContact: row.user_contact,
-        method: row.method, amount: row.method === 'crypto' ? String(row.amount) + ' USDT' : Number(row.amount).toLocaleString('en-US') + ' Toman',
-        cryptoNetwork: row.crypto_network || undefined, txHashOrReceiptNo: row.tx_hash_or_receipt_no,
-        receiptPath: row.receipt_path || undefined, notes: row.notes || undefined, status: row.status,
-        createdAt: row.created_at, reviewDate: row.review_date || undefined, adminNote: row.admin_note || undefined,
-      })));
+      const mapped = await Promise.all((data || []).map(async (row: any) => {
+        let receiptImageData: string | undefined;
+        if (row.receipt_path) {
+          const { data: signed } = await supabase.storage.from('receipts').createSignedUrl(row.receipt_path, 15 * 60);
+          receiptImageData = signed?.signedUrl;
+        }
+        return {
+          id: row.id, userId: row.user_id, userName: row.user_name, userContact: row.user_contact,
+          method: row.method, amount: row.method === 'crypto' ? String(row.amount) + ' USDT' : Number(row.amount).toLocaleString('en-US') + ' Toman',
+          cryptoNetwork: row.crypto_network || undefined, txHashOrReceiptNo: row.tx_hash_or_receipt_no,
+          receiptPath: row.receipt_path || undefined, receiptImageData, notes: row.notes || undefined, status: row.status,
+          createdAt: row.created_at, reviewDate: row.review_date || undefined, adminNote: row.admin_note || undefined,
+        };
+      }));
+      if (active) setTickets(mapped);
     });
     return () => { active = false; };
   }, [currentUser?.id, currentUser?.role, authLoading]);
