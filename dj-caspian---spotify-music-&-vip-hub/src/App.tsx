@@ -438,31 +438,36 @@ export default function App() {
   };
 
   const handleDeleteTrack = async (trackId: string) => {
-    if (currentUser?.role !== 'admin') { showToast('دسترسی مدیریت لازم است.', 'error'); return; }
+    if (currentUser?.role !== 'admin') {
+      showToast('دسترسی مدیریت لازم است.', 'error');
+      return;
+    }
     const track = tracks.find((item) => item.id === trackId);
     if (!track) return;
-    const { data: storedTrack, error: readError } = await supabase.from('tracks').select('audio_path,cover_path').eq('id', trackId).single();
-    if (readError || !storedTrack) { showToast('خواندن مسیر فایل آهنگ ناموفق بود: ' + (readError?.message || 'رکورد پیدا نشد'), 'error'); return; }
-    const { error: linksError } = await supabase.from('playlist_tracks').delete().eq('track_id', trackId);
-    if (linksError) { showToast('حذف ارتباط آهنگ با پلی‌لیست‌ها ناموفق بود: ' + linksError.message, 'error'); return; }
-    const { error: likesError } = await supabase.from('user_likes').delete().eq('track_id', trackId);
-    if (likesError) { showToast('پاک‌سازی علاقه‌مندی‌ها ناموفق بود: ' + likesError.message, 'error'); return; }
-    const { error: rowError } = await supabase.from('tracks').delete().eq('id', trackId);
-    if (rowError) { showToast('حذف آهنگ از دیتابیس ناموفق بود: ' + rowError.message, 'error'); return; }
-    if (storedTrack.audio_path) {
-      const { error: fileError } = await supabase.storage.from('tracks').remove([storedTrack.audio_path]);
-      if (fileError) showToast('رکورد حذف شد اما فایل صوتی باقی ماند: ' + fileError.message, 'error');
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData.session?.access_token;
+    if (!accessToken) {
+      showToast('برای حذف آهنگ باید دوباره وارد حساب مدیریت شوید.', 'error');
+      return;
     }
-    if (storedTrack.cover_path && !storedTrack.cover_path.startsWith('http://') && !storedTrack.cover_path.startsWith('https://')) {
-      const { error: coverError } = await supabase.storage.from('covers').remove([storedTrack.cover_path]);
-      if (coverError) showToast('رکورد حذف شد اما کاور باقی ماند: ' + coverError.message, 'error');
+
+    const { data, error } = await supabase.functions.invoke('track-delete', {
+      body: { track_id: trackId },
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (error || !data?.success) {
+      showToast('حذف آهنگ کامل نشد: ' + (data?.error || error?.message || 'خطای نامشخص'), 'error');
+      return;
     }
+
     setTracks((prev) => prev.filter((item) => item.id !== trackId));
     if (currentTrack?.id === trackId) {
-      audioEngine.stop(); setIsPlaying(false);
+      audioEngine.stop();
+      setIsPlaying(false);
       setCurrentTrack(tracks.find((item) => item.id !== trackId) || null);
     }
-    showToast('آهنگ و فایل‌های وابسته حذف شدند.', 'success');
+    showToast('آهنگ و فایل‌های وابسته با موفقیت حذف شدند.', 'success');
   };
 
   const handleAddPlaylist = async (newPlaylist: Playlist) => {
