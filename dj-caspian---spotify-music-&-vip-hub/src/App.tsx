@@ -21,8 +21,8 @@ import { ToastContainer, ToastMessage } from './components/Toast';
 import { Track, VipTicket, Playlist, UserAccount } from './types';
 import { INITIAL_TRACKS, INITIAL_PLAYLISTS, INITIAL_TICKETS, INITIAL_USERS } from './data/initialData';
 import { audioEngine } from './utils/audioEngine';
-import { getCurrentSupabaseUser, signOutSupabaseUser } from './lib/auth';
-import { loadCatalog, toggleTrackLike, uploadTrackAssets } from './lib/catalog';
+import { getCurrentSupabaseUser, signOutSupabaseUser } from './services/supabase/auth.service';
+import { deleteTrackAssets, loadCatalog, toggleTrackLike, uploadTrackAssets } from './services/supabase/catalog.service';
 import confetti from 'canvas-confetti';
 
 export default function App() {
@@ -314,10 +314,16 @@ export default function App() {
       return;
     }
 
-    // User is VIP! Trigger real download of audio file
-    showToast(`دانلود فایل اصلی ${track.title} با کیفیت ۳۲۰ آغاز شد...`, 'success');
+    // Download only the original uploaded audio file. Never fabricate a fallback track.
+    const downloadUrl = track.audioUrl;
+    if (!downloadUrl) {
+      showToast('فایل اصلی این آهنگ در دسترس نیست و دانلود انجام نشد.', 'error');
+      return;
+    }
 
-    // Increment user download count if logged in
+    showToast(`دانلود فایل اصلی ${track.title} آغاز شد...`, 'success');
+
+    // Increment user download count only when a real source URL exists.
     if (currentUser) {
       const updatedUser: UserAccount = {
         ...currentUser,
@@ -328,14 +334,7 @@ export default function App() {
     }
 
     try {
-      let downloadUrl = track.audioUrl;
-      let filename = `DJ_Caspian_${track.title.replace(/[^a-zA-Z0-9]/g, '_')}_320k.wav`;
-
-      if (!downloadUrl) {
-        // Generate high quality WAV audio blob
-        const blob = audioEngine.generateVipDownloadBlob(track.title, track.artist, track.bpm);
-        downloadUrl = URL.createObjectURL(blob);
-      }
+      const filename = `DJ_Caspian_${track.title.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
       const a = document.createElement('a');
       a.href = downloadUrl;
@@ -407,13 +406,24 @@ export default function App() {
     return newTrack;
   };
 
-  const handleDeleteTrack = (trackId: string) => {
-    setTracks((prev) => prev.filter((t) => t.id !== trackId));
+  const handleDeleteTrack = async (trackId: string) => {
+    if (currentUser?.role !== 'admin') throw new Error('فقط مدیر مجاز به حذف آهنگ است.');
+
+    const result = await deleteTrackAssets(trackId);
+    const remainingTracks = tracks.filter((track) => track.id !== trackId);
+    setTracks(remainingTracks);
+    setPlaylists((previous) => previous.map((playlist) => ({
+      ...playlist,
+      trackIds: playlist.trackIds.filter((id) => id !== trackId),
+    })));
+
     if (currentTrack?.id === trackId) {
       audioEngine.stop();
       setIsPlaying(false);
-      setCurrentTrack(tracks.find((t) => t.id !== trackId) || null);
+      setCurrentTrack(remainingTracks[0] || null);
+      setCurrentTime(0);
     }
+    return result;
   };
 
   const handleAddPlaylist = (newPlaylist: Playlist) => {

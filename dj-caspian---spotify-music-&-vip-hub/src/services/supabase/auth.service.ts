@@ -1,5 +1,5 @@
-import { supabase } from './supabase';
-import type { UserAccount } from '../types';
+import { supabase } from './client';
+import type { UserAccount } from '../../types';
 
 type ProfileRow = {
   id: string;
