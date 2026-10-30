@@ -136,7 +136,7 @@ export async function deleteTrackAssets(trackId: string): Promise<{ storageClean
   const paths = data as { audio_path?: string | null; cover_path?: string | null } | null;
   const removals = await Promise.all([
     paths?.audio_path ? supabase.storage.from('tracks').remove([paths.audio_path]) : Promise.resolve({ error: null }),
-    paths?.cover_path && !/^https?:\\/\\//i.test(paths.cover_path) && !paths.cover_path.startsWith('data:')
+    paths?.cover_path && !paths.cover_path.startsWith('http://') && !paths.cover_path.startsWith('https://') && !paths.cover_path.startsWith('data:')
       ? supabase.storage.from('covers').remove([paths.cover_path])
       : Promise.resolve({ error: null }),
   ]);
