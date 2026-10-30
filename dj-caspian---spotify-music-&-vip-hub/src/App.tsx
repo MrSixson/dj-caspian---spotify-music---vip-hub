@@ -184,9 +184,8 @@ export default function App() {
   };
 
   // Play a specific track
-  const handlePlayTrack = (track: Track) => {
+  const handlePlayTrack = async (track: Track) => {
     if (currentTrack?.id === track.id && isPlaying) {
-      // Pause
       audioEngine.pause();
       setIsPlaying(false);
       return;
@@ -195,52 +194,62 @@ export default function App() {
     setCurrentTrack(track);
     setDuration(track.duration);
     setCurrentTime(0);
-    setIsPlaying(true);
+    setIsPlaying(false);
 
-    audioEngine.playTrack(
-      track.id,
-      track.audioUrl,
-      track.bpm,
-      track.synthPreset || 'festival_drop',
-      (secs) => {
-        setCurrentTime((prev) => {
-          if (secs >= track.duration) {
+    try {
+      await audioEngine.playTrack(
+        track.id,
+        track.audioUrl,
+        track.bpm,
+        track.synthPreset || 'festival_drop',
+        (secs) => {
+          setCurrentTime(secs);
+          if (track.duration > 0 && secs >= track.duration) {
             handleNextTrack();
-            return 0;
           }
-          return secs;
-        });
-      }
-    );
-
-    // Increment play count
-    setTracks((prev) =>
-      prev.map((t) => (t.id === track.id ? { ...t, plays: (t.plays || 0) + 1 } : t))
-    );
+        }
+      );
+      setIsPlaying(true);
+      setTracks((prev) =>
+        prev.map((t) => (t.id === track.id ? { ...t, plays: (t.plays || 0) + 1 } : t))
+      );
+    } catch (error) {
+      setIsPlaying(false);
+      showToast(
+        error instanceof Error ? error.message : 'پخش آهنگ ناموفق بود.',
+        'error'
+      );
+    }
   };
 
-  const handleTogglePlay = () => {
+  const handleTogglePlay = async () => {
     if (!currentTrack) {
-      if (tracks.length > 0) {
-        handlePlayTrack(tracks[0]);
-      }
+      if (tracks.length > 0) await handlePlayTrack(tracks[0]);
       return;
     }
 
     if (isPlaying) {
       audioEngine.pause();
       setIsPlaying(false);
-    } else {
-      audioEngine.playTrack(
+      return;
+    }
+
+    setIsPlaying(false);
+    try {
+      await audioEngine.playTrack(
         currentTrack.id,
         currentTrack.audioUrl,
         currentTrack.bpm,
         currentTrack.synthPreset || 'festival_drop',
-        (secs) => {
-          setCurrentTime(secs);
-        }
+        (secs) => setCurrentTime(secs)
       );
       setIsPlaying(true);
+    } catch (error) {
+      setIsPlaying(false);
+      showToast(
+        error instanceof Error ? error.message : 'پخش آهنگ ناموفق بود.',
+        'error'
+      );
     }
   };
 
@@ -308,16 +317,25 @@ export default function App() {
   // -------------------------------------------------------------
   const handleDownloadTrack = (track: Track) => {
     if (!isUserVip && track.isVipOnlyDownload) {
-      // Free user attempting to download VIP track -> Show VIP Modal
       setVipModalTrackTitle(track.title);
       setIsVipModalOpen(true);
       return;
     }
 
-    // User is VIP! Trigger real download of audio file
-    showToast(`دانلود فایل اصلی ${track.title} با کیفیت ۳۲۰ آغاز شد...`, 'success');
+    if (!track.audioUrl || !/^https?:\\/\\//i.test(track.audioUrl)) {
+      showToast('لینک فایل اصلی این آهنگ در دسترس نیست؛ دانلود انجام نشد.', 'error');
+      return;
+    }
 
-    // Increment user download count if logged in
+    const safeTitle = track.title.replace(/[^a-zA-Z0-9_-]+/g, '_') || 'Track';
+    const anchor = document.createElement('a');
+    anchor.href = track.audioUrl;
+    anchor.download = `DJ_Caspian_${safeTitle}.mp3`;
+    anchor.rel = 'noopener';
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+
     if (currentUser) {
       const updatedUser: UserAccount = {
         ...currentUser,
@@ -327,39 +345,9 @@ export default function App() {
       setUsers((prev) => prev.map((u) => (u.id === currentUser.id ? updatedUser : u)));
     }
 
-    try {
-      let downloadUrl = track.audioUrl;
-      let filename = `DJ_Caspian_${track.title.replace(/[^a-zA-Z0-9]/g, '_')}_320k.wav`;
-
-      if (!downloadUrl) {
-        // Generate high quality WAV audio blob
-        const blob = audioEngine.generateVipDownloadBlob(track.title, track.artist, track.bpm);
-        downloadUrl = URL.createObjectURL(blob);
-      }
-
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-
-      try {
-        confetti({
-          particleCount: 50,
-          spread: 60,
-          origin: { y: 0.8 },
-        });
-      } catch {
-        // ignore
-      }
-    } catch (err) {
-      console.error(err);
-      showToast('خطا در دانلود فایل', 'error');
-    }
+    showToast(`درخواست دانلود فایل اصلی ${track.title} ارسال شد.`, 'success');
   };
 
-  // -------------------------------------------------------------
   // AUTH ACTIONS
   // -------------------------------------------------------------
   const handleLogin = (user: UserAccount) => {
