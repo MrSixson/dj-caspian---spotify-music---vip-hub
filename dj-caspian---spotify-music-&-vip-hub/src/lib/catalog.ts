@@ -66,7 +66,7 @@ async function mapTrack(row: TrackRow): Promise<Track> {
 
 export async function loadCatalog(userId?: string): Promise<{ tracks: Track[]; playlists: Playlist[]; likedTrackIds: string[] }> {
   const [trackResult, playlistResult, likesResult] = await Promise.all([
-    supabase.from('tracks').select('*').order('created_at', { ascending: false }),
+    supabase.from('tracks').select('*').eq('is_deleting', false).order('created_at', { ascending: false }),
     supabase.from('playlists').select('id,title,description,cover_path').order('created_at', { ascending: false }),
     userId
       ? supabase.from('user_likes').select('track_id').eq('user_id', userId)
