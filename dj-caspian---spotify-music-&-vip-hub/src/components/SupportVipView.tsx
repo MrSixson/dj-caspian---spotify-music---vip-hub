@@ -48,8 +48,15 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 8 * 1024 * 1024) {
-        onShowToast('حجم فایل نباید بیشتر از ۸ مگابایت باشد', 'error');
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        onShowToast('فقط تصویر JPG، PNG یا WEBP قابل قبول است.', 'error');
+        e.target.value = '';
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        onShowToast('حجم رسید نباید بیشتر از ۵ مگابایت باشد.', 'error');
+        e.target.value = '';
         return;
       }
       const reader = new FileReader();
@@ -86,7 +93,7 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
       if (receiptImage) {
         const response = await fetch(receiptImage);
         const blob = await response.blob();
-        const extension = blob.type.includes('png') ? 'png' : 'jpg';
+        const extension = blob.type === 'image/png' ? 'png' : blob.type === 'image/webp' ? 'webp' : 'jpg';
         receiptPath = userId + '/' + crypto.randomUUID() + '.' + extension;
         const { error: uploadError } = await supabase.storage.from('receipts').upload(receiptPath, blob, { contentType: blob.type || 'image/jpeg', upsert: false });
         if (uploadError) throw new Error('آپلود رسید ناموفق بود: ' + uploadError.message);
