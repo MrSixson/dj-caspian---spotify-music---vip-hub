@@ -479,15 +479,27 @@ export default function App() {
 
   const handleUpdateTicketStatus = async (ticketId: string, status: 'approved' | 'rejected', adminNote?: string) => {
     const target = tickets.find((ticket) => ticket.id === ticketId);
-    if (!target || currentUser?.role !== 'admin' || !target.userId) { showToast('تیکت یا دسترسی معتبر نیست.', 'error'); return; }
-    const { error } = await supabase.from('vip_tickets').update({ status, admin_note: adminNote || null, review_date: new Date().toISOString() }).eq('id', ticketId);
-    if (error) { showToast('ثبت نتیجه بررسی ناموفق بود: ' + error.message, 'error'); return; }
-    if (status === 'approved') {
-      const { error: vipError } = await supabase.from('vip_entitlements').upsert({ user_id: target.userId, is_active: true, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
-      if (vipError) { showToast('تیکت ثبت شد اما فعال‌سازی VIP ناموفق بود: ' + vipError.message, 'error'); return; }
+    if (!target || currentUser?.role !== 'admin' || !target.userId) {
+      showToast('تیکت یا دسترسی معتبر نیست.', 'error');
+      return;
     }
-    setTickets((previous) => previous.map((ticket) => ticket.id === ticketId ? { ...ticket, status, adminNote, reviewDate: new Date().toISOString() } : ticket));
+
+    const { error } = await supabase.rpc('review_vip_ticket', {
+      p_ticket_id: ticketId,
+      p_status: status,
+      p_admin_note: adminNote || null,
+    });
+    if (error) {
+      showToast('ثبت نتیجه بررسی ناموفق بود: ' + error.message, 'error');
+      return;
+    }
+
+    const reviewDate = new Date().toISOString();
+    setTickets((previous) => previous.map((ticket) =>
+      ticket.id === ticketId ? { ...ticket, status, adminNote, reviewDate } : ticket
+    ));
     showToast(status === 'approved' ? 'تیکت تایید و اشتراک VIP فعال شد.' : 'تیکت رد شد.', 'success');
+
     if (status === 'approved' && currentUser.id === target.userId) {
       const refreshed = await getCurrentSupabaseUser();
       if (refreshed) setCurrentUser(refreshed);
