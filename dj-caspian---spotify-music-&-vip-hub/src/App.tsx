@@ -347,30 +347,47 @@ export default function App() {
   // -------------------------------------------------------------
   // THE KEY VIP DOWNLOAD LOGIC
   // -------------------------------------------------------------
-  const handleDownloadTrack = (track: Track) => {
-    if (!isUserVip && track.isVipOnlyDownload) {
+  const handleDownloadTrack = async (track: Track) => {
+    if (track.isVipOnlyDownload && !isUserVip) {
       setVipModalTrackTitle(track.title);
       setIsVipModalOpen(true);
       return;
     }
 
-    if (!track.audioUrl || !(track.audioUrl.startsWith('https://') || track.audioUrl.startsWith('http://'))) {
-      showToast('لینک فایل اصلی این آهنگ در دسترس نیست؛ دانلود انجام نشد.', 'error');
-      return;
+    try {
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+
+      const headers: Record<string, string> = {};
+      if (sessionData.session?.access_token) {
+        headers.Authorization = `Bearer ${sessionData.session.access_token}`;
+      }
+
+      const downloadUrl = `https://irkdzjizhwxbmnnfyqsx.supabase.co/functions/v1/audio-gateway?track_id=${encodeURIComponent(track.id)}&mode=download`;
+      const response = await fetch(downloadUrl, { method: 'GET', headers });
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          setVipModalTrackTitle(track.title);
+          setIsVipModalOpen(true);
+          return;
+        }
+        throw new Error(response.status === 404 ? 'فایل این آهنگ در Storage پیدا نشد.' : 'دریافت فایل آهنگ ناموفق بود.');
+      }
+
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const safeTitle = track.title.replace(/[^a-zA-Z0-9_-]+/g, '_') || 'Track';
+      const anchor = document.createElement('a');
+      anchor.href = objectUrl;
+      anchor.download = `DJ_Caspian_${safeTitle}.mp3`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(objectUrl);
+      showToast(`دانلود فایل اصلی ${track.title} آغاز شد.`, 'success');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'دانلود آهنگ انجام نشد.', 'error');
     }
-
-    const safeTitle = track.title.replace(/[^a-zA-Z0-9_-]+/g, '_') || 'Track';
-    const anchor = document.createElement('a');
-    anchor.href = track.audioUrl;
-    anchor.download = `DJ_Caspian_${safeTitle}.mp3`;
-    anchor.rel = 'noopener';
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-
-
-
-    showToast(`درخواست دانلود فایل اصلی ${track.title} ارسال شد.`, 'success');
   };
 
   // AUTH ACTIONS
