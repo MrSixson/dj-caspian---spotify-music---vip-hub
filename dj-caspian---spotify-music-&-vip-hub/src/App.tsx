@@ -21,6 +21,7 @@ import { ToastContainer, ToastMessage } from './components/Toast';
 import { Track, VipTicket, Playlist, UserAccount } from './types';
 import { INITIAL_TRACKS, INITIAL_PLAYLISTS, INITIAL_TICKETS, INITIAL_USERS } from './data/initialData';
 import { audioEngine } from './utils/audioEngine';
+import { getCurrentSupabaseUser, signOutSupabaseUser } from './lib/auth';
 import confetti from 'canvas-confetti';
 
 export default function App() {
@@ -35,15 +36,8 @@ export default function App() {
     return INITIAL_USERS;
   });
 
-  const [currentUser, setCurrentUser] = useState<UserAccount | null>(() => {
-    try {
-      const saved = localStorage.getItem('caspian_current_user');
-      if (saved) return JSON.parse(saved);
-    } catch {
-      // fallback
-    }
-    return null;
-  });
+  // Restore identity and permissions only from Supabase, not editable browser storage.
+  const [currentUser, setCurrentUser] = useState<UserAccount | null>(null);
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
@@ -140,12 +134,19 @@ export default function App() {
   }, [users]);
 
   useEffect(() => {
-    if (currentUser) {
-      localStorage.setItem('caspian_current_user', JSON.stringify(currentUser));
-    } else {
-      localStorage.removeItem('caspian_current_user');
-    }
-  }, [currentUser]);
+    let active = true;
+    getCurrentSupabaseUser()
+      .then((user) => {
+        if (active) {
+          setCurrentUser(user);
+          if (user?.likedTrackIds) setLikedTrackIds(user.likedTrackIds);
+        }
+      })
+      .catch((error) => console.error('Supabase session restore failed:', error));
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('caspian_liked_tracks', JSON.stringify(likedTrackIds));
@@ -362,10 +363,15 @@ export default function App() {
     showToast('حساب کاربری جدید با موفقیت ساخته شد!', 'success');
   };
 
-  const handleLogout = () => {
-    setCurrentUser(null);
-    setCurrentView('home');
-    showToast('از حساب کاربری خود خارج شدید.', 'info');
+  const handleLogout = async () => {
+    try {
+      await signOutSupabaseUser();
+      setCurrentUser(null);
+      setCurrentView('home');
+      showToast('از حساب کاربری خود خارج شدید.', 'info');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'خروج از حساب انجام نشد.', 'error');
+    }
   };
 
   const handleUpdateUser = (updatedUser: UserAccount) => {
