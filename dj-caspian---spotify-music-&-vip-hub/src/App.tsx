@@ -531,7 +531,15 @@ export default function App() {
       crypto_network: ticket.cryptoNetwork || null, tx_hash_or_receipt_no: ticket.txHashOrReceiptNo,
       receipt_path: ticket.receiptPath || null, notes: ticket.notes || null, status: 'pending',
     }).select('id,created_at').single();
-    if (error || !data) throw new Error('ثبت تیکت در سرور ناموفق بود: ' + (error?.message || 'No record returned'));
+
+    if (error || !data) {
+      if (ticket.receiptPath) {
+        const { error: cleanupError } = await supabase.storage.from('receipts').remove([ticket.receiptPath]);
+        if (cleanupError) console.error('Could not clean up orphan VIP receipt:', cleanupError.message);
+      }
+      throw new Error('ثبت تیکت در سرور ناموفق بود: ' + (error?.message || 'No record returned'));
+    }
+
     const created = { ...ticket, id: data.id, createdAt: data.created_at };
     setTickets((previous) => [created, ...previous]);
     return created;
