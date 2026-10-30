@@ -4,7 +4,7 @@ import {
   Mail, Sparkles, CheckCircle2, AlertCircle, ArrowLeft, Disc3
 } from 'lucide-react';
 import { UserAccount } from '../types';
-import { signInWithEmail, signUpWithEmail } from '../lib/auth';
+import { signInWithEmail, signUpWithEmail } from '../services/supabase/auth.service';
 
 interface AuthModalProps {
   isOpen: boolean;

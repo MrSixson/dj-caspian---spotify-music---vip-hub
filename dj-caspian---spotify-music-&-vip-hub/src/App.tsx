@@ -21,8 +21,8 @@ import { ToastContainer, ToastMessage } from './components/Toast';
 import { Track, VipTicket, Playlist, UserAccount } from './types';
 import { INITIAL_TRACKS, INITIAL_PLAYLISTS, INITIAL_TICKETS, INITIAL_USERS } from './data/initialData';
 import { audioEngine } from './utils/audioEngine';
-import { getCurrentSupabaseUser, signOutSupabaseUser } from './lib/auth';
-import { loadCatalog, toggleTrackLike, uploadTrackAssets } from './lib/catalog';
+import { getCurrentSupabaseUser, signOutSupabaseUser } from './services/supabase/auth.service';
+import { loadCatalog, toggleTrackLike, uploadTrackAssets } from './services/supabase/catalog.service';
 import confetti from 'canvas-confetti';
 
 export default function App() {

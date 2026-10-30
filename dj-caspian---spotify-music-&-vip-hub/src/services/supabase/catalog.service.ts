@@ -1,5 +1,5 @@
-import { supabase } from './supabase';
-import type { Playlist, Track } from '../types';
+import { supabase } from './client';
+import type { Playlist, Track } from '../../types';
 
 type TrackRow = {
   id: string; title: string; artist: string; album: string; duration: string;
