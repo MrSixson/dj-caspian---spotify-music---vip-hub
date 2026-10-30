@@ -1,4 +1,3 @@
-```ts
 /**
  * DJ Caspian Audio Engine
  * Real audio playback only.
