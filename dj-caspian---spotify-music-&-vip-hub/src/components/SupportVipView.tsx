@@ -9,7 +9,7 @@ import confetti from 'canvas-confetti';
 import { supabase } from '../lib/supabase';
 
 interface SupportVipViewProps {
-  onAddTicket: (ticket: VipTicket) => void;
+  onAddTicket: (ticket: VipTicket) => Promise<VipTicket>;
   onShowToast: (text: string, type?: 'success' | 'error' | 'info') => void;
   isUserVip: boolean;
   userId: string | null;
