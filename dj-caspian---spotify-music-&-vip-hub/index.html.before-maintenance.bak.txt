@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DJ Caspian | دی‌جی کاسپین | سایت رسمی</title>
+    <meta name="description" content="وب‌سایت رسمی DJ Caspian؛ شنیدن میکس‌ها و ریمیکس‌های اختصاصی، موسیقی الکترونیک، پلی‌لیست‌ها و دسترسی VIP. دی‌جی کاسپین | DJ Caspian Official." />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="author" content="DJ Caspian" />
+    <meta name="theme-color" content="#101810" />
+    <link rel="canonical" href="https://mrsixson.github.io/dj-caspian---spotify-music---vip-hub/" />
+    <meta property="og:locale" content="fa_IR" />
+    <meta property="og:site_name" content="DJ Caspian" />
+    <meta property="og:title" content="DJ Caspian | دی‌جی کاسپین | سایت رسمی" />
+    <meta property="og:description" content="وب‌سایت رسمی DJ Caspian؛ شنیدن میکس‌ها و ریمیکس‌های اختصاصی، موسیقی الکترونیک و پلی‌لیست‌ها." />
+    <meta property="og:url" content="https://mrsixson.github.io/dj-caspian---spotify-music---vip-hub/" />
+    <meta property="og:image" content="https://mrsixson.github.io/dj-caspian---spotify-music---vip-hub/dj-caspian-profile.jpg" />
+    <meta name="description" content="Official Spotify-style streaming platform for DJ Caspian. Stream mixes, support via Card-to-Card or USDT Tether, unlock VIP downloads with ticket verification, and manage tracks with the DJ Caspian admin panel." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="DJ Caspian | دی‌جی کاسپین" />
+    <meta name="twitter:description" content="وب‌سایت رسمی DJ Caspian؛ میکس‌ها، ریمیکس‌ها و موسیقی الکترونیک." />
+    <meta name="twitter:image" content="https://mrsixson.github.io/dj-caspian---spotify-music---vip-hub/dj-caspian-profile.jpg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-[#121212] text-white antialiased selection:bg-[#1db954] selection:text-black">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
