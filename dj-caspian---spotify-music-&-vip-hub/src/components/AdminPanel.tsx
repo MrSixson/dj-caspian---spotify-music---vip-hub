@@ -15,7 +15,7 @@ interface AdminPanelProps {
   tracks: Track[];
   playlists: Playlist[];
   tickets: VipTicket[];
-  onAddTrack: (track: Track) => void;
+  onAddTrack: (input: { audioFile: File; coverFile?: File; title: string; artist: string; album: string; durationSeconds: number; genre: string; bpm: number; synthPreset?: string; isVipOnlyDownload: boolean; description?: string; coverUrl?: string }) => Promise<Track>;
   onDeleteTrack: (trackId: string) => void;
   onAddPlaylist: (playlist: Playlist) => void;
   onDeletePlaylist: (playlistId: string) => void;
@@ -44,7 +44,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   isPlaying,
   onPlayTrack,
 }) => {
-  const isOwnerAdmin = currentUser?.role === 'admin' && currentUser?.username === 'AminJodaie';
+  const isOwnerAdmin = currentUser?.role === 'admin';
 
   // Active sub-tab in Admin
   const [activeTab, setActiveTab] = useState<'tracks' | 'playlists' | 'tickets'>('tracks');
@@ -64,6 +64,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [newDuration, setNewDuration] = useState(210);
   const [newCoverUrl, setNewCoverUrl] = useState('');
   const [newAudioUrl, setNewAudioUrl] = useState('');
+  const [newAudioFile, setNewAudioFile] = useState<File | null>(null);
+  const [newCoverFile, setNewCoverFile] = useState<File | undefined>(undefined);
   const [newAudioFileName, setNewAudioFileName] = useState('');
   const [newSynthPreset, setNewSynthPreset] = useState<'festival_drop' | 'deep_groove' | 'persian_club' | 'melodic_techno' | 'tech_house'>('persian_club');
   const [newIsVipOnly, setNewIsVipOnly] = useState(true);
@@ -97,8 +99,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     const file = e.target.files?.[0];
     if (file) {
       setNewAudioFileName(file.name);
-      const url = URL.createObjectURL(file);
-      setNewAudioUrl(url);
+      setNewAudioFile(file);
+      setNewAudioUrl('');
 
       // Auto-populate title if empty from filename
       if (!newTitle) {
@@ -116,6 +118,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const handleCoverFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setNewCoverFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setNewCoverUrl(reader.result as string);
@@ -126,36 +129,38 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   };
 
   // Final Publish Track Handler
-  const handlePublishTrack = (e: React.FormEvent) => {
+  const handlePublishTrack = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim()) {
       onShowToast('عنوان قطعه الزامی است', 'error');
       return;
     }
 
-    const cover = newCoverUrl.trim() || presetCovers[Math.floor(Math.random() * presetCovers.length)];
-    const trackId = 'caspian-track-' + Date.now();
+    if (!newAudioFile) {
+      onShowToast('ابتدا فایل MP3 را انتخاب کنید.', 'error');
+      return;
+    }
 
-    const createdTrack: Track = {
-      id: trackId,
-      title: newTitle.trim(),
-      artist: newArtist.trim() || 'DJ Caspian',
-      album: newAlbum.trim() || 'Caspian Singles',
-      genre: newGenre,
-      bpm: Number(newBpm) || 128,
-      duration: Number(newDuration) || 210,
-      coverUrl: cover,
-      audioUrl: newAudioUrl || undefined,
-      synthPreset: newSynthPreset,
-      plays: 1,
-      likes: 1,
-      releaseDate: new Date().toISOString().split('T')[0],
-      isVipOnlyDownload: newIsVipOnly,
-      description: newDescription.trim() || 'قطعه اختصاصی جدید آپلود شده توسط DJ Caspian',
-      fileSize: '10.5 MB (MP3 320k)',
-    };
-
-    onAddTrack(createdTrack);
+    let createdTrack: Track;
+    try {
+      createdTrack = await onAddTrack({
+        audioFile: newAudioFile,
+        coverFile: newCoverFile,
+        coverUrl: newCoverFile ? undefined : (newCoverUrl.trim() || undefined),
+        title: newTitle.trim(),
+        artist: newArtist.trim() || 'DJ Caspian',
+        album: newAlbum.trim() || 'Caspian Singles',
+        genre: newGenre,
+        bpm: Number(newBpm) || 128,
+        durationSeconds: Number(newDuration) || 210,
+        synthPreset: newSynthPreset,
+        isVipOnlyDownload: newIsVipOnly,
+        description: newDescription.trim() || 'قطعه اختصاصی جدید آپلود شده توسط DJ Caspian',
+      });
+    } catch (error) {
+      onShowToast(error instanceof Error ? error.message : 'انتشار آهنگ ناموفق بود.', 'error');
+      return;
+    }
     
     try {
       confetti({
@@ -174,6 +179,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     setNewTitle('');
     setNewCoverUrl('');
     setNewAudioUrl('');
+    setNewAudioFile(null);
+    setNewCoverFile(undefined);
     setNewAudioFileName('');
     setNewDescription('');
     setUploadStep(1);
