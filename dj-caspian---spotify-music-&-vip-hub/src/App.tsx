@@ -22,6 +22,7 @@ import { Track, VipTicket, Playlist, UserAccount } from './types';
 import { INITIAL_TRACKS, INITIAL_PLAYLISTS, INITIAL_TICKETS, INITIAL_USERS } from './data/initialData';
 import { audioEngine } from './utils/audioEngine';
 import { getCurrentSupabaseUser, signOutSupabaseUser } from './lib/auth';
+import { supabase } from './lib/supabase';
 import { loadCatalog, toggleTrackLike, uploadTrackAssets } from './lib/catalog';
 import confetti from 'canvas-confetti';
 
@@ -39,6 +40,7 @@ export default function App() {
 
   // Restore identity and permissions only from Supabase, not editable browser storage.
   const [currentUser, setCurrentUser] = useState<UserAccount | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
@@ -153,22 +155,77 @@ export default function App() {
 
   useEffect(() => {
     let active = true;
-    getCurrentSupabaseUser()
-      .then((user) => {
-        if (active) {
+
+    const restoreSession = async () => {
+      try {
+        const user = await getCurrentSupabaseUser();
+        if (!active) return;
+        setCurrentUser(user);
+        if (user?.likedTrackIds) setLikedTrackIds(user.likedTrackIds);
+      } catch (error) {
+        console.error('Supabase session restore failed:', error);
+        if (active) setCurrentUser(null);
+      } finally {
+        if (active) setAuthLoading(false);
+      }
+    };
+
+    void restoreSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!active) return;
+
+      if (event === 'SIGNED_OUT' || !session) {
+        setCurrentUser(null);
+        setAuthLoading(false);
+        setCurrentView((view) =>
+          view === 'admin' || view === 'dashboard' || view === 'liked' ? 'home' : view
+        );
+        return;
+      }
+
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+        // Defer profile/role queries until after the auth callback returns.
+        Promise.resolve().then(async () => {
+          const user = await getCurrentSupabaseUser();
+          if (!active) return;
           setCurrentUser(user);
           if (user?.likedTrackIds) setLikedTrackIds(user.likedTrackIds);
-        }
-      })
-      .catch((error) => console.error('Supabase session restore failed:', error));
+          setAuthLoading(false);
+        }).catch((error) => {
+          console.error('Supabase auth state sync failed:', error);
+          if (active) setAuthLoading(false);
+        });
+      }
+    });
+
     return () => {
       active = false;
+      subscription.unsubscribe();
     };
   }, []);
 
   useEffect(() => {
     localStorage.setItem('caspian_liked_tracks', JSON.stringify(likedTrackIds));
   }, [likedTrackIds]);
+
+  const navigateToView = (view: typeof currentView) => {
+    if ((view === 'dashboard' || view === 'liked') && !currentUser) {
+      showToast('برای دسترسی به این بخش ابتدا وارد حساب کاربری شوید.', 'info');
+      setIsAuthModalOpen(true);
+      return;
+    }
+    if (view === 'admin' && currentUser?.role !== 'admin') {
+      showToast(
+        currentUser ? 'دسترسی مدیریت برای این حساب فعال نیست.' : 'برای ورود به مدیریت ابتدا وارد حساب ادمین شوید.',
+        'error'
+      );
+      if (!currentUser) setIsAuthModalOpen(true);
+      setCurrentView('home');
+      return;
+    }
+    setCurrentView(view);
+  };
 
   // Toast Helper
   const showToast = (text: string, type: 'success' | 'error' | 'info' = 'info') => {
@@ -521,7 +578,7 @@ export default function App() {
       {/* Spotify Sidebar (Desktop + Mobile Drawer) */}
       <Sidebar
         currentView={currentView}
-        onNavigate={(view) => setCurrentView(view)}
+        onNavigate={navigateToView}
         playlists={playlists}
         onSelectPlaylist={(pl) => {
           setCurrentView('home');
@@ -621,7 +678,9 @@ export default function App() {
           )}
 
           {currentView === 'dashboard' && (
-            currentUser ? (
+            authLoading ? (
+              <div className="p-8 text-center text-neutral-400">در حال بررسی نشست کاربری...</div>
+            ) : currentUser ? (
               <UserDashboard
                 user={currentUser}
                 allTracks={tracks}
@@ -632,7 +691,7 @@ export default function App() {
                 onToggleLike={handleToggleLike}
                 onDownloadTrack={handleDownloadTrack}
                 onNavigateToSupport={() => setCurrentView('support')}
-                onNavigateToAdmin={() => setCurrentView('admin')}
+                onNavigateToAdmin={() => navigateToView('admin')}
                 onLogout={handleLogout}
                 onUpdateUser={handleUpdateUser}
               />
@@ -666,7 +725,9 @@ export default function App() {
           )}
 
           {currentView === 'admin' && (
-            currentUser?.role === 'admin' ? (
+            authLoading ? (
+              <div className="p-8 text-center text-neutral-400">در حال بررسی دسترسی مدیریت...</div>
+            ) : currentUser?.role === 'admin' ? (
               <AdminPanel
                 currentUser={currentUser}
                 onOpenAuthModal={() => setIsAuthModalOpen(true)}
@@ -684,7 +745,19 @@ export default function App() {
                 isPlaying={isPlaying}
                 onPlayTrack={handlePlayTrack}
               />
-            ) : null
+            ) : (
+              <div className="p-8 text-center space-y-4">
+                <p className="text-neutral-400">این بخش فقط برای حساب‌های دارای نقش ادمین قابل دسترسی است.</p>
+                {!currentUser && (
+                  <button
+                    onClick={() => setIsAuthModalOpen(true)}
+                    className="py-2.5 px-6 rounded-full bg-[#1db954] text-black font-bold text-xs"
+                  >
+                    ورود به حساب ادمین
+                  </button>
+                )}
+              </div>
+            )
           )}
         </main>
       </div>
