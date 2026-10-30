@@ -78,20 +78,4 @@ export const INITIAL_PLAYLISTS: Playlist[] = [];
 export const INITIAL_TICKETS: VipTicket[] = [
 ];
 
-export const INITIAL_USERS: UserAccount[] = [
-  {
-    id: 'user-admin-caspian',
-    username: 'AminJodaie',
-    password: 'Amin12120000',
-    displayName: 'DJ Caspian (امین جدایی)',
-    email: 'aminjodaie314@gmail.com',
-    role: 'admin',
-    isVip: true,
-    vipSince: '2025-01-01',
-    likedTrackIds: ['caspian-01', 'caspian-03', 'caspian-04', 'caspian-02'],
-    customPlaylists: [],
-    avatarUrl: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&auto=format&fit=crop&q=80',
-    createdAt: '2025-01-01 00:00',
-    downloadCount: 48,
-  },
-];
+export const INITIAL_USERS: UserAccount[] = [];
