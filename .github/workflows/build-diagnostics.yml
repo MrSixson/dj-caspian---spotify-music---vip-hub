@@ -32,6 +32,7 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
+        id: install
         run: npm install --legacy-peer-deps
 
       - name: Run TypeScript validation
@@ -41,6 +42,7 @@ jobs:
           npm run lint 2>&1 | tee lint-output.log
 
       - name: Run production build and capture full output
+        if: ${{ always() && steps.install.outcome == 'success' }}
         shell: bash
         run: |
           set -o pipefail

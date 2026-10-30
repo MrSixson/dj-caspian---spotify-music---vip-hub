@@ -314,10 +314,16 @@ export default function App() {
       return;
     }
 
-    // User is VIP! Trigger real download of audio file
-    showToast(`دانلود فایل اصلی ${track.title} با کیفیت ۳۲۰ آغاز شد...`, 'success');
+    // Download only the original uploaded audio file. Never fabricate a fallback track.
+    const downloadUrl = track.audioUrl;
+    if (!downloadUrl) {
+      showToast('فایل اصلی این آهنگ در دسترس نیست و دانلود انجام نشد.', 'error');
+      return;
+    }
 
-    // Increment user download count if logged in
+    showToast(`دانلود فایل اصلی ${track.title} آغاز شد...`, 'success');
+
+    // Increment user download count only when a real source URL exists.
     if (currentUser) {
       const updatedUser: UserAccount = {
         ...currentUser,
@@ -328,14 +334,7 @@ export default function App() {
     }
 
     try {
-      let downloadUrl = track.audioUrl;
-      let filename = `DJ_Caspian_${track.title.replace(/[^a-zA-Z0-9]/g, '_')}_320k.wav`;
-
-      if (!downloadUrl) {
-        // Generate high quality WAV audio blob
-        const blob = audioEngine.generateVipDownloadBlob(track.title, track.artist, track.bpm);
-        downloadUrl = URL.createObjectURL(blob);
-      }
+      const filename = `DJ_Caspian_${track.title.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
       const a = document.createElement('a');
       a.href = downloadUrl;
