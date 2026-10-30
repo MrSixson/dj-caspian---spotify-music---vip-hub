@@ -11,6 +11,32 @@ type ProfileRow = {
 type RoleRow = { role: 'admin' | 'user' };
 type VipRow = { is_active: boolean };
 
+function createDefaultAvatar(name: string): string {
+  const initials = name
+    .trim()
+    .split(/[\\s._-]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => Array.from(part)[0]?.toUpperCase() || '')
+    .join('') || 'DJ';
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160">
+    <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#123d31"/>
+        <stop offset="100%" stop-color="#050807"/>
+      </linearGradient>
+    </defs>
+    <rect width="160" height="160" rx="32" fill="url(#bg)"/>
+    <circle cx="80" cy="80" r="57" fill="none" stroke="#1db954" stroke-opacity=".55" stroke-width="2"/>
+    <circle cx="80" cy="80" r="48" fill="#1db954" fill-opacity=".10"/>
+    <text x="80" y="94" text-anchor="middle" font-family="Arial,sans-serif" font-size="48" font-weight="800" fill="#eafff0">${initials}</text>
+    <circle cx="125" cy="35" r="5" fill="#1db954"/>
+  </svg>`;
+
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
 const toUserAccount = async (userId: string, email?: string): Promise<UserAccount> => {
   const [{ data: profile, error: profileError }, { data: role }, { data: vip }] =
     await Promise.all([
@@ -25,7 +51,7 @@ const toUserAccount = async (userId: string, email?: string): Promise<UserAccoun
 
   const avatarUrl = profile.avatar_path
     ? supabase.storage.from('avatars').getPublicUrl(profile.avatar_path).data.publicUrl
-    : '';
+    : createDefaultAvatar(profile.display_name || profile.username);
 
   return {
     id: profile.id,
