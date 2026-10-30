@@ -19,7 +19,7 @@ import { VipModal } from './components/VipModal';
 import { VisualizerModal } from './components/VisualizerModal';
 import { ToastContainer, ToastMessage } from './components/Toast';
 import { Track, VipTicket, Playlist, UserAccount } from './types';
-import { INITIAL_TICKETS, INITIAL_USERS } from './data/initialData';
+import { INITIAL_USERS } from './data/initialData';
 import { audioEngine } from './utils/audioEngine';
 import { getCurrentSupabaseUser, signOutSupabaseUser } from './lib/auth';
 import { supabase } from './lib/supabase';
@@ -50,15 +50,7 @@ export default function App() {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
 
   // 3. Persistent VIP Tickets
-  const [tickets, setTickets] = useState<VipTicket[]>(() => {
-    try {
-      const saved = localStorage.getItem('caspian_tickets');
-      if (saved) return JSON.parse(saved);
-    } catch {
-      // fallback
-    }
-    return INITIAL_TICKETS;
-  });
+  const [tickets, setTickets] = useState<VipTicket[]>([]);
 
   // 4. Derived & Persistent User Permissions
   const isUserVip = Boolean(currentUser?.isVip);
@@ -90,13 +82,25 @@ export default function App() {
 
   // LocalStorage Synchronization
   useEffect(() => {
-    localStorage.setItem('caspian_tickets', JSON.stringify(tickets));
-  }, [tickets]);
-
-  useEffect(() => {
     localStorage.setItem('caspian_users', JSON.stringify(users));
   }, [users]);
 
+  useEffect(() => {
+    if (authLoading || currentUser?.role !== 'admin') { setTickets([]); return; }
+    let active = true;
+    supabase.from('vip_tickets').select('*').order('created_at', { ascending: false }).then(({ data, error }) => {
+      if (!active) return;
+      if (error) { showToast('دریافت تیکت‌های VIP ناموفق بود: ' + error.message, 'error'); return; }
+      setTickets((data || []).map((row: any) => ({
+        id: row.id, userId: row.user_id, userName: row.user_name, userContact: row.user_contact,
+        method: row.method, amount: row.method === 'crypto' ? String(row.amount) + ' USDT' : Number(row.amount).toLocaleString('en-US') + ' Toman',
+        cryptoNetwork: row.crypto_network || undefined, txHashOrReceiptNo: row.tx_hash_or_receipt_no,
+        receiptPath: row.receipt_path || undefined, notes: row.notes || undefined, status: row.status,
+        createdAt: row.created_at, reviewDate: row.review_date || undefined, adminNote: row.admin_note || undefined,
+      })));
+    });
+    return () => { active = false; };
+  }, [currentUser?.id, currentUser?.role, authLoading]);
   useEffect(() => {
     if (authLoading) return;
     let active = true;
@@ -432,73 +436,35 @@ export default function App() {
     setPlaylists((prev) => prev.filter((p) => p.id !== playlistId));
   };
 
-  const handleUpdateTicketStatus = (
-    ticketId: string,
-    status: 'approved' | 'rejected',
-    adminNote?: string
-  ) => {
-    const updatedTickets = tickets.map((t) =>
-      t.id === ticketId
-        ? {
-            ...t,
-            status,
-            adminNote: adminNote || t.adminNote,
-            reviewDate: new Date().toISOString().replace('T', ' ').substring(0, 16),
-          }
-        : t
-    );
-    setTickets(updatedTickets);
-
-    // If approved, promote the user who submitted this ticket to VIP
+  const handleUpdateTicketStatus = async (ticketId: string, status: 'approved' | 'rejected', adminNote?: string) => {
+    const target = tickets.find((ticket) => ticket.id === ticketId);
+    if (!target || currentUser?.role !== 'admin' || !target.userId) { showToast('تیکت یا دسترسی معتبر نیست.', 'error'); return; }
+    const { error } = await supabase.from('vip_tickets').update({ status, admin_note: adminNote || null, review_date: new Date().toISOString() }).eq('id', ticketId);
+    if (error) { showToast('ثبت نتیجه بررسی ناموفق بود: ' + error.message, 'error'); return; }
     if (status === 'approved') {
-      const targetTicket = tickets.find((t) => t.id === ticketId);
-      if (targetTicket) {
-        setUsers((prevUsers) =>
-          prevUsers.map((u) => {
-            const matches =
-              u.displayName.toLowerCase() === targetTicket.userName.toLowerCase() ||
-              u.username.toLowerCase() === targetTicket.userName.toLowerCase() ||
-              (u.email && targetTicket.userContact.includes(u.email));
-
-            if (matches) {
-              const updatedU = { ...u, isVip: true, vipSince: new Date().toISOString().split('T')[0] };
-              if (currentUser?.id === u.id) {
-                setCurrentUser(updatedU);
-              }
-              return updatedU;
-            }
-            return u;
-          })
-        );
-      }
-
-      // If current user submitted or owns this ticket, activate VIP
-      if (currentUser) {
-        const isMyTicket = targetTicket && (
-          targetTicket.userName.toLowerCase() === currentUser.displayName.toLowerCase() ||
-          targetTicket.userName.toLowerCase() === currentUser.username.toLowerCase() ||
-          (currentUser.email && targetTicket.userContact.includes(currentUser.email))
-        );
-        if (isMyTicket) {
-          const vipUser = { ...currentUser, isVip: true };
-          setCurrentUser(vipUser);
-        }
-      }
-
-      try {
-        confetti({
-          particleCount: 100,
-          spread: 80,
-          origin: { y: 0.5 },
-        });
-      } catch {
-        // ignore
-      }
+      const { error: vipError } = await supabase.from('vip_entitlements').upsert({ user_id: target.userId, is_active: true, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+      if (vipError) { showToast('تیکت ثبت شد اما فعال‌سازی VIP ناموفق بود: ' + vipError.message, 'error'); return; }
+    }
+    setTickets((previous) => previous.map((ticket) => ticket.id === ticketId ? { ...ticket, status, adminNote, reviewDate: new Date().toISOString() } : ticket));
+    showToast(status === 'approved' ? 'تیکت تایید و اشتراک VIP فعال شد.' : 'تیکت رد شد.', 'success');
+    if (status === 'approved' && currentUser.id === target.userId) {
+      const refreshed = await getCurrentSupabaseUser();
+      if (refreshed) setCurrentUser(refreshed);
     }
   };
 
-  const handleAddTicket = (newTicket: VipTicket) => {
-    setTickets((prev) => [newTicket, ...prev]);
+  const handleAddTicket = async (ticket: VipTicket): Promise<VipTicket> => {
+    if (!currentUser?.id || ticket.userId !== currentUser.id) throw new Error('برای ثبت تیکت باید وارد حساب کاربری خود شوید.');
+    const { data, error } = await supabase.from('vip_tickets').insert({
+      user_id: currentUser.id, user_name: ticket.userName, user_contact: ticket.userContact,
+      method: ticket.method, amount: ticket.method === 'crypto' ? 10 : 3000000,
+      crypto_network: ticket.cryptoNetwork || null, tx_hash_or_receipt_no: ticket.txHashOrReceiptNo,
+      receipt_path: ticket.receiptPath || null, notes: ticket.notes || null, status: 'pending',
+    }).select('id,created_at').single();
+    if (error || !data) throw new Error('ثبت تیکت در سرور ناموفق بود: ' + (error?.message || 'No record returned'));
+    const created = { ...ticket, id: data.id, createdAt: data.created_at };
+    setTickets((previous) => [created, ...previous]);
+    return created;
   };
 
   const handleActivateVipForUser = (ticketId: string) => {
@@ -676,6 +642,7 @@ export default function App() {
 
           {currentView === 'support' && (
             <SupportVipView
+              userId={currentUser?.id || null}
               onAddTicket={handleAddTicket}
               onShowToast={showToast}
               isUserVip={isUserVip}
