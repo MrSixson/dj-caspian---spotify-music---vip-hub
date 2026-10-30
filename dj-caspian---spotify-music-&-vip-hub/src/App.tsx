@@ -519,17 +519,20 @@ export default function App() {
     }
   };
 
-  const handleResetToDefault = () => {
-    if (confirm('آیا مایلید تمام تغییرات و تیکت‌ها به اطلاعات اولیه برگردد؟')) {
-      setTracks(INITIAL_TRACKS);
-      setTickets(INITIAL_TICKETS);
-      setUsers(INITIAL_USERS);
-      setCurrentUser(INITIAL_USERS[0]);
-      localStorage.removeItem('caspian_tracks');
-      localStorage.removeItem('caspian_tickets');
-      localStorage.removeItem('caspian_users');
-      localStorage.removeItem('caspian_current_user');
-      showToast('اطلاعات به حالت پیش‌فرض بازگشت', 'info');
+  const handleResetToDefault = async () => {
+    if (!confirm('کتابخانه دوباره از Supabase بارگذاری شود؟ هیچ آهنگ، حساب یا تیکتی از سرور حذف نخواهد شد.')) return;
+    try {
+      const catalog = await loadCatalog(currentUser?.id);
+      setTracks(catalog.tracks);
+      setPlaylists(catalog.playlists);
+      setLikedTrackIds(catalog.likedTrackIds);
+      setCurrentTrack(catalog.tracks[0] || null);
+      setCurrentTime(0);
+      audioEngine.stop();
+      setIsPlaying(false);
+      showToast('کتابخانه از Supabase تازه‌سازی شد.', 'success');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'تازه‌سازی کتابخانه ناموفق بود.', 'error');
     }
   };
 
