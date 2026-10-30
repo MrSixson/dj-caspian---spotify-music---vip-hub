@@ -368,14 +368,7 @@ export default function App() {
     anchor.click();
     anchor.remove();
 
-    if (currentUser) {
-      const updatedUser: UserAccount = {
-        ...currentUser,
-        downloadCount: (currentUser.downloadCount || 0) + 1,
-      };
-      setCurrentUser(updatedUser);
-      setUsers((prev) => prev.map((u) => (u.id === currentUser.id ? updatedUser : u)));
-    }
+
 
     showToast(`درخواست دانلود فایل اصلی ${track.title} ارسال شد.`, 'success');
   };
@@ -515,23 +508,9 @@ export default function App() {
     return created;
   };
 
-  const handleActivateVipForUser = (ticketId: string) => {
-    if (currentUser) {
-      const updated = { ...currentUser, isVip: true };
-      setCurrentUser(updated);
-      setUsers((prev) => prev.map((u) => (u.id === currentUser.id ? updated : u)));
-    }
-    showToast('اشتراک VIP شما با موفقیت روی این دستگاه فعال شد!', 'success');
-    try {
-      confetti({
-        particleCount: 100,
-        spread: 80,
-        origin: { y: 0.5 },
-      });
-    } catch {
-      // ignore
-    }
-  };
+  // VIP access is read from Supabase auth/profile state only.
+  // There is intentionally no client-side VIP activation shortcut.
+
 
   const handleResetToDefault = async () => {
     if (!confirm('کتابخانه دوباره از Supabase بارگذاری شود؟ هیچ آهنگ، حساب یا تیکتی از سرور حذف نخواهد شد.')) return;
