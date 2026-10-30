@@ -29,11 +29,63 @@ function durationToText(seconds: number): string {
   return `${Math.floor(safe / 60)}:${String(safe % 60).padStart(2, '0')}`;
 }
 
-async function signedAudioUrl(path: string | null): Promise<string | undefined> {
+function normalizeAudioPath(value: string): string | undefined {
+  const raw = value.trim();
+  if (!raw) return undefined;
+
+  // Accept a stored object path or a URL copied from Supabase Storage.
+  let objectPath = raw;
+  if (/^https?:\/\//i.test(raw)) {
+    try {
+      const url = new URL(raw);
+      const match = url.pathname.match(/\/storage\/v1\/object\/(?:sign|public|authenticated)\/tracks\/(.+)$/i);
+      if (!match) return raw;
+      objectPath = match[1];
+    } catch {
+      return undefined;
+    }
+  }
+
+  try {
+    objectPath = objectPath.split('/').map((part) => decodeURIComponent(part)).join('/');
+  } catch {
+    return undefined;
+  }
+
+  objectPath = objectPath.replace(/^\/+/, '').replace(/^tracks\//i, '');
+  if (!objectPath || objectPath.split('/').some((part) => part === '.' || part === '..')) return undefined;
+  return objectPath;
+}
+
+async function signedAudioUrl(
+  path: string | null,
+  track?: Pick<TrackRow, 'id' | 'title' | 'artist'>
+): Promise<string | undefined> {
   if (!path) return undefined;
-  const { data, error } = await supabase.storage.from('tracks').createSignedUrl(path, 60 * 60);
-  if (error) {
-    console.error('Could not create audio signed URL:', error.message);
+
+  const objectPath = normalizeAudioPath(path);
+  if (!objectPath) {
+    console.error('Invalid audio_path in tracks row:', {
+      trackId: track?.id,
+      title: track?.title,
+      audioPath: path,
+    });
+    return undefined;
+  }
+
+  // A stored full URL is kept only when it is not a Supabase Storage URL.
+  if (/^https?:\/\//i.test(objectPath)) return objectPath;
+
+  const { data, error } = await supabase.storage.from('tracks').createSignedUrl(objectPath, 60 * 60);
+  if (error || !data?.signedUrl) {
+    console.error('Could not create audio signed URL:', {
+      trackId: track?.id,
+      title: track?.title,
+      artist: track?.artist,
+      bucket: 'tracks',
+      requestedPath: objectPath,
+      message: error?.message || 'Supabase returned no signed URL',
+    });
     return undefined;
   }
   return data.signedUrl;
@@ -56,7 +108,7 @@ async function mapTrack(row: TrackRow): Promise<Track> {
     album: row.album,
     duration: secondsFromDuration(row.duration),
     coverUrl: coverUrl(row.cover_path),
-    audioUrl: await signedAudioUrl(row.audio_path),
+    audioUrl: await signedAudioUrl(row.audio_path, row),
     synthPreset: preset,
     genre: row.genre || 'Electronic',
     bpm: row.bpm || 0,
