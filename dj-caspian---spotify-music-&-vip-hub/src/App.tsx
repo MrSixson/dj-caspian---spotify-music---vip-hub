@@ -45,29 +45,9 @@ export default function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // 2. Persistent tracks & library (Clean initial slate without legacy mock tracks)
-  const [tracks, setTracks] = useState<Track[]>(() => {
-    try {
-      const saved = localStorage.getItem('caspian_tracks');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        // Exclude legacy mock tracks if any exist from older versions
-        return parsed.filter((t: Track) => !t.id.startsWith('caspian-0'));
-      }
-    } catch {
-      // fallback
-    }
-    return INITIAL_TRACKS;
-  });
+  const [tracks, setTracks] = useState<Track[]>(INITIAL_TRACKS);
 
-  const [playlists, setPlaylists] = useState<Playlist[]>(() => {
-    try {
-      const saved = localStorage.getItem('caspian_playlists');
-      if (saved) return JSON.parse(saved);
-    } catch {
-      // fallback
-    }
-    return INITIAL_PLAYLISTS;
-  });
+  const [playlists, setPlaylists] = useState<Playlist[]>(INITIAL_PLAYLISTS);
 
   // 3. Persistent VIP Tickets
   const [tickets, setTickets] = useState<VipTicket[]>(() => {
@@ -83,18 +63,7 @@ export default function App() {
   // 4. Derived & Persistent User Permissions
   const isUserVip = Boolean(currentUser?.isVip);
 
-  const [likedTrackIds, setLikedTrackIds] = useState<string[]>(() => {
-    if (currentUser?.likedTrackIds && currentUser.likedTrackIds.length > 0) {
-      return currentUser.likedTrackIds;
-    }
-    try {
-      const saved = localStorage.getItem('caspian_liked_tracks');
-      if (saved) return JSON.parse(saved);
-    } catch {
-      // fallback
-    }
-    return ['caspian-01', 'caspian-03', 'caspian-04'];
-  });
+  const [likedTrackIds, setLikedTrackIds] = useState<string[]>([]);
 
   // 5. Navigation & Views
   const [currentView, setCurrentView] = useState<
