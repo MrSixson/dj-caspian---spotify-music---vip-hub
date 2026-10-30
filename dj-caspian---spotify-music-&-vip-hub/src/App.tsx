@@ -322,7 +322,7 @@ export default function App() {
       return;
     }
 
-    if (!track.audioUrl || !/^https?:\\/\\//i.test(track.audioUrl)) {
+    if (!track.audioUrl || !(track.audioUrl.startsWith('https://') || track.audioUrl.startsWith('http://'))) {
       showToast('لینک فایل اصلی این آهنگ در دسترس نیست؛ دانلود انجام نشد.', 'error');
       return;
     }
