@@ -136,6 +136,7 @@ export async function uploadTrackAssets(input: {
   synthPreset?: string;
   isVipOnlyDownload: boolean;
   description?: string;
+  coverUrl?: string;
 }): Promise<Track> {
   const safeBase = input.audioFile.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 70) || 'track';
   const unique = crypto.randomUUID();
@@ -165,7 +166,7 @@ export async function uploadTrackAssets(input: {
     artist: input.artist.trim() || 'DJ Caspian',
     album: input.album.trim() || 'Caspian Singles',
     duration: durationToText(input.durationSeconds),
-    cover_path: coverPath,
+    cover_path: coverPath || input.coverUrl || null,
     audio_path: audioPath,
     synth_preset: input.synthPreset || null,
     genre: input.genre || null,
