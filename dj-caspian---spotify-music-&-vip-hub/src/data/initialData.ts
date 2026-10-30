@@ -7,8 +7,8 @@ export const DJ_CASPIAN_INFO = {
   bio: 'دی‌جی کاسپین، پیشگام سبک تلفیقی پرشین کلاب، تکنو ملودیک و دیپ هاوس مدرن در خاورمیانه و فستیوال‌های بین‌المللی. تمامی ریمیکس‌ها و سِت‌های رادیویی به صورت انحصاری در این پلتفرم استریم می‌شوند.',
   monthlyListeners: '۱۸۴,۳۵۰ شنونده ماهانه',
   followers: '۸۹,۲۰۰ دنبال‌کننده',
-  avatarUrl: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&auto=format&fit=crop&q=80',
-  bannerUrl: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1600&auto=format&fit=crop&q=80',
+  avatarUrl: `${import.meta.env.BASE_URL}dj-caspian-profile.jpg`,
+  bannerUrl: `${import.meta.env.BASE_URL}dj-caspian-profile.jpg`,
   
   // Payment Details for Support & VIP
   payment: {
