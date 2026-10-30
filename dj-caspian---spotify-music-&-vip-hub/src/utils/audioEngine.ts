@@ -31,6 +31,7 @@ class AudioEngine {
       this.analyser.fftSize = 64;
       this.gainNode = this.ctx.createGain();
       this.gainNode.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+      this.analyser.connect(this.gainNode);
       this.gainNode.connect(this.ctx.destination);
     }
     if (this.ctx.state === 'suspended') {
