@@ -235,8 +235,7 @@ class AudioEngine {
 
       audio.onerror = () => {
         const mediaError = audio.error;
-        const message = mediaError
-          ? `Audio loading failed. Media error code: ${mediaError.code}`
+        const message = mediaError ? `Audio loading failed. Media error code: ${mediaError.code}`
           : "Audio loading failed.";
 
         console.error("[DJ AUDIO]", message, this.getDebugInfo());
