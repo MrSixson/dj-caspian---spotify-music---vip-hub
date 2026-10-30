@@ -22,7 +22,7 @@ import { Track, VipTicket, Playlist, UserAccount } from './types';
 import { INITIAL_TRACKS, INITIAL_PLAYLISTS, INITIAL_TICKETS, INITIAL_USERS } from './data/initialData';
 import { audioEngine } from './utils/audioEngine';
 import { getCurrentSupabaseUser, signOutSupabaseUser } from './lib/auth';
-import { loadCatalog, toggleTrackLike } from './lib/catalog';
+import { loadCatalog, toggleTrackLike, uploadTrackAssets } from './lib/catalog';
 import confetti from 'canvas-confetti';
 
 export default function App() {
@@ -401,8 +401,10 @@ export default function App() {
   // -------------------------------------------------------------
   // DJ CASPIAN ADMIN ACTIONS
   // -------------------------------------------------------------
-  const handleAddTrack = (newTrack: Track) => {
+  const handleAddTrack = async (input: Parameters<typeof uploadTrackAssets>[0]) => {
+    const newTrack = await uploadTrackAssets(input);
     setTracks((prev) => [newTrack, ...prev]);
+    return newTrack;
   };
 
   const handleDeleteTrack = (trackId: string) => {
