@@ -8,9 +8,9 @@
 
 - `src/App.tsx`: هماهنگ‌کننده اصلی UI و state؛ در حال حاضر مسئولیت‌های زیادی دارد.
 - `src/components/`: اجزای صفحه و پنل‌ها.
-- `src/lib/auth.ts`: منطق احراز هویت فعلی.
-- `src/lib/catalog.ts`: دریافت کاتالوگ، ساخت URL فایل‌ها و آپلود آهنگ.
-- `src/lib/supabase.ts`: ساخت Supabase client.
+- `src/services/supabase/auth.service.ts`: احراز هویت و تبدیل پروفایل Supabase به مدل کاربر.
+- `src/services/supabase/catalog.service.ts`: دریافت کاتالوگ، ساخت URL فایل‌ها و آپلود آهنگ.
+- `src/services/supabase/client.ts`: ساخت و پیکربندی Supabase client.
 - `src/utils/audioEngine.ts`: موتور پخش.
 - `src/data/initialData.ts`: داده‌های اولیه/نمونه.
 - `src/types/index.ts`: مدل‌های TypeScript.
@@ -36,11 +36,11 @@ src/
 │   ├── vip/              # اشتراک و درخواست VIP
 │   └── profile/          # پروفایل و تنظیمات کاربر
 ├── services/
-│   └── supabase/         # client و adapterهای زیرساخت
+│   └── supabase/         # client، احراز هویت و کاتالوگ
 ├── hooks/               # هوک‌های مشترک
 ├── config/              # پیکربندی قابل اشتراک
 ├── data/                # داده‌های نمونه و seed
-├── lib/                 # سازگاری موقت تا پایان مهاجرت
+├── lib/                 # حذف‌شده از مسیر اصلی؛ برای کدهای جدید استفاده نشود
 ├── types/               # مدل‌های دامنه
 ├── utils/               # توابع خالص و ابزارها
 └── styles/              # استایل‌های سازمان‌دهی‌شده
