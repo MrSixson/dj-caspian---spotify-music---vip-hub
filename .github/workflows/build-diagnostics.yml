@@ -1,0 +1,50 @@
+name: DJ Caspian Build Diagnostics
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: "dj-caspian-diagnostics"
+  cancel-in-progress: false
+
+jobs:
+  diagnostic-build:
+    name: Diagnostic build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dj-caspian---spotify-music-&-vip-hub
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: dj-caspian---spotify-music-&-vip-hub/package-lock.json
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Run production build and capture full output
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee build-output.log
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dj-caspian-build-log
+          path: dj-caspian---spotify-music-&-vip-hub/build-output.log
+          if-no-files-found: warn
+          retention-days: 7
