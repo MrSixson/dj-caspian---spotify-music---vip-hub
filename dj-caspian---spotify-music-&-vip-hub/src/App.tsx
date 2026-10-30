@@ -22,6 +22,7 @@ import { Track, VipTicket, Playlist, UserAccount } from './types';
 import { INITIAL_TRACKS, INITIAL_PLAYLISTS, INITIAL_TICKETS, INITIAL_USERS } from './data/initialData';
 import { audioEngine } from './utils/audioEngine';
 import { getCurrentSupabaseUser, signOutSupabaseUser } from './lib/auth';
+import { loadCatalog, toggleTrackLike } from './lib/catalog';
 import confetti from 'canvas-confetti';
 
 export default function App() {
@@ -132,6 +133,23 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('caspian_users', JSON.stringify(users));
   }, [users]);
+
+  useEffect(() => {
+    let active = true;
+    loadCatalog(currentUser?.id)
+      .then((catalog) => {
+        if (!active) return;
+        setTracks(catalog.tracks);
+        setPlaylists(catalog.playlists);
+        if (currentUser) setLikedTrackIds(catalog.likedTrackIds);
+        setCurrentTrack((previous) => previous ? (catalog.tracks.find((t) => t.id === previous.id) || catalog.tracks[0] || null) : (catalog.tracks[0] || null));
+      })
+      .catch((error) => {
+        console.error('Supabase catalog load failed:', error);
+        if (active) showToast(error instanceof Error ? error.message : 'دریافت کتابخانه از سرور ناموفق بود.', 'error');
+      });
+    return () => { active = false; };
+  }, [currentUser?.id]);
 
   useEffect(() => {
     let active = true;
@@ -265,24 +283,24 @@ export default function App() {
     }
   };
 
-  const handleToggleLike = (trackId: string) => {
+  const handleToggleLike = async (trackId: string) => {
     const exists = likedTrackIds.includes(trackId);
-    const nextLiked = exists
-      ? likedTrackIds.filter((id) => id !== trackId)
-      : [...likedTrackIds, trackId];
-
-    setLikedTrackIds(nextLiked);
-
-    if (currentUser) {
-      const updatedUser: UserAccount = {
-        ...currentUser,
-        likedTrackIds: nextLiked,
-      };
-      setCurrentUser(updatedUser);
-      setUsers((prev) => prev.map((u) => (u.id === currentUser.id ? updatedUser : u)));
+    if (!currentUser) {
+      showToast('برای ذخیره علاقه‌مندی‌ها ابتدا وارد حساب کاربری شوید.', 'info');
+      setIsAuthModalOpen(true);
+      return;
     }
-
-    showToast(exists ? 'از لیست علاقه‌مندی‌ها حذف شد' : 'به آهنگ‌های لایک شده اضافه شد', 'success');
+    try {
+      await toggleTrackLike(currentUser.id, trackId, exists);
+      const nextLiked = exists
+        ? likedTrackIds.filter((id) => id !== trackId)
+        : [...likedTrackIds, trackId];
+      setLikedTrackIds(nextLiked);
+      setCurrentUser({ ...currentUser, likedTrackIds: nextLiked });
+      showToast(exists ? 'از لیست علاقه‌مندی‌ها حذف شد' : 'به آهنگ‌های لایک شده اضافه شد', 'success');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'ذخیره علاقه‌مندی ناموفق بود.', 'error');
+    }
   };
 
   // -------------------------------------------------------------
@@ -350,7 +368,7 @@ export default function App() {
       setLikedTrackIds(user.likedTrackIds);
     }
     showToast(`خوش آمدید، ${user.displayName}!`, 'success');
-    if (user.role === 'admin' && user.username === 'AminJodaie') {
+    if (user.role === 'admin') {
       showToast('ورود موفق به اتاق مدیریت DJ Caspian ⚡', 'success');
       setCurrentView('admin');
     } else {
@@ -658,7 +676,7 @@ export default function App() {
           )}
 
           {currentView === 'admin' && (
-            currentUser?.username === 'AminJodaie' ? (
+            currentUser?.role === 'admin' ? (
               <AdminPanel
                 currentUser={currentUser}
                 onOpenAuthModal={() => setIsAuthModalOpen(true)}
