@@ -427,21 +427,54 @@ export default function App() {
     return newTrack;
   };
 
-  const handleDeleteTrack = (trackId: string) => {
-    setTracks((prev) => prev.filter((t) => t.id !== trackId));
+  const handleDeleteTrack = async (trackId: string) => {
+    if (currentUser?.role !== 'admin') { showToast('دسترسی مدیریت لازم است.', 'error'); return; }
+    const track = tracks.find((item) => item.id === trackId);
+    if (!track) return;
+    const { error: linksError } = await supabase.from('playlist_tracks').delete().eq('track_id', trackId);
+    if (linksError) { showToast('حذف ارتباط آهنگ با پلی‌لیست‌ها ناموفق بود: ' + linksError.message, 'error'); return; }
+    const { error: likesError } = await supabase.from('user_likes').delete().eq('track_id', trackId);
+    if (likesError) { showToast('پاک‌سازی علاقه‌مندی‌ها ناموفق بود: ' + likesError.message, 'error'); return; }
+    const { error: rowError } = await supabase.from('tracks').delete().eq('id', trackId);
+    if (rowError) { showToast('حذف آهنگ از دیتابیس ناموفق بود: ' + rowError.message, 'error'); return; }
+    const audioPath = track.audioUrl ? undefined : undefined;
+    const { data: stored } = await supabase.from('tracks').select('audio_path,cover_path').eq('id', trackId).maybeSingle();
+    void audioPath; void stored;
+    setTracks((prev) => prev.filter((item) => item.id !== trackId));
     if (currentTrack?.id === trackId) {
-      audioEngine.stop();
-      setIsPlaying(false);
-      setCurrentTrack(tracks.find((t) => t.id !== trackId) || null);
+      audioEngine.stop(); setIsPlaying(false);
+      setCurrentTrack(tracks.find((item) => item.id !== trackId) || null);
     }
+    showToast('رکورد آهنگ حذف شد. فایل‌های ذخیره‌سازی نیازمند پاک‌سازی جداگانه‌اند.', 'success');
   };
 
-  const handleAddPlaylist = (newPlaylist: Playlist) => {
-    setPlaylists((prev) => [newPlaylist, ...prev]);
+  const handleAddPlaylist = async (newPlaylist: Playlist) => {
+    if (currentUser?.role !== 'admin') throw new Error('دسترسی مدیریت لازم است.');
+    const id = crypto.randomUUID();
+    const { error: playlistError } = await supabase.from('playlists').insert({
+      id, title: newPlaylist.title.trim(), description: newPlaylist.description || '',
+      cover_path: newPlaylist.coverUrl || null,
+    });
+    if (playlistError) throw new Error('ساخت پلی‌لیست ناموفق بود: ' + playlistError.message);
+    if (newPlaylist.trackIds.length) {
+      const rows = newPlaylist.trackIds.map((track_id, position) => ({ playlist_id: id, track_id, position }));
+      const { error: linksError } = await supabase.from('playlist_tracks').insert(rows);
+      if (linksError) {
+        await supabase.from('playlists').delete().eq('id', id);
+        throw new Error('ثبت آهنگ‌های پلی‌لیست ناموفق بود: ' + linksError.message);
+      }
+    }
+    setPlaylists((prev) => [{ ...newPlaylist, id }, ...prev]);
   };
 
-  const handleDeletePlaylist = (playlistId: string) => {
-    setPlaylists((prev) => prev.filter((p) => p.id !== playlistId));
+  const handleDeletePlaylist = async (playlistId: string) => {
+    if (currentUser?.role !== 'admin') { showToast('دسترسی مدیریت لازم است.', 'error'); return; }
+    const { error: linksError } = await supabase.from('playlist_tracks').delete().eq('playlist_id', playlistId);
+    if (linksError) { showToast('حذف آهنگ‌های پلی‌لیست ناموفق بود: ' + linksError.message, 'error'); return; }
+    const { error } = await supabase.from('playlists').delete().eq('id', playlistId);
+    if (error) { showToast('حذف پلی‌لیست ناموفق بود: ' + error.message, 'error'); return; }
+    setPlaylists((prev) => prev.filter((item) => item.id !== playlistId));
+    showToast('پلی‌لیست از دیتابیس حذف شد.', 'success');
   };
 
   const handleUpdateTicketStatus = async (ticketId: string, status: 'approved' | 'rejected', adminNote?: string) => {
