@@ -383,7 +383,7 @@ export default function App() {
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
-      URL.revokeObjectURL(objectUrl);
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
       showToast(`دانلود فایل اصلی ${track.title} آغاز شد.`, 'success');
     } catch (error) {
       showToast(error instanceof Error ? error.message : 'دانلود آهنگ انجام نشد.', 'error');
