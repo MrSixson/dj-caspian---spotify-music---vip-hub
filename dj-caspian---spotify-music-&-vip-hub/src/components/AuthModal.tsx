@@ -4,6 +4,7 @@ import {
   Mail, Sparkles, CheckCircle2, AlertCircle, ArrowLeft, Disc3
 } from 'lucide-react';
 import { UserAccount } from '../types';
+import { signInWithEmail, signUpWithEmail } from '../lib/auth';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -39,26 +40,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
 
-    const targetUser = users.find(
-      (u) =>
-        (u.username.toLowerCase() === loginUsername.trim().toLowerCase() ||
-         u.email?.toLowerCase() === loginUsername.trim().toLowerCase()) &&
-        u.password === loginPassword
-    );
-
-    if (targetUser) {
-      onLogin(targetUser);
+    try {
+      const email = loginUsername.trim();
+      if (!email.includes('@')) {
+        setLoginError('ورود با نام کاربری در حال آماده‌سازی است؛ فعلاً ایمیل ثبت‌شده را وارد کنید.');
+        return;
+      }
+      const authenticatedUser = await signInWithEmail(email, loginPassword);
+      onLogin(authenticatedUser);
       onClose();
-    } else {
-      setLoginError('نام کاربری یا رمز عبور اشتباه است.');
+    } catch (error) {
+      setLoginError(error instanceof Error ? error.message : 'ورود انجام نشد. اطلاعات حساب را بررسی کنید.');
     }
   };
 
-  const handleRegisterSubmit = (e: React.FormEvent) => {
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setRegError('');
 
@@ -66,37 +66,34 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       setRegError('رمز عبور و تکرار آن یکسان نیستند.');
       return;
     }
-    if (regPassword.length < 5) {
-      setRegError('رمز عبور باید حداقل ۵ کاراکتر باشد.');
+    if (!regEmail.trim() || !regEmail.includes('@')) {
+      setRegError('برای ساخت حساب، ایمیل معتبر الزامی است.');
+      return;
+    }
+    if (regPassword.length < 8) {
+      setRegError('رمز عبور باید حداقل ۸ کاراکتر باشد.');
       return;
     }
 
-    const usernameExists = users.some(
-      (u) => u.username.toLowerCase() === regUsername.trim().toLowerCase()
-    );
-    if (usernameExists) {
-      setRegError('این نام کاربری قبلاً ثبت شده است. نام دیگری انتخاب نمایید.');
-      return;
+    try {
+      const result = await signUpWithEmail({
+        email: regEmail.trim(),
+        password: regPassword,
+        username: regUsername.trim(),
+        displayName: regDisplayName.trim() || regUsername.trim(),
+      });
+
+      if (result.emailConfirmationRequired || !result.user) {
+        setRegError('حساب ساخته شد. برای فعال‌سازی، لینک تأیید ارسال‌شده به ایمیلتان را باز کنید؛ سپس وارد شوید.');
+        return;
+      }
+
+      onRegister(result.user);
+      onLogin(result.user);
+      onClose();
+    } catch (error) {
+      setRegError(error instanceof Error ? error.message : 'ثبت‌نام انجام نشد.');
     }
-
-    const newUser: UserAccount = {
-      id: 'user-' + Date.now(),
-      username: regUsername.trim(),
-      password: regPassword,
-      displayName: regDisplayName.trim() || regUsername.trim(),
-      email: regEmail.trim() || undefined,
-      role: 'user',
-      isVip: false,
-      likedTrackIds: [],
-      customPlaylists: [],
-      avatarUrl: `https://images.unsplash.com/photo-${1534528741775 + Math.floor(Math.random() * 500)}?w=400&auto=format&fit=crop&q=80`,
-      createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
-      downloadCount: 0,
-    };
-
-    onRegister(newUser);
-    onLogin(newUser);
-    onClose();
   };
 
   return (
@@ -243,9 +240,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
 
             <div>
-              <label className="text-xs text-neutral-300 block mb-1 font-medium">ایمیل یا شماره همراه (اختیاری):</label>
+              <label className="text-xs text-neutral-300 block mb-1 font-medium">ایمیل (برای تأیید حساب الزامی):</label>
               <input
-                type="text"
+                type="email"
+                required
                 placeholder="email@example.com"
                 value={regEmail}
                 onChange={(e) => setRegEmail(e.target.value)}
@@ -260,7 +258,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <input
                   type="password"
                   required
-                  placeholder="حداقل ۵ حرف"
+                  placeholder="حداقل ۸ کاراکتر"
                   value={regPassword}
                   onChange={(e) => setRegPassword(e.target.value)}
                   className="w-full bg-[#202020] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl py-2 px-3 text-xs sm:text-sm text-white font-mono"
