@@ -443,7 +443,7 @@ export default function App() {
       const { error: fileError } = await supabase.storage.from('tracks').remove([storedTrack.audio_path]);
       if (fileError) showToast('رکورد حذف شد اما فایل صوتی باقی ماند: ' + fileError.message, 'error');
     }
-    if (storedTrack.cover_path && !/^https?:\\/\\//i.test(storedTrack.cover_path)) {
+    if (storedTrack.cover_path && !storedTrack.cover_path.startsWith('http://') && !storedTrack.cover_path.startsWith('https://')) {
       const { error: coverError } = await supabase.storage.from('covers').remove([storedTrack.cover_path]);
       if (coverError) showToast('رکورد حذف شد اما کاور باقی ماند: ' + coverError.message, 'error');
     }
