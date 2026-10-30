@@ -6,7 +6,7 @@ type TrackRow = {
   cover_path: string | null; audio_path: string | null; synth_preset: string | null;
   genre: string | null; bpm: number | null; plays: number; likes: number;
   release_date: string | null; is_vip_only_download: boolean; description: string | null;
-  lyrics: string | null; file_size: string | null;
+  lyrics: string | null; file_size: string | null; audio_sha256: string | null;
 };
 
 type PlaylistRow = {
@@ -124,6 +124,27 @@ export async function toggleTrackLike(userId: string, trackId: string, currently
   }
 }
 
+async function getAudioSha256(file: File): Promise<string> {
+  const bytes = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
+  return Array.from(new Uint8Array(bytes), (value) => value.toString(16).padStart(2, '0')).join('');
+}
+
+export async function deleteTrackAssets(trackId: string): Promise<{ storageCleanupPending: boolean }> {
+  const { data, error } = await supabase.rpc('admin_delete_track', { p_track_id: trackId });
+  if (error) throw new Error(`حذف آهنگ از دیتابیس ناموفق بود: ${error.message}`);
+
+  const paths = data as { audio_path?: string | null; cover_path?: string | null } | null;
+  const removals = await Promise.all([
+    paths?.audio_path ? supabase.storage.from('tracks').remove([paths.audio_path]) : Promise.resolve({ error: null }),
+    paths?.cover_path && !/^https?:\\/\\//i.test(paths.cover_path) && !paths.cover_path.startsWith('data:')
+      ? supabase.storage.from('covers').remove([paths.cover_path])
+      : Promise.resolve({ error: null }),
+  ]);
+  const storageCleanupPending = removals.some((result) => Boolean(result.error));
+  if (storageCleanupPending) console.error('[CATALOG] Track row deleted; Storage cleanup needs retry.', removals);
+  return { storageCleanupPending };
+}
+
 export async function uploadTrackAssets(input: {
   audioFile: File;
   coverFile?: File;
@@ -138,9 +159,22 @@ export async function uploadTrackAssets(input: {
   description?: string;
   coverUrl?: string;
 }): Promise<Track> {
+  const audioHash = await getAudioSha256(input.audioFile);
+  const { data: duplicate, error: duplicateError } = await supabase
+    .from('tracks')
+    .select('id')
+    .eq('audio_sha256', audioHash)
+    .maybeSingle();
+
+  if (duplicateError) {
+    throw new Error(`بررسی فایل تکراری ناموفق بود: ${duplicateError.message}. migration مربوط به یکپارچگی آهنگ‌ها باید در Supabase اجرا شود.`);
+  }
+  if (duplicate) throw new Error('این فایل صوتی قبلاً در کاتالوگ ثبت شده است.');
+
   const safeBase = input.audioFile.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 70) || 'track';
+  const extension = input.audioFile.name.split('.').pop()?.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() || 'mp3';
   const unique = crypto.randomUUID();
-  const audioPath = `${unique}/${safeBase}.mp3`;
+  const audioPath = `${unique}/${safeBase}.${extension}`;
   const audioUpload = await supabase.storage.from('tracks').upload(audioPath, input.audioFile, {
     contentType: input.audioFile.type || 'audio/mpeg',
     upsert: false,
@@ -168,6 +202,7 @@ export async function uploadTrackAssets(input: {
     duration: durationToText(input.durationSeconds),
     cover_path: coverPath || input.coverUrl || null,
     audio_path: audioPath,
+    audio_sha256: audioHash,
     synth_preset: input.synthPreset || null,
     genre: input.genre || null,
     bpm: Number(input.bpm) || null,

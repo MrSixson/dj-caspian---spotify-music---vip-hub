@@ -16,7 +16,7 @@ interface AdminPanelProps {
   playlists: Playlist[];
   tickets: VipTicket[];
   onAddTrack: (input: { audioFile: File; coverFile?: File; title: string; artist: string; album: string; durationSeconds: number; genre: string; bpm: number; synthPreset?: string; isVipOnlyDownload: boolean; description?: string; coverUrl?: string }) => Promise<Track>;
-  onDeleteTrack: (trackId: string) => void;
+  onDeleteTrack: (trackId: string) => Promise<{ storageCleanupPending: boolean }>;
   onAddPlaylist: (playlist: Playlist) => void;
   onDeletePlaylist: (playlistId: string) => void;
   onUpdateTicketStatus: (ticketId: string, status: 'approved' | 'rejected', adminNote?: string) => void;
@@ -49,6 +49,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   // Active sub-tab in Admin
   const [activeTab, setActiveTab] = useState<'tracks' | 'playlists' | 'tickets'>('tracks');
   const [ticketFilter, setTicketFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+  const [deletingTrackId, setDeletingTrackId] = useState<string | null>(null);
 
   // -------------------------------------------------------------
   // NEW TRACK UPLOAD & METADATA MANAGEMENT MODAL
@@ -489,16 +490,28 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                       <button
                         type="button"
-                        onClick={() => {
-                          if (confirm(`آیا از حذف آهنگ "${track.title}" از روی سایت اطمینان دارید؟`)) {
-                            onDeleteTrack(track.id);
-                            onShowToast(`آهنگ "${track.title}" با موفقیت حذف شد`, 'info');
+                        disabled={deletingTrackId === track.id}
+                        onClick={async () => {
+                          if (!confirm(`حذف دائمی آهنگ "${track.title}" از دیتابیس و فایل‌های سایت؟`)) return;
+                          setDeletingTrackId(track.id);
+                          try {
+                            const result = await onDeleteTrack(track.id);
+                            onShowToast(
+                              result.storageCleanupPending
+                                ? 'رکورد آهنگ حذف شد، اما پاک‌سازی یکی از فایل‌های Storage نیاز به پیگیری دارد.'
+                                : `آهنگ "${track.title}" با موفقیت حذف شد.`,
+                              result.storageCleanupPending ? 'error' : 'success'
+                            );
+                          } catch (error) {
+                            onShowToast(error instanceof Error ? error.message : 'حذف آهنگ ناموفق بود.', 'error');
+                          } finally {
+                            setDeletingTrackId(null);
                           }
                         }}
-                        className="p-2 rounded-lg bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-800/40 transition-colors cursor-pointer"
-                        title="حذف قطعه از سایت"
+                        className="p-2 rounded-lg bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-800/40 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="حذف دائمی آهنگ از دیتابیس و Storage"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        {deletingTrackId === track.id ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                       </button>
                     </div>
                   </div>
