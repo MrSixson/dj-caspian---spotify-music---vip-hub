@@ -20,6 +20,8 @@ export interface Track {
 
 export interface VipTicket {
   id: string;
+  userId?: string;
+  receiptPath?: string;
   userName: string;
   userContact: string; // phone or email or telegram
   method: 'card' | 'crypto';

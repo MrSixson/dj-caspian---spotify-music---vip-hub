@@ -168,6 +168,13 @@ class AudioEngine {
     this.audioElement?.pause();
   }
 
+  public seek(seconds: number): void {
+    const audio = this.audioElement;
+    if (!audio || !Number.isFinite(seconds)) return;
+    const upperBound = Number.isFinite(audio.duration) ? audio.duration : Math.max(0, seconds);
+    audio.currentTime = Math.max(0, Math.min(seconds, upperBound));
+  }
+
   public async playTrack(
     trackId: string,
     audioUrl?: string,

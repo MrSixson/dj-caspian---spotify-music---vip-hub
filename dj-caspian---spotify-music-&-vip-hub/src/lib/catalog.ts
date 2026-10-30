@@ -29,14 +29,8 @@ function durationToText(seconds: number): string {
   return `${Math.floor(safe / 60)}:${String(safe % 60).padStart(2, '0')}`;
 }
 
-async function signedAudioUrl(path: string | null): Promise<string | undefined> {
-  if (!path) return undefined;
-  const { data, error } = await supabase.storage.from('tracks').createSignedUrl(path, 60 * 60);
-  if (error) {
-    console.error('Could not create audio signed URL:', error.message);
-    return undefined;
-  }
-  return data.signedUrl;
+function audioStreamUrl(trackId: string): string {
+  return `https://irkdzjizhwxbmnnfyqsx.supabase.co/functions/v1/audio-gateway?track_id=${encodeURIComponent(trackId)}&mode=stream`;
 }
 
 function coverUrl(path: string | null): string {
@@ -56,7 +50,7 @@ async function mapTrack(row: TrackRow): Promise<Track> {
     album: row.album,
     duration: secondsFromDuration(row.duration),
     coverUrl: coverUrl(row.cover_path),
-    audioUrl: await signedAudioUrl(row.audio_path),
+    audioUrl: row.audio_path ? audioStreamUrl(row.id) : undefined,
     synthPreset: preset,
     genre: row.genre || 'Electronic',
     bpm: row.bpm || 0,
@@ -72,7 +66,7 @@ async function mapTrack(row: TrackRow): Promise<Track> {
 
 export async function loadCatalog(userId?: string): Promise<{ tracks: Track[]; playlists: Playlist[]; likedTrackIds: string[] }> {
   const [trackResult, playlistResult, likesResult] = await Promise.all([
-    supabase.from('tracks').select('*').order('created_at', { ascending: false }),
+    supabase.from('tracks').select('*').eq('is_deleting', false).order('created_at', { ascending: false }),
     supabase.from('playlists').select('id,title,description,cover_path').order('created_at', { ascending: false }),
     userId
       ? supabase.from('user_likes').select('track_id').eq('user_id', userId)
@@ -124,6 +118,28 @@ export async function toggleTrackLike(userId: string, trackId: string, currently
   }
 }
 
+async function validateMp3File(file: File): Promise<void> {
+  if (!/\.mp3$/i.test(file.name)) {
+    throw new Error('فقط فایل با پسوند MP3 قابل آپلود است.');
+  }
+
+  const allowedTypes = ['audio/mpeg', 'audio/mp3', 'application/octet-stream', ''];
+  if (!allowedTypes.includes(file.type)) {
+    throw new Error('نوع فایل انتخاب‌شده MP3 نیست.');
+  }
+
+  if (file.size < 4 || file.size > 50 * 1024 * 1024) {
+    throw new Error('حجم فایل MP3 باید بیشتر از صفر و حداکثر ۵۰ مگابایت باشد.');
+  }
+
+  const header = new Uint8Array(await file.slice(0, 4).arrayBuffer());
+  const hasId3Header = header[0] === 0x49 && header[1] === 0x44 && header[2] === 0x33;
+  const hasMpegFrameSync = header[0] === 0xff && (header[1] & 0xe0) === 0xe0;
+  if (!hasId3Header && !hasMpegFrameSync) {
+    throw new Error('محتوای فایل با ساختار MP3 سازگار نیست. فایل صوتی اصلی را انتخاب کن.');
+  }
+}
+
 export async function uploadTrackAssets(input: {
   audioFile: File;
   coverFile?: File;
@@ -138,6 +154,8 @@ export async function uploadTrackAssets(input: {
   description?: string;
   coverUrl?: string;
 }): Promise<Track> {
+  await validateMp3File(input.audioFile);
+
   const safeBase = input.audioFile.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 70) || 'track';
   const unique = crypto.randomUUID();
   const audioPath = `${unique}/${safeBase}.mp3`;

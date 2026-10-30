@@ -17,7 +17,7 @@ interface AdminPanelProps {
   tickets: VipTicket[];
   onAddTrack: (input: { audioFile: File; coverFile?: File; title: string; artist: string; album: string; durationSeconds: number; genre: string; bpm: number; synthPreset?: string; isVipOnlyDownload: boolean; description?: string; coverUrl?: string }) => Promise<Track>;
   onDeleteTrack: (trackId: string) => void;
-  onAddPlaylist: (playlist: Playlist) => void;
+  onAddPlaylist: (playlist: Playlist) => Promise<void>;
   onDeletePlaylist: (playlistId: string) => void;
   onUpdateTicketStatus: (ticketId: string, status: 'approved' | 'rejected', adminNote?: string) => void;
   onResetToDefault: () => void;
@@ -187,7 +187,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   };
 
   // Create Playlist Handler
-  const handlePublishPlaylist = (e: React.FormEvent) => {
+  const handlePublishPlaylist = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPlTitle.trim()) {
       onShowToast('عنوان پلی‌لیست الزامی است', 'error');
@@ -195,15 +195,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     }
 
     const newPl: Playlist = {
-      id: 'pl-official-' + Date.now(),
+      id: crypto.randomUUID(),
       title: newPlTitle.trim(),
       description: newPlDesc.trim() || 'پلی‌لیست رسمی DJ Caspian',
       coverUrl: newPlCoverUrl.trim() || (tracks[0]?.coverUrl || presetCovers[0]),
       trackIds: selectedTrackIdsForPl,
     };
 
-    onAddPlaylist(newPl);
-    onShowToast(`پلی‌لیست "${newPl.title}" ساخته شد و در سایت قرار گرفت!`, 'success');
+    try {
+      await onAddPlaylist(newPl);
+      onShowToast(`پلی‌لیست "${newPl.title}" ساخته شد و در سایت قرار گرفت!`, 'success');
+    } catch (error) {
+      onShowToast(error instanceof Error ? error.message : 'ساخت پلی‌لیست ناموفق بود.', 'error');
+      return;
+    }
     setIsNewPlaylistOpen(false);
     setNewPlTitle('');
     setNewPlDesc('');

@@ -1,0 +1,30 @@
+name: Verify audio playback fix
+
+on:
+  push:
+    branches:
+      - fix/audio-playback-download
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  typecheck-and-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dj-caspian---spotify-music-&-vip-hub
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install locked dependencies
+        run: bun install
+      - name: TypeScript check
+        run: bun run lint
+      - name: Production build
+        run: bun run build

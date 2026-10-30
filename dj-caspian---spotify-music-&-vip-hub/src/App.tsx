@@ -19,9 +19,10 @@ import { VipModal } from './components/VipModal';
 import { VisualizerModal } from './components/VisualizerModal';
 import { ToastContainer, ToastMessage } from './components/Toast';
 import { Track, VipTicket, Playlist, UserAccount } from './types';
-import { INITIAL_TRACKS, INITIAL_PLAYLISTS, INITIAL_TICKETS, INITIAL_USERS } from './data/initialData';
+import { INITIAL_USERS } from './data/initialData';
 import { audioEngine } from './utils/audioEngine';
 import { getCurrentSupabaseUser, signOutSupabaseUser } from './lib/auth';
+import { supabase } from './lib/supabase';
 import { loadCatalog, toggleTrackLike, uploadTrackAssets } from './lib/catalog';
 import confetti from 'canvas-confetti';
 
@@ -39,60 +40,22 @@ export default function App() {
 
   // Restore identity and permissions only from Supabase, not editable browser storage.
   const [currentUser, setCurrentUser] = useState<UserAccount | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // 2. Persistent tracks & library (Clean initial slate without legacy mock tracks)
-  const [tracks, setTracks] = useState<Track[]>(() => {
-    try {
-      const saved = localStorage.getItem('caspian_tracks');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        // Exclude legacy mock tracks if any exist from older versions
-        return parsed.filter((t: Track) => !t.id.startsWith('caspian-0'));
-      }
-    } catch {
-      // fallback
-    }
-    return INITIAL_TRACKS;
-  });
+  const [tracks, setTracks] = useState<Track[]>([]);
 
-  const [playlists, setPlaylists] = useState<Playlist[]>(() => {
-    try {
-      const saved = localStorage.getItem('caspian_playlists');
-      if (saved) return JSON.parse(saved);
-    } catch {
-      // fallback
-    }
-    return INITIAL_PLAYLISTS;
-  });
+  const [playlists, setPlaylists] = useState<Playlist[]>([]);
 
   // 3. Persistent VIP Tickets
-  const [tickets, setTickets] = useState<VipTicket[]>(() => {
-    try {
-      const saved = localStorage.getItem('caspian_tickets');
-      if (saved) return JSON.parse(saved);
-    } catch {
-      // fallback
-    }
-    return INITIAL_TICKETS;
-  });
+  const [tickets, setTickets] = useState<VipTicket[]>([]);
 
   // 4. Derived & Persistent User Permissions
   const isUserVip = Boolean(currentUser?.isVip);
 
-  const [likedTrackIds, setLikedTrackIds] = useState<string[]>(() => {
-    if (currentUser?.likedTrackIds && currentUser.likedTrackIds.length > 0) {
-      return currentUser.likedTrackIds;
-    }
-    try {
-      const saved = localStorage.getItem('caspian_liked_tracks');
-      if (saved) return JSON.parse(saved);
-    } catch {
-      // fallback
-    }
-    return ['caspian-01', 'caspian-03', 'caspian-04'];
-  });
+  const [likedTrackIds, setLikedTrackIds] = useState<string[]>([]);
 
   // 5. Navigation & Views
   const [currentView, setCurrentView] = useState<
@@ -119,22 +82,35 @@ export default function App() {
 
   // LocalStorage Synchronization
   useEffect(() => {
-    localStorage.setItem('caspian_tracks', JSON.stringify(tracks));
-  }, [tracks]);
-
-  useEffect(() => {
-    localStorage.setItem('caspian_playlists', JSON.stringify(playlists));
-  }, [playlists]);
-
-  useEffect(() => {
-    localStorage.setItem('caspian_tickets', JSON.stringify(tickets));
-  }, [tickets]);
-
-  useEffect(() => {
     localStorage.setItem('caspian_users', JSON.stringify(users));
   }, [users]);
 
   useEffect(() => {
+    if (authLoading || currentUser?.role !== 'admin') { setTickets([]); return; }
+    let active = true;
+    supabase.from('vip_tickets').select('*').order('created_at', { ascending: false }).then(async ({ data, error }) => {
+      if (!active) return;
+      if (error) { showToast('دریافت تیکت‌های VIP ناموفق بود: ' + error.message, 'error'); return; }
+      const mapped = await Promise.all((data || []).map(async (row: any) => {
+        let receiptImageData: string | undefined;
+        if (row.receipt_path) {
+          const { data: signed } = await supabase.storage.from('receipts').createSignedUrl(row.receipt_path, 15 * 60);
+          receiptImageData = signed?.signedUrl;
+        }
+        return {
+          id: row.id, userId: row.user_id, userName: row.user_name, userContact: row.user_contact,
+          method: row.method, amount: row.method === 'crypto' ? String(row.amount) + ' USDT' : Number(row.amount).toLocaleString('en-US') + ' Toman',
+          cryptoNetwork: row.crypto_network || undefined, txHashOrReceiptNo: row.tx_hash_or_receipt_no,
+          receiptPath: row.receipt_path || undefined, receiptImageData, notes: row.notes || undefined, status: row.status,
+          createdAt: row.created_at, reviewDate: row.review_date || undefined, adminNote: row.admin_note || undefined,
+        };
+      }));
+      if (active) setTickets(mapped);
+    });
+    return () => { active = false; };
+  }, [currentUser?.id, currentUser?.role, authLoading]);
+  useEffect(() => {
+    if (authLoading) return;
     let active = true;
     loadCatalog(currentUser?.id)
       .then((catalog) => {
@@ -149,26 +125,81 @@ export default function App() {
         if (active) showToast(error instanceof Error ? error.message : 'دریافت کتابخانه از سرور ناموفق بود.', 'error');
       });
     return () => { active = false; };
-  }, [currentUser?.id]);
+  }, [currentUser?.id, authLoading]);
 
   useEffect(() => {
     let active = true;
-    getCurrentSupabaseUser()
-      .then((user) => {
-        if (active) {
+
+    const restoreSession = async () => {
+      try {
+        const user = await getCurrentSupabaseUser();
+        if (!active) return;
+        setCurrentUser(user);
+        if (user?.likedTrackIds) setLikedTrackIds(user.likedTrackIds);
+      } catch (error) {
+        console.error('Supabase session restore failed:', error);
+        if (active) setCurrentUser(null);
+      } finally {
+        if (active) setAuthLoading(false);
+      }
+    };
+
+    void restoreSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!active) return;
+
+      if (event === 'SIGNED_OUT' || !session) {
+        setCurrentUser(null);
+        setAuthLoading(false);
+        setCurrentView((view) =>
+          view === 'admin' || view === 'dashboard' || view === 'liked' ? 'home' : view
+        );
+        return;
+      }
+
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+        // Defer profile/role queries until after the auth callback returns.
+        Promise.resolve().then(async () => {
+          const user = await getCurrentSupabaseUser();
+          if (!active) return;
           setCurrentUser(user);
           if (user?.likedTrackIds) setLikedTrackIds(user.likedTrackIds);
-        }
-      })
-      .catch((error) => console.error('Supabase session restore failed:', error));
+          setAuthLoading(false);
+        }).catch((error) => {
+          console.error('Supabase auth state sync failed:', error);
+          if (active) setAuthLoading(false);
+        });
+      }
+    });
+
     return () => {
       active = false;
+      subscription.unsubscribe();
     };
   }, []);
 
   useEffect(() => {
     localStorage.setItem('caspian_liked_tracks', JSON.stringify(likedTrackIds));
   }, [likedTrackIds]);
+
+  const navigateToView = (view: typeof currentView) => {
+    if ((view === 'dashboard' || view === 'liked') && !currentUser) {
+      showToast('برای دسترسی به این بخش ابتدا وارد حساب کاربری شوید.', 'info');
+      setIsAuthModalOpen(true);
+      return;
+    }
+    if (view === 'admin' && currentUser?.role !== 'admin') {
+      showToast(
+        currentUser ? 'دسترسی مدیریت برای این حساب فعال نیست.' : 'برای ورود به مدیریت ابتدا وارد حساب ادمین شوید.',
+        'error'
+      );
+      if (!currentUser) setIsAuthModalOpen(true);
+      setCurrentView('home');
+      return;
+    }
+    setCurrentView(view);
+  };
 
   // Toast Helper
   const showToast = (text: string, type: 'success' | 'error' | 'info' = 'info') => {
@@ -184,9 +215,8 @@ export default function App() {
   };
 
   // Play a specific track
-  const handlePlayTrack = (track: Track) => {
+  const handlePlayTrack = async (track: Track) => {
     if (currentTrack?.id === track.id && isPlaying) {
-      // Pause
       audioEngine.pause();
       setIsPlaying(false);
       return;
@@ -195,52 +225,62 @@ export default function App() {
     setCurrentTrack(track);
     setDuration(track.duration);
     setCurrentTime(0);
-    setIsPlaying(true);
+    setIsPlaying(false);
 
-    audioEngine.playTrack(
-      track.id,
-      track.audioUrl,
-      track.bpm,
-      track.synthPreset || 'festival_drop',
-      (secs) => {
-        setCurrentTime((prev) => {
-          if (secs >= track.duration) {
+    try {
+      await audioEngine.playTrack(
+        track.id,
+        track.audioUrl,
+        track.bpm,
+        track.synthPreset || 'festival_drop',
+        (secs) => {
+          setCurrentTime(secs);
+          if (track.duration > 0 && secs >= track.duration) {
             handleNextTrack();
-            return 0;
           }
-          return secs;
-        });
-      }
-    );
-
-    // Increment play count
-    setTracks((prev) =>
-      prev.map((t) => (t.id === track.id ? { ...t, plays: (t.plays || 0) + 1 } : t))
-    );
+        }
+      );
+      setIsPlaying(true);
+      setTracks((prev) =>
+        prev.map((t) => (t.id === track.id ? { ...t, plays: (t.plays || 0) + 1 } : t))
+      );
+    } catch (error) {
+      setIsPlaying(false);
+      showToast(
+        error instanceof Error ? error.message : 'پخش آهنگ ناموفق بود.',
+        'error'
+      );
+    }
   };
 
-  const handleTogglePlay = () => {
+  const handleTogglePlay = async () => {
     if (!currentTrack) {
-      if (tracks.length > 0) {
-        handlePlayTrack(tracks[0]);
-      }
+      if (tracks.length > 0) await handlePlayTrack(tracks[0]);
       return;
     }
 
     if (isPlaying) {
       audioEngine.pause();
       setIsPlaying(false);
-    } else {
-      audioEngine.playTrack(
+      return;
+    }
+
+    setIsPlaying(false);
+    try {
+      await audioEngine.playTrack(
         currentTrack.id,
         currentTrack.audioUrl,
         currentTrack.bpm,
         currentTrack.synthPreset || 'festival_drop',
-        (secs) => {
-          setCurrentTime(secs);
-        }
+        (secs) => setCurrentTime(secs)
       );
       setIsPlaying(true);
+    } catch (error) {
+      setIsPlaying(false);
+      showToast(
+        error instanceof Error ? error.message : 'پخش آهنگ ناموفق بود.',
+        'error'
+      );
     }
   };
 
@@ -264,6 +304,7 @@ export default function App() {
   };
 
   const handleSeek = (seconds: number) => {
+    audioEngine.seek(seconds);
     setCurrentTime(seconds);
   };
 
@@ -306,60 +347,49 @@ export default function App() {
   // -------------------------------------------------------------
   // THE KEY VIP DOWNLOAD LOGIC
   // -------------------------------------------------------------
-  const handleDownloadTrack = (track: Track) => {
-    if (!isUserVip && track.isVipOnlyDownload) {
-      // Free user attempting to download VIP track -> Show VIP Modal
+  const handleDownloadTrack = async (track: Track) => {
+    if (track.isVipOnlyDownload && !isUserVip) {
       setVipModalTrackTitle(track.title);
       setIsVipModalOpen(true);
       return;
     }
 
-    // User is VIP! Trigger real download of audio file
-    showToast(`دانلود فایل اصلی ${track.title} با کیفیت ۳۲۰ آغاز شد...`, 'success');
-
-    // Increment user download count if logged in
-    if (currentUser) {
-      const updatedUser: UserAccount = {
-        ...currentUser,
-        downloadCount: (currentUser.downloadCount || 0) + 1,
-      };
-      setCurrentUser(updatedUser);
-      setUsers((prev) => prev.map((u) => (u.id === currentUser.id ? updatedUser : u)));
-    }
-
     try {
-      let downloadUrl = track.audioUrl;
-      let filename = `DJ_Caspian_${track.title.replace(/[^a-zA-Z0-9]/g, '_')}_320k.wav`;
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
 
-      if (!downloadUrl) {
-        // Generate high quality WAV audio blob
-        const blob = audioEngine.generateVipDownloadBlob(track.title, track.artist, track.bpm);
-        downloadUrl = URL.createObjectURL(blob);
+      const headers: Record<string, string> = {};
+      if (sessionData.session?.access_token) {
+        headers.Authorization = `Bearer ${sessionData.session.access_token}`;
       }
 
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-
-      try {
-        confetti({
-          particleCount: 50,
-          spread: 60,
-          origin: { y: 0.8 },
-        });
-      } catch {
-        // ignore
+      const downloadUrl = `https://irkdzjizhwxbmnnfyqsx.supabase.co/functions/v1/audio-gateway?track_id=${encodeURIComponent(track.id)}&mode=download`;
+      const response = await fetch(downloadUrl, { method: 'GET', headers });
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          setVipModalTrackTitle(track.title);
+          setIsVipModalOpen(true);
+          return;
+        }
+        throw new Error(response.status === 404 ? 'فایل این آهنگ در Storage پیدا نشد.' : 'دریافت فایل آهنگ ناموفق بود.');
       }
-    } catch (err) {
-      console.error(err);
-      showToast('خطا در دانلود فایل', 'error');
+
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const safeTitle = track.title.replace(/[^a-zA-Z0-9_-]+/g, '_') || 'Track';
+      const anchor = document.createElement('a');
+      anchor.href = objectUrl;
+      anchor.download = `DJ_Caspian_${safeTitle}.mp3`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
+      showToast(`دانلود فایل اصلی ${track.title} آغاز شد.`, 'success');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'دانلود آهنگ انجام نشد.', 'error');
     }
   };
 
-  // -------------------------------------------------------------
   // AUTH ACTIONS
   // -------------------------------------------------------------
   const handleLogin = (user: UserAccount) => {
@@ -407,121 +437,137 @@ export default function App() {
     return newTrack;
   };
 
-  const handleDeleteTrack = (trackId: string) => {
-    setTracks((prev) => prev.filter((t) => t.id !== trackId));
+  const handleDeleteTrack = async (trackId: string) => {
+    if (currentUser?.role !== 'admin') {
+      showToast('دسترسی مدیریت لازم است.', 'error');
+      return;
+    }
+    const track = tracks.find((item) => item.id === trackId);
+    if (!track) return;
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData.session?.access_token;
+    if (!accessToken) {
+      showToast('برای حذف آهنگ باید دوباره وارد حساب مدیریت شوید.', 'error');
+      return;
+    }
+
+    const { data, error } = await supabase.functions.invoke('track-delete', {
+      body: { track_id: trackId },
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (error || !data?.success) {
+      showToast('حذف آهنگ کامل نشد: ' + (data?.error || error?.message || 'خطای نامشخص'), 'error');
+      return;
+    }
+
+    setTracks((prev) => prev.filter((item) => item.id !== trackId));
     if (currentTrack?.id === trackId) {
       audioEngine.stop();
       setIsPlaying(false);
-      setCurrentTrack(tracks.find((t) => t.id !== trackId) || null);
+      setCurrentTrack(tracks.find((item) => item.id !== trackId) || null);
+    }
+    showToast('آهنگ و فایل‌های وابسته با موفقیت حذف شدند.', 'success');
+  };
+
+  const handleAddPlaylist = async (newPlaylist: Playlist) => {
+    if (currentUser?.role !== 'admin') throw new Error('دسترسی مدیریت لازم است.');
+    const id = crypto.randomUUID();
+    const { error: playlistError } = await supabase.from('playlists').insert({
+      id, title: newPlaylist.title.trim(), description: newPlaylist.description || '',
+      cover_path: newPlaylist.coverUrl || null,
+    });
+    if (playlistError) throw new Error('ساخت پلی‌لیست ناموفق بود: ' + playlistError.message);
+    if (newPlaylist.trackIds.length) {
+      const rows = newPlaylist.trackIds.map((track_id, position) => ({ playlist_id: id, track_id, position }));
+      const { error: linksError } = await supabase.from('playlist_tracks').insert(rows);
+      if (linksError) {
+        await supabase.from('playlists').delete().eq('id', id);
+        throw new Error('ثبت آهنگ‌های پلی‌لیست ناموفق بود: ' + linksError.message);
+      }
+    }
+    setPlaylists((prev) => [{ ...newPlaylist, id }, ...prev]);
+  };
+
+  const handleDeletePlaylist = async (playlistId: string) => {
+    if (currentUser?.role !== 'admin') { showToast('دسترسی مدیریت لازم است.', 'error'); return; }
+    const { error: linksError } = await supabase.from('playlist_tracks').delete().eq('playlist_id', playlistId);
+    if (linksError) { showToast('حذف آهنگ‌های پلی‌لیست ناموفق بود: ' + linksError.message, 'error'); return; }
+    const { error } = await supabase.from('playlists').delete().eq('id', playlistId);
+    if (error) { showToast('حذف پلی‌لیست ناموفق بود: ' + error.message, 'error'); return; }
+    setPlaylists((prev) => prev.filter((item) => item.id !== playlistId));
+    showToast('پلی‌لیست از دیتابیس حذف شد.', 'success');
+  };
+
+  const handleUpdateTicketStatus = async (ticketId: string, status: 'approved' | 'rejected', adminNote?: string) => {
+    const target = tickets.find((ticket) => ticket.id === ticketId);
+    if (!target || currentUser?.role !== 'admin' || !target.userId) {
+      showToast('تیکت یا دسترسی معتبر نیست.', 'error');
+      return;
+    }
+
+    const { error } = await supabase.rpc('review_vip_ticket', {
+      p_ticket_id: ticketId,
+      p_status: status,
+      p_admin_note: adminNote || null,
+    });
+    if (error) {
+      showToast('ثبت نتیجه بررسی ناموفق بود: ' + error.message, 'error');
+      return;
+    }
+
+    const reviewDate = new Date().toISOString();
+    setTickets((previous) => previous.map((ticket) =>
+      ticket.id === ticketId ? { ...ticket, status, adminNote, reviewDate } : ticket
+    ));
+    showToast(status === 'approved' ? 'تیکت تایید و اشتراک VIP فعال شد.' : 'تیکت رد شد.', 'success');
+
+    if (status === 'approved' && currentUser.id === target.userId) {
+      const refreshed = await getCurrentSupabaseUser();
+      if (refreshed) setCurrentUser(refreshed);
     }
   };
 
-  const handleAddPlaylist = (newPlaylist: Playlist) => {
-    setPlaylists((prev) => [newPlaylist, ...prev]);
-  };
+  const handleAddTicket = async (ticket: VipTicket): Promise<VipTicket> => {
+    if (!currentUser?.id || ticket.userId !== currentUser.id) throw new Error('برای ثبت تیکت باید وارد حساب کاربری خود شوید.');
+    const { data, error } = await supabase.from('vip_tickets').insert({
+      user_id: currentUser.id, user_name: ticket.userName, user_contact: ticket.userContact,
+      method: ticket.method, amount: ticket.method === 'crypto' ? 10 : 3000000,
+      crypto_network: ticket.cryptoNetwork || null, tx_hash_or_receipt_no: ticket.txHashOrReceiptNo,
+      receipt_path: ticket.receiptPath || null, notes: ticket.notes || null, status: 'pending',
+    }).select('id,created_at').single();
 
-  const handleDeletePlaylist = (playlistId: string) => {
-    setPlaylists((prev) => prev.filter((p) => p.id !== playlistId));
-  };
-
-  const handleUpdateTicketStatus = (
-    ticketId: string,
-    status: 'approved' | 'rejected',
-    adminNote?: string
-  ) => {
-    const updatedTickets = tickets.map((t) =>
-      t.id === ticketId
-        ? {
-            ...t,
-            status,
-            adminNote: adminNote || t.adminNote,
-            reviewDate: new Date().toISOString().replace('T', ' ').substring(0, 16),
-          }
-        : t
-    );
-    setTickets(updatedTickets);
-
-    // If approved, promote the user who submitted this ticket to VIP
-    if (status === 'approved') {
-      const targetTicket = tickets.find((t) => t.id === ticketId);
-      if (targetTicket) {
-        setUsers((prevUsers) =>
-          prevUsers.map((u) => {
-            const matches =
-              u.displayName.toLowerCase() === targetTicket.userName.toLowerCase() ||
-              u.username.toLowerCase() === targetTicket.userName.toLowerCase() ||
-              (u.email && targetTicket.userContact.includes(u.email));
-
-            if (matches) {
-              const updatedU = { ...u, isVip: true, vipSince: new Date().toISOString().split('T')[0] };
-              if (currentUser?.id === u.id) {
-                setCurrentUser(updatedU);
-              }
-              return updatedU;
-            }
-            return u;
-          })
-        );
+    if (error || !data) {
+      if (ticket.receiptPath) {
+        const { error: cleanupError } = await supabase.storage.from('receipts').remove([ticket.receiptPath]);
+        if (cleanupError) console.error('Could not clean up orphan VIP receipt:', cleanupError.message);
       }
-
-      // If current user submitted or owns this ticket, activate VIP
-      if (currentUser) {
-        const isMyTicket = targetTicket && (
-          targetTicket.userName.toLowerCase() === currentUser.displayName.toLowerCase() ||
-          targetTicket.userName.toLowerCase() === currentUser.username.toLowerCase() ||
-          (currentUser.email && targetTicket.userContact.includes(currentUser.email))
-        );
-        if (isMyTicket) {
-          const vipUser = { ...currentUser, isVip: true };
-          setCurrentUser(vipUser);
-        }
-      }
-
-      try {
-        confetti({
-          particleCount: 100,
-          spread: 80,
-          origin: { y: 0.5 },
-        });
-      } catch {
-        // ignore
-      }
+      throw new Error('ثبت تیکت در سرور ناموفق بود: ' + (error?.message || 'No record returned'));
     }
+
+    const created = { ...ticket, id: data.id, createdAt: data.created_at };
+    setTickets((previous) => [created, ...previous]);
+    return created;
   };
 
-  const handleAddTicket = (newTicket: VipTicket) => {
-    setTickets((prev) => [newTicket, ...prev]);
-  };
+  // VIP access is read from Supabase auth/profile state only.
+  // There is intentionally no client-side VIP activation shortcut.
 
-  const handleActivateVipForUser = (ticketId: string) => {
-    if (currentUser) {
-      const updated = { ...currentUser, isVip: true };
-      setCurrentUser(updated);
-      setUsers((prev) => prev.map((u) => (u.id === currentUser.id ? updated : u)));
-    }
-    showToast('اشتراک VIP شما با موفقیت روی این دستگاه فعال شد!', 'success');
+
+  const handleResetToDefault = async () => {
+    if (!confirm('کتابخانه دوباره از Supabase بارگذاری شود؟ هیچ آهنگ، حساب یا تیکتی از سرور حذف نخواهد شد.')) return;
     try {
-      confetti({
-        particleCount: 100,
-        spread: 80,
-        origin: { y: 0.5 },
-      });
-    } catch {
-      // ignore
-    }
-  };
-
-  const handleResetToDefault = () => {
-    if (confirm('آیا مایلید تمام تغییرات و تیکت‌ها به اطلاعات اولیه برگردد؟')) {
-      setTracks(INITIAL_TRACKS);
-      setTickets(INITIAL_TICKETS);
-      setUsers(INITIAL_USERS);
-      setCurrentUser(INITIAL_USERS[0]);
-      localStorage.removeItem('caspian_tracks');
-      localStorage.removeItem('caspian_tickets');
-      localStorage.removeItem('caspian_users');
-      localStorage.removeItem('caspian_current_user');
-      showToast('اطلاعات به حالت پیش‌فرض بازگشت', 'info');
+      const catalog = await loadCatalog(currentUser?.id);
+      setTracks(catalog.tracks);
+      setPlaylists(catalog.playlists);
+      setLikedTrackIds(catalog.likedTrackIds);
+      setCurrentTrack(catalog.tracks[0] || null);
+      setCurrentTime(0);
+      audioEngine.stop();
+      setIsPlaying(false);
+      showToast('کتابخانه از Supabase تازه‌سازی شد.', 'success');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'تازه‌سازی کتابخانه ناموفق بود.', 'error');
     }
   };
 
@@ -533,7 +579,7 @@ export default function App() {
       {/* Spotify Sidebar (Desktop + Mobile Drawer) */}
       <Sidebar
         currentView={currentView}
-        onNavigate={(view) => setCurrentView(view)}
+        onNavigate={navigateToView}
         playlists={playlists}
         onSelectPlaylist={(pl) => {
           setCurrentView('home');
@@ -633,7 +679,9 @@ export default function App() {
           )}
 
           {currentView === 'dashboard' && (
-            currentUser ? (
+            authLoading ? (
+              <div className="p-8 text-center text-neutral-400">در حال بررسی نشست کاربری...</div>
+            ) : currentUser ? (
               <UserDashboard
                 user={currentUser}
                 allTracks={tracks}
@@ -644,7 +692,7 @@ export default function App() {
                 onToggleLike={handleToggleLike}
                 onDownloadTrack={handleDownloadTrack}
                 onNavigateToSupport={() => setCurrentView('support')}
-                onNavigateToAdmin={() => setCurrentView('admin')}
+                onNavigateToAdmin={() => navigateToView('admin')}
                 onLogout={handleLogout}
                 onUpdateUser={handleUpdateUser}
               />
@@ -663,6 +711,7 @@ export default function App() {
 
           {currentView === 'support' && (
             <SupportVipView
+              userId={currentUser?.id || null}
               onAddTicket={handleAddTicket}
               onShowToast={showToast}
               isUserVip={isUserVip}
@@ -678,7 +727,9 @@ export default function App() {
           )}
 
           {currentView === 'admin' && (
-            currentUser?.role === 'admin' ? (
+            authLoading ? (
+              <div className="p-8 text-center text-neutral-400">در حال بررسی دسترسی مدیریت...</div>
+            ) : currentUser?.role === 'admin' ? (
               <AdminPanel
                 currentUser={currentUser}
                 onOpenAuthModal={() => setIsAuthModalOpen(true)}
@@ -696,7 +747,19 @@ export default function App() {
                 isPlaying={isPlaying}
                 onPlayTrack={handlePlayTrack}
               />
-            ) : null
+            ) : (
+              <div className="p-8 text-center space-y-4">
+                <p className="text-neutral-400">این بخش فقط برای حساب‌های دارای نقش ادمین قابل دسترسی است.</p>
+                {!currentUser && (
+                  <button
+                    onClick={() => setIsAuthModalOpen(true)}
+                    className="py-2.5 px-6 rounded-full bg-[#1db954] text-black font-bold text-xs"
+                  >
+                    ورود به حساب ادمین
+                  </button>
+                )}
+              </div>
+            )
           )}
         </main>
       </div>
