@@ -176,6 +176,28 @@ export async function toggleTrackLike(userId: string, trackId: string, currently
   }
 }
 
+async function validateMp3File(file: File): Promise<void> {
+  if (!/\\.mp3$/i.test(file.name)) {
+    throw new Error('فقط فایل با پسوند MP3 قابل آپلود است.');
+  }
+
+  const allowedTypes = ['audio/mpeg', 'audio/mp3', 'application/octet-stream', ''];
+  if (!allowedTypes.includes(file.type)) {
+    throw new Error('نوع فایل انتخاب‌شده MP3 نیست.');
+  }
+
+  if (file.size < 4 || file.size > 50 * 1024 * 1024) {
+    throw new Error('حجم فایل MP3 باید بیشتر از صفر و حداکثر ۵۰ مگابایت باشد.');
+  }
+
+  const header = new Uint8Array(await file.slice(0, 4).arrayBuffer());
+  const hasId3Header = header[0] === 0x49 && header[1] === 0x44 && header[2] === 0x33;
+  const hasMpegFrameSync = header[0] === 0xff && (header[1] & 0xe0) === 0xe0;
+  if (!hasId3Header && !hasMpegFrameSync) {
+    throw new Error('محتوای فایل با ساختار MP3 سازگار نیست. فایل صوتی اصلی را انتخاب کن.');
+  }
+}
+
 export async function uploadTrackAssets(input: {
   audioFile: File;
   coverFile?: File;
@@ -190,6 +212,8 @@ export async function uploadTrackAssets(input: {
   description?: string;
   coverUrl?: string;
 }): Promise<Track> {
+  await validateMp3File(input.audioFile);
+
   const safeBase = input.audioFile.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 70) || 'track';
   const unique = crypto.randomUUID();
   const audioPath = `${unique}/${safeBase}.mp3`;
