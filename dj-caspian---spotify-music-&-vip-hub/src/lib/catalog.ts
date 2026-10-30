@@ -177,7 +177,7 @@ export async function toggleTrackLike(userId: string, trackId: string, currently
 }
 
 async function validateMp3File(file: File): Promise<void> {
-  if (!/\\.mp3$/i.test(file.name)) {
+  if (!/\.mp3$/i.test(file.name)) {
     throw new Error('فقط فایل با پسوند MP3 قابل آپلود است.');
   }
 
