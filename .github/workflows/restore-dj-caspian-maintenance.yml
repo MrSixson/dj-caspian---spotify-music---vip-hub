@@ -34,10 +34,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          restore_after="$(date -u -d '2026-11-03T18:56:44Z' +%s)"
+          restore_after="$(date -u -d '2026-11-03T19:02:44Z' +%s)"
           now="$(date -u +%s)"
           if (( now < restore_after )); then
-            echo "The original site is scheduled to restore after 2026-11-03 18:56:44 UTC. Refusing to deploy it early."
+            echo "The original site is scheduled to restore after 2026-11-03 19:02:44 UTC. Refusing to deploy it early."
             exit 1
           fi
           git cat-file -e 'fa174bc3551254ed42fbc79b897552a01cd229fb:dj-caspian---spotify-music-&-vip-hub/index.html'
