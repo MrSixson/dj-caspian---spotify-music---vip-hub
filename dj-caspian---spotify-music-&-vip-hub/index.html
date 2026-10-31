@@ -91,6 +91,36 @@ h1 span{color:transparent;background:linear-gradient(90deg,#42eaff,#8c8aff 48%,#
 .soon-pulse{width:6px;height:6px;background:var(--gold);box-shadow:0 0 10px var(--gold)}
 @media(max-width:480px){.youtube-card{gap:10px;padding:12px}.youtube-icon{width:42px;height:40px}.youtube-copy strong{font-size:11px}.youtube-copy span{font-size:9px}.youtube-soon{max-width:112px;padding:7px;font-size:8px}.announcement-badge{font-size:9px}}
 
+
+.feedback-section{max-width:650px;margin:24px auto 0;padding:20px;text-align:right;border:1px solid #42eaff25;border-radius:16px;background:linear-gradient(145deg,#101a2bba,#0a0e1c)}
+.feedback-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.feedback-head h2{margin:0;font-size:17px;color:#f4f7ff}
+.feedback-goal{font:700 9px Orbitron,sans-serif;direction:ltr;color:var(--gold);border:1px solid #d8b56a44;border-radius:6px;padding:7px 9px;white-space:nowrap}
+.feedback-intro{color:#8995ad;font-size:11px;line-height:2;margin:7px 0 15px}
+.feedback-counts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:17px}
+.feedback-counts span{padding:7px 10px;border-radius:7px;background:#ffffff08;border:1px solid #ffffff10;color:#aebbd0;font-size:10px}
+.feedback-counts b{color:var(--cyan);font:700 12px Orbitron,sans-serif;margin-right:5px}
+.feedback-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.feedback-form label{display:flex;flex-direction:column;gap:6px;color:#a9b6cd;font-size:10px}
+.feedback-form input,.feedback-form select,.feedback-form textarea{width:100%;border:1px solid #ffffff1c;border-radius:9px;background:#080e1b;color:#f4f7ff;padding:11px;font:400 12px Vazirmatn,sans-serif;outline:none}
+.feedback-form input:focus,.feedback-form select:focus,.feedback-form textarea:focus{border-color:#42eaff88;box-shadow:0 0 0 3px #42eaff0c}
+.feedback-form textarea{min-height:95px;resize:vertical;grid-column:1/-1}
+.feedback-form .wide{grid-column:1/-1}
+.feedback-submit{grid-column:1/-1;border:1px solid #42eaff66;border-radius:9px;padding:12px;background:linear-gradient(100deg,#176bff33,#42eaff18);color:#eafaff;font:700 12px Vazirmatn,sans-serif;cursor:pointer}
+.feedback-submit:disabled{opacity:.6;cursor:wait}
+.feedback-message{min-height:20px;margin:8px 0 0;color:#83e8d8;font-size:10px}
+.feedback-list{display:grid;gap:9px;margin-top:15px}
+.feedback-item{padding:12px;border:1px solid #ffffff12;border-radius:10px;background:#ffffff05}
+.feedback-item-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:7px}
+.feedback-item strong{font-size:11px;color:#edf4ff}
+.feedback-type{font-size:9px;border-radius:5px;padding:4px 7px;background:#42eaff12;color:var(--cyan)}
+.feedback-type.criticism{background:#ff6b6b12;color:#ff9999}
+.feedback-type.positive{background:#56d6a212;color:#78e4b9}
+.feedback-item p{margin:0;color:#a5b1c7;font-size:11px;line-height:2;overflow-wrap:anywhere}
+.feedback-sample{display:inline-block;margin-top:7px;color:#d8b56a;font-size:9px}
+.feedback-empty{color:#7f8da5;text-align:center;padding:15px;font-size:10px}
+@media(max-width:480px){.feedback-section{padding:15px 12px}.feedback-form{grid-template-columns:1fr}.feedback-form .wide,.feedback-form textarea,.feedback-submit{grid-column:1}.feedback-head h2{font-size:15px}.feedback-goal{font-size:8px}}
+
 </style>
 </head>
 <body>
@@ -133,6 +163,25 @@ h1 span{color:transparent;background:linear-gradient(90deg,#42eaff,#8c8aff 48%,#
   <div class="youtube-copy"><strong>کانال رسمی DJ Caspian</strong><span>موزیک، میکس‌ها و محتوای اختصاصی در راه است</span></div>
   <div class="youtube-soon"><span class="soon-pulse"></span> به‌زودی پس از راه‌اندازی</div>
 </section>
+
+<section class="feedback-section" id="feedback" aria-labelledby="feedbackTitle">
+ <div class="feedback-head"><h2 id="feedbackTitle">نظرات و انتقادات</h2><span class="feedback-goal">GOAL: 335 FEEDBACKS</span></div>
+ <p class="feedback-intro">نظرت درباره DJ Caspian برای ما مهم است. پیشنهاد، انتقاد یا حس خوبت را بنویس؛ بازخوردها پس از بررسی در سایت نمایش داده می‌شوند.</p>
+ <div class="feedback-counts"><span>بازخوردهای تأییدشده <b id="feedbackCount">۰</b></span><span>هدف جمع‌آوری <b>۳۳۵</b></span></div>
+ <form class="feedback-form" id="feedbackForm">
+  <label>نام نمایشی (اختیاری)<input name="display_name" maxlength="40" placeholder="مثلاً: مهمان کاسپین"></label>
+  <label>نوع بازخورد<select name="feedback_type" required><option value="positive">نظر مثبت</option><option value="criticism">انتقاد</option><option value="neutral">پیشنهاد / نظر عادی</option></select></label>
+  <label class="wide">متن بازخورد<textarea name="message" minlength="10" maxlength="1000" required placeholder="نظرت رو اینجا بنویس... (۱۰ تا ۱۰۰۰ کاراکتر)"></textarea></label>
+  <button class="feedback-submit" id="feedbackSubmit" type="submit">ثبت بازخورد</button>
+ </form>
+ <p class="feedback-message" id="feedbackMessage" role="status" aria-live="polite"></p>
+ <div class="feedback-list" id="feedbackList" aria-live="polite">
+  <article class="feedback-item"><div class="feedback-item-top"><strong>نمونه نمایشی · شنونده کاسپین</strong><span class="feedback-type positive">مثبت</span></div><p>فضای بصری سایت خیلی جذابه؛ منتظرم محتوای کانال هم منتشر بشه.</p><span class="feedback-sample">این متن نمونه است، نه نظر ثبت‌شده کاربر.</span></article>
+  <article class="feedback-item"><div class="feedback-item-top"><strong>نمونه نمایشی · بازدیدکننده</strong><span class="feedback-type criticism">انتقاد</span></div><p>بهتره زمان‌بندی انتشار برنامه‌ها و خبرهای جدید واضح‌تر اعلام بشه.</p><span class="feedback-sample">این متن نمونه است، نه نظر ثبت‌شده کاربر.</span></article>
+  <article class="feedback-item"><div class="feedback-item-top"><strong>نمونه نمایشی · مخاطب</strong><span class="feedback-type">پیشنهاد</span></div><p>پیشنهاد می‌کنم میکس‌های کوتاه و پلی‌لیست‌های موضوعی هم در کانال قرار بگیره.</p><span class="feedback-sample">این متن نمونه است، نه نظر ثبت‌شده کاربر.</span></article>
+ </div>
+</section>
+
 <div class="bottom"><span>THE NEXT FREQUENCY IS COMING</span><span>DJ CASPIAN ©</span></div>
 </div>
 </section>
@@ -195,5 +244,48 @@ h1 span{color:transparent;background:linear-gradient(90deg,#42eaff,#8c8aff 48%,#
 </script>
 <script>
 (()=>{const deadline=Date.parse('2026-11-03T18:56:44Z');const h=document.getElementById('hours'),m=document.getElementById('minutes'),s=document.getElementById('seconds'),status=document.getElementById('status');let checking=false;async function checkRestored(){try{const url=new URL(window.location.href);url.searchParams.set('caspian_restore_check',String(Date.now()));const response=await fetch(url.toString(),{cache:'no-store'});if(!response.ok)return;const html=await response.text();if(html.includes('id="root"')&&!html.includes('id="hours"')){const target=new URL(window.location.pathname,window.location.origin);target.searchParams.set('restored',String(Date.now()));window.location.replace(target.href)}}catch(e){}}function tick(){const left=Math.max(0,deadline-Date.now());h.textContent=String(Math.floor(left/3600000)).padStart(2,'0');m.textContent=String(Math.floor(left%3600000/60000)).padStart(2,'0');s.textContent=String(Math.floor(left%60000/1000)).padStart(2,'0');if(left===0){status.textContent='پایان زمان آماده‌سازی؛ در حال بازگشت نسخه اصلی';if(!checking){checking=true;checkRestored();setInterval(checkRestored,15000)}}}tick();setInterval(tick,1000)})();</script>
+
+<script>
+(()=> {
+ const base='https://irkdzjizhwxbmnnfyqsx.supabase.co';
+ const key='sb_publishable_VoBs1G1u4_Rl8GxVc2HKfw_ADAyAxa3';
+ const list=document.getElementById('feedbackList'),count=document.getElementById('feedbackCount');
+ const form=document.getElementById('feedbackForm'),submit=document.getElementById('feedbackSubmit'),message=document.getElementById('feedbackMessage');
+ const labels={positive:'مثبت',criticism:'انتقاد',neutral:'پیشنهاد'};
+ const headers={apikey:key,Authorization:'Bearer '+key};
+ async function loadApproved(){
+  try{
+   const r=await fetch(base+'/rest/v1/site_feedback?select=id,display_name,feedback_type,message,created_at&status=eq.approved&order=created_at.desc&limit=30',{headers:{...headers,Prefer:'count=exact'},cache:'no-store'});
+   if(!r.ok)throw new Error('load');
+   const rows=await r.json(),range=r.headers.get('content-range')||'*/0',total=Number(range.split('/').pop())||rows.length;
+   count.textContent=new Intl.NumberFormat('fa-IR').format(total);
+   if(!rows.length)return;
+   list.replaceChildren();
+   rows.forEach(row=>{
+    const article=document.createElement('article');article.className='feedback-item';
+    const top=document.createElement('div');top.className='feedback-item-top';
+    const name=document.createElement('strong');name.textContent=row.display_name||'مهمان';
+    const type=document.createElement('span');type.className='feedback-type '+row.feedback_type;type.textContent=labels[row.feedback_type]||'نظر';
+    const p=document.createElement('p');p.textContent=row.message;
+    top.append(name,type);article.append(top,p);list.append(article);
+   });
+  }catch(e){count.textContent='—'}
+ }
+ form.addEventListener('submit',async e=>{
+  e.preventDefault();if(!form.reportValidity())return;
+  submit.disabled=true;message.textContent='در حال ثبت بازخورد…';
+  const data=new FormData(form);
+  try{
+   const r=await fetch(base+'/functions/v1/submit-site-feedback',{method:'POST',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({display_name:data.get('display_name'),feedback_type:data.get('feedback_type'),message:data.get('message')})});
+   const result=await r.json();
+   if(!r.ok)throw new Error(result.error||'ثبت انجام نشد');
+   form.reset();message.textContent=result.message||'بازخورد ثبت شد و پس از بررسی نمایش داده می‌شود.';
+  }catch(err){message.textContent=err.message||'خطا در ثبت بازخورد؛ دوباره تلاش کن.'}
+  finally{submit.disabled=false}
+ });
+ loadApproved();
+})();
+</script>
+
 </body>
 </html>
