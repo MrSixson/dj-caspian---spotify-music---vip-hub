@@ -130,11 +130,19 @@ async function validateMp3File(file: File): Promise<void> {
     throw new Error('حجم فایل MP3 باید بیشتر از صفر و حداکثر ۵۰ مگابایت باشد.');
   }
 
-  const header = new Uint8Array(await file.slice(0, 4).arrayBuffer());
-  const hasId3Header = header[0] === 0x49 && header[1] === 0x44 && header[2] === 0x33;
-  const hasMpegFrameSync = header[0] === 0xff && (header[1] & 0xe0) === 0xe0;
+  // MP3 files may begin with an ID3 tag, encoder padding, or other valid metadata.
+  // Scan a small prefix for an MPEG frame sync instead of assuming it is at byte zero.
+  const prefix = new Uint8Array(await file.slice(0, Math.min(file.size, 64 * 1024)).arrayBuffer());
+  const hasId3Header = prefix[0] === 0x49 && prefix[1] === 0x44 && prefix[2] === 0x33;
+  let hasMpegFrameSync = false;
+  for (let i = 0; i < prefix.length - 1; i += 1) {
+    if (prefix[i] === 0xff && (prefix[i + 1] & 0xe0) === 0xe0) {
+      hasMpegFrameSync = true;
+      break;
+    }
+  }
   if (!hasId3Header && !hasMpegFrameSync) {
-    throw new Error('محتوای فایل با ساختار MP3 سازگار نیست. فایل صوتی اصلی را انتخاب کن.');
+    throw new Error('ساختار فایل MP3 معتبر تشخیص داده نشد. فایل را دوباره خروجی MP3 بگیر.');
   }
 }
 
