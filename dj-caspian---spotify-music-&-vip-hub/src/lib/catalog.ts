@@ -123,10 +123,8 @@ async function validateMp3File(file: File): Promise<void> {
     throw new Error('فقط فایل با پسوند MP3 قابل آپلود است.');
   }
 
-  const allowedTypes = ['audio/mpeg', 'audio/mp3', 'application/octet-stream', ''];
-  if (!allowedTypes.includes(file.type)) {
-    throw new Error('نوع فایل انتخاب‌شده MP3 نیست.');
-  }
+  // Browsers and operating systems report inconsistent MIME types for valid MP3 files.
+  // The extension and MPEG/ID3 signature checks below are the reliable validation.
 
   if (file.size < 4 || file.size > 50 * 1024 * 1024) {
     throw new Error('حجم فایل MP3 باید بیشتر از صفر و حداکثر ۵۰ مگابایت باشد.');
