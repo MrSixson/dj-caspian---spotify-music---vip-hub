@@ -7,14 +7,21 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
-  group: dj-caspian-maintenance-restore
-  cancel-in-progress: false
+  group: pages
+  cancel-in-progress: true
 
 jobs:
   restore-original-site:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dj-caspian---spotify-music-&-vip-hub
+    environment:
+      name: github-pages
     steps:
       - name: Check out full history
         uses: actions/checkout@v5
@@ -23,7 +30,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Restore the original source once
+      - name: Restore the original app entry from the verified pre-maintenance commit
         shell: bash
         run: |
           set -euo pipefail
@@ -31,7 +38,33 @@ jobs:
             echo "This one-time restoration is only valid on 2026-11-01 UTC."
             exit 0
           fi
-          git show 'fa174bc3551254ed42fbc79b897552a01cd229fb:dj-caspian---spotify-music-&-vip-hub/index.html' > 'dj-caspian---spotify-music-&-vip-hub/index.html'
+          git show 'fa174bc3551254ed42fbc79b897552a01cd229fb:dj-caspian---spotify-music-&-vip-hub/index.html' > index.html
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build the original site
+        run: npm run build
+
+      - name: Upload original Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dj-caspian---spotify-music-&-vip-hub/dist
+
+      - name: Deploy original site
+        id: deployment
+        uses: actions/deploy-pages@v5
+
+      - name: Persist restored source and remove this one-time workflow
+        shell: bash
+        working-directory: .
+        run: |
+          set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -- 'dj-caspian---spotify-music-&-vip-hub/index.html'
