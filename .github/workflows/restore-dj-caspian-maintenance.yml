@@ -1,0 +1,38 @@
+name: Restore DJ Caspian after maintenance
+
+on:
+  schedule:
+    - cron: '7 1 1 11 *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dj-caspian-maintenance-restore
+  cancel-in-progress: false
+
+jobs:
+  restore-original-site:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+
+      - name: Restore the preserved original entry page
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp 'dj-caspian---spotify-music-&-vip-hub/index.original.html' 'dj-caspian---spotify-music-&-vip-hub/index.html'
+          if git diff --quiet -- 'dj-caspian---spotify-music-&-vip-hub/index.html'; then
+            echo "Original entry page is already restored."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- 'dj-caspian---spotify-music-&-vip-hub/index.html'
+          git commit -m 'Restore DJ Caspian site after maintenance'
+          git push origin main
