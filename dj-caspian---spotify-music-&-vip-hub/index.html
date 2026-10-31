@@ -51,10 +51,26 @@ h1 span{color:transparent;background:linear-gradient(90deg,#42eaff,#8c8aff 48%,#
 .value{display:block;font:800 clamp(30px,7vw,48px)/1 Orbitron,sans-serif;letter-spacing:-.06em;font-variant-numeric:tabular-nums;color:#f4fbff;text-shadow:0 0 22px #42eaff66}
 .name{display:block;margin-top:12px;color:#8090aa;font-size:10px}
 .status{display:inline-flex;align-items:center;gap:9px;margin-top:27px;padding:10px 16px;border:1px solid #d8b56a45;border-radius:5px;background:#d8b56a0b;color:#e7d5a9;font-size:11px}
+.capacity{margin:26px auto 0;padding:19px 20px 17px;max-width:540px;text-align:right;border:1px solid #42eaff25;border-radius:16px;background:linear-gradient(135deg,#42eaff0b,#176bff0a 55%,#d8b56a08);box-shadow:inset 0 1px #ffffff08}
+.capacity-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px}
+.capacity-title{color:#dce8fa;font-size:12px;font-weight:700}
+.capacity-tag{direction:ltr;font:600 8px Orbitron,sans-serif;letter-spacing:.12em;color:var(--cyan);border:1px solid #42eaff35;border-radius:4px;padding:6px 8px}
+.capacity-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.capacity-stat{padding:12px 10px;border-radius:10px;background:#ffffff05;border:1px solid #ffffff0b}
+.capacity-stat small{display:block;color:#7f90ad;font-size:10px;margin-bottom:8px}
+.capacity-stat strong{display:block;color:#f2f7ff;font:700 clamp(18px,4vw,25px)/1.2 Orbitron,sans-serif;direction:ltr;text-align:right;font-variant-numeric:tabular-nums}
+.capacity-stat:first-child strong{color:var(--cyan)}
+.capacity-stat:last-child strong{color:var(--gold)}
+.capacity-progress-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:16px 0 9px;color:#8796b0;font-size:10px}
+.capacity-progress-head b{direction:ltr;color:#d6e6ff;font:700 11px Orbitron,sans-serif}
+.capacity-track{height:7px;overflow:hidden;border-radius:99px;background:#ffffff0d;box-shadow:inset 0 1px 3px #0008}
+.capacity-fill{height:100%;width:5.3%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--cyan),var(--gold));box-shadow:0 0 14px #42eaff55}
+.capacity-note{margin:10px 0 0;color:#63738e;font-size:9px;line-height:1.8}
+
 .status i{width:6px;height:6px;background:var(--gold);box-shadow:0 0 10px var(--gold);transform:rotate(45deg)}
 .bottom{display:flex;justify-content:space-between;gap:12px;margin-top:34px;padding-top:18px;border-top:1px solid #ffffff12;color:#62718b;font:600 8px Orbitron,sans-serif;letter-spacing:.17em;direction:ltr}
 .bottom span:last-child{color:#b89b62}
-@media(max-width:480px){main{padding:18px 12px}.panel{padding:25px 17px}.topline{margin-bottom:28px;font-size:8px}.brandname{font-size:14px}.copy{font-size:12px}.unit{min-width:0;flex:1;padding:16px 5px 12px}.value{font-size:clamp(26px,8vw,37px)}.bottom{font-size:7px;letter-spacing:.1em}}
+@media(max-width:480px){.capacity{padding:15px 12px}.capacity-stats{gap:6px}.capacity-stat{padding:10px 6px}.capacity-stat small{font-size:9px}.capacity-stat strong{font-size:clamp(15px,4.5vw,21px)}main{padding:18px 12px}.panel{padding:25px 17px}.topline{margin-bottom:28px;font-size:8px}.brandname{font-size:14px}.copy{font-size:12px}.unit{min-width:0;flex:1;padding:16px 5px 12px}.value{font-size:clamp(26px,8vw,37px)}.bottom{font-size:7px;letter-spacing:.1em}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
@@ -79,6 +95,17 @@ h1 span{color:transparent;background:linear-gradient(90deg,#42eaff,#8c8aff 48%,#
 <div class="unit"><span class="value" id="seconds">00</span><span class="name">ثانیه</span></div>
 </div>
 <div class="status"><i></i><span id="status">در حال آماده‌سازی نسخه جدید</span></div>
+<div class="capacity" aria-label="آمار ظرفیت ثبت‌نام">
+  <div class="capacity-head"><span class="capacity-title">ظرفیت ثبت‌نام DJ Caspian</span><span class="capacity-tag">EARLY ACCESS</span></div>
+  <div class="capacity-stats">
+    <div class="capacity-stat"><small>ثبت‌نام‌شده‌ها</small><strong>265</strong></div>
+    <div class="capacity-stat"><small>ظرفیت باقی‌مانده</small><strong>4,735</strong></div>
+    <div class="capacity-stat"><small>ظرفیت کل</small><strong>5,000</strong></div>
+  </div>
+  <div class="capacity-progress-head"><span>میزان تکمیل ظرفیت</span><b>5.3%</b></div>
+  <div class="capacity-track" role="progressbar" aria-label="تکمیل ظرفیت" aria-valuemin="0" aria-valuemax="100" aria-valuenow="5.3"><div class="capacity-fill"></div></div>
+  <p class="capacity-note">آمار فعلی ثبت‌نام و ظرفیت اعلام‌شده برای شروع فعالیت DJ Caspian</p>
+</div>
 <div class="bottom"><span>NO SIGNAL LOST · JUST RELOADING</span><span>DJ CASPIAN ©</span></div>
 </div>
 </section>
