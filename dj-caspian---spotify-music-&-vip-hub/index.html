@@ -3,52 +3,84 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#080b09">
+<meta name="theme-color" content="#050711">
 <meta name="robots" content="noindex,nofollow">
-<title>DJ Caspian | به‌زودی برمی‌گردیم</title>
+<title>DJ CASPIAN | SYSTEM UPGRADE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#080b09;color:#f4f7f4;font-family:Vazirmatn,sans-serif}
-main{min-height:100svh;display:grid;place-items:center;position:relative;isolation:isolate;overflow:hidden;padding:24px;background:radial-gradient(ellipse at 50% 10%,rgba(29,215,96,.15),transparent 38%),radial-gradient(ellipse at 90% 90%,rgba(201,169,99,.09),transparent 35%),#080b09}
-main:before,main:after{content:"";position:absolute;z-index:-1;width:min(86vw,560px);aspect-ratio:1;border:1px solid rgba(29,215,96,.12);border-radius:50%;animation:spin 32s linear infinite}
-main:after{width:min(105vw,720px);border-color:rgba(210,184,125,.08);animation-direction:reverse}
-@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{50%{opacity:.35}}
-.card{width:min(100%,650px);padding:clamp(28px,6vw,56px);text-align:center;border:1px solid #ffffff17;border-radius:30px;background:linear-gradient(145deg,#171d19f2,#0d100ff5);box-shadow:0 30px 100px #0009,inset 0 1px #ffffff0b;backdrop-filter:blur(18px)}
-.logo{width:68px;height:68px;margin:0 auto 24px;display:grid;place-items:center;border:1px solid #1ed76055;border-radius:22px;background:#1ed76012;color:#1ed760;box-shadow:0 0 45px #1ed76012}.logo svg{width:31px;height:31px}
-.eyebrow{font:800 11px 'Plus Jakarta Sans',sans-serif;letter-spacing:.27em;color:#1ed760;direction:ltr}
-h1{font-size:clamp(32px,6.5vw,50px);line-height:1.45;margin:16px 0 12px;font-weight:900;letter-spacing:-.04em}h1 span{color:#1ed760}
-.copy{max-width:455px;margin:0 auto;color:#a8b1aa;font-size:14px;line-height:2.1}
-.rule{height:1px;margin:30px 0 24px;background:linear-gradient(90deg,transparent,#ffffff20,transparent)}
-.label{font-size:12px;color:#b8c0ba;margin-bottom:16px}
-.timer{display:flex;justify-content:center;gap:clamp(8px,3vw,17px);direction:ltr}
-.unit{min-width:clamp(65px,17vw,92px);padding:15px 9px 12px;border:1px solid #ffffff12;border-radius:16px;background:#ffffff06}
-.value{display:block;font:800 clamp(28px,6vw,40px)/1.1 'Plus Jakarta Sans',sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.04em}
-.name{display:block;margin-top:9px;color:#7f8982;font-size:10px}
-.status{display:inline-flex;align-items:center;gap:9px;margin-top:26px;padding:9px 14px;border:1px solid #1ed7602b;border-radius:999px;background:#1ed7600d;color:#bce9ca;font-size:11px}
-.dot{width:7px;height:7px;border-radius:50%;background:#1ed760;box-shadow:0 0 12px #1ed760;animation:pulse 1.6s ease-in-out infinite}
-.footer{margin-top:26px;font:600 10px 'Plus Jakarta Sans',sans-serif;letter-spacing:.16em;color:#5e6861;direction:ltr}
-@media(max-width:420px){.card{border-radius:24px}.copy{font-size:13px}.unit{padding:13px 6px 10px}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important}}
+:root{color-scheme:dark;--cyan:#42eaff;--blue:#176bff;--pink:#ff3dce;--gold:#d8b56a;--bg:#050711;--muted:#8995ad}
+*{box-sizing:border-box}
+html{min-height:100%;background:var(--bg)}
+body{margin:0;min-height:100vh;background:var(--bg);color:#f4f7ff;font-family:Vazirmatn,sans-serif}
+body:before{content:"";position:fixed;inset:0;z-index:5;pointer-events:none;opacity:.16;background:repeating-linear-gradient(0deg,transparent 0 3px,#a7dfff0c 4px 5px)}
+main{min-height:100svh;position:relative;isolation:isolate;overflow:hidden;display:grid;place-items:center;padding:38px 18px;background:radial-gradient(ellipse at 50% 42%,#103d7040 0,transparent 48%),radial-gradient(ellipse at 12% 18%,#ff3dce12,transparent 32%),radial-gradient(ellipse at 90% 85%,#d8b56a12,transparent 32%),#050711}
+.grid{position:absolute;inset:-25%;z-index:-2;opacity:.24;background-image:linear-gradient(#2b91ff22 1px,transparent 1px),linear-gradient(90deg,#2b91ff22 1px,transparent 1px);background-size:54px 54px;transform:perspective(600px) rotateX(62deg) scale(1.5);transform-origin:center 70%;mask-image:linear-gradient(transparent,#000 28%,#000 80%,transparent);animation:gridmove 18s linear infinite}
+@keyframes gridmove{to{background-position:0 54px,54px 0}}
+.orb{position:absolute;z-index:-1;width:min(78vw,680px);aspect-ratio:1;border:1px solid #42eaff20;border-radius:50%;box-shadow:0 0 90px #176bff12,inset 0 0 90px #176bff0b;animation:orbit 28s linear infinite}
+.orb:before,.orb:after{content:"";position:absolute;inset:8%;border:1px dashed #ff3dce30;border-radius:50%;transform:rotateX(65deg) rotate(18deg)}
+.orb:after{inset:18%;border-color:#d8b56a38;transform:rotateY(65deg) rotate(-25deg)}
+@keyframes orbit{to{transform:rotate(360deg)}}
+.shell{width:min(100%,790px);position:relative;padding:1px;border-radius:27px;background:linear-gradient(130deg,#42eaffaa,#176bff33 32%,#ff3dce77 66%,#d8b56a88);box-shadow:0 0 0 1px #42eaff0b,0 28px 100px #000c,0 0 90px #176bff1c}
+.panel{position:relative;overflow:hidden;border-radius:26px;padding:clamp(25px,6vw,58px);text-align:center;background:linear-gradient(145deg,#0d1424f7,#080b17f8 58%,#10101df7);backdrop-filter:blur(22px)}
+.panel:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 20%,#42eaff08 48%,transparent 70%);transform:translateX(-100%);animation:sweep 8s ease-in-out infinite}
+@keyframes sweep{55%,100%{transform:translateX(100%)}}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:12px;direction:ltr;margin-bottom:36px;color:#8fa0bd;font:600 9px Orbitron,sans-serif;letter-spacing:.2em}
+.live{display:inline-flex;align-items:center;gap:8px;color:#ff79dd}
+.live i{width:7px;height:7px;border-radius:50%;background:#ff3dce;box-shadow:0 0 13px #ff3dce;animation:blink 1.3s infinite}
+@keyframes blink{50%{opacity:.25}}
+.brand{display:flex;align-items:center;justify-content:center;gap:13px;margin-bottom:26px}
+.mark{width:54px;height:54px;display:grid;place-items:center;border:1px solid #42eaff80;border-radius:15px;color:var(--cyan);background:linear-gradient(145deg,#42eaff17,#176bff18);box-shadow:0 0 30px #42eaff20,inset 0 0 20px #42eaff0c}
+.mark svg{width:29px;height:29px}
+.brandname{direction:ltr;text-align:left;font:800 17px Orbitron,sans-serif;letter-spacing:.13em}
+.brandname b{display:block;margin-top:5px;color:var(--gold);font-size:8px;font-weight:500;letter-spacing:.38em}
+.kicker{font:700 10px Orbitron,sans-serif;letter-spacing:.34em;color:var(--cyan);text-shadow:0 0 18px #42eaff75;direction:ltr}
+h1{margin:16px 0 12px;font-size:clamp(32px,7vw,58px);font-weight:900;line-height:1.45;letter-spacing:-.045em}
+h1 span{color:transparent;background:linear-gradient(90deg,#42eaff,#8c8aff 48%,#ff64d9);background-clip:text;-webkit-background-clip:text;text-shadow:0 0 35px #42eaff22}
+.copy{max-width:490px;margin:0 auto;color:#a2aec5;font-size:13px;line-height:2.25;font-weight:400}
+.equalizer{height:35px;display:flex;align-items:center;justify-content:center;gap:4px;margin:26px auto 8px;direction:ltr}
+.equalizer i{width:3px;height:var(--h);border-radius:8px;background:linear-gradient(0deg,var(--blue),var(--cyan));box-shadow:0 0 12px #42eaff66;animation:eq .9s ease-in-out infinite alternate;animation-delay:var(--d)}
+@keyframes eq{to{height:5px;opacity:.45}}
+.separator{display:flex;align-items:center;gap:15px;margin:25px 0 20px;color:#7886a2;font-size:10px}
+.separator:before,.separator:after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,#42eaff40)}
+.separator:after{background:linear-gradient(90deg,#42eaff40,transparent)}
+.timer{display:flex;justify-content:center;gap:clamp(9px,3vw,18px);direction:ltr}
+.unit{position:relative;min-width:clamp(76px,19vw,118px);padding:18px 10px 14px;border:1px solid #42eaff35;border-radius:13px;background:linear-gradient(155deg,#14243a99,#090e1b);box-shadow:inset 0 0 24px #176bff0b,0 0 22px #176bff0c}
+.unit:before{content:"";position:absolute;top:-1px;left:15px;right:15px;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);box-shadow:0 0 9px var(--cyan)}
+.value{display:block;font:800 clamp(30px,7vw,48px)/1 Orbitron,sans-serif;letter-spacing:-.06em;font-variant-numeric:tabular-nums;color:#f4fbff;text-shadow:0 0 22px #42eaff66}
+.name{display:block;margin-top:12px;color:#8090aa;font-size:10px}
+.status{display:inline-flex;align-items:center;gap:9px;margin-top:27px;padding:10px 16px;border:1px solid #d8b56a45;border-radius:5px;background:#d8b56a0b;color:#e7d5a9;font-size:11px}
+.status i{width:6px;height:6px;background:var(--gold);box-shadow:0 0 10px var(--gold);transform:rotate(45deg)}
+.bottom{display:flex;justify-content:space-between;gap:12px;margin-top:34px;padding-top:18px;border-top:1px solid #ffffff12;color:#62718b;font:600 8px Orbitron,sans-serif;letter-spacing:.17em;direction:ltr}
+.bottom span:last-child{color:#b89b62}
+@media(max-width:480px){main{padding:18px 12px}.panel{padding:25px 17px}.topline{margin-bottom:28px;font-size:8px}.brandname{font-size:14px}.copy{font-size:12px}.unit{min-width:0;flex:1;padding:16px 5px 12px}.value{font-size:clamp(26px,8vw,37px)}.bottom{font-size:7px;letter-spacing:.1em}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
 <main>
-<section class="card" aria-label="صفحه آماده‌سازی DJ Caspian">
-<div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 13.5V10a8 8 0 0 1 16 0v3.5M4 12h3v6H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 1-2Zm16 0h-3v6h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-1-2ZM17 18a5 5 0 0 1-5 3h-1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-<div class="eyebrow">DJ CASPIAN · OFFICIAL</div>
-<h1>یه اتفاق <span>خفن</span><br>در راهه.</h1>
-<p class="copy">داریم آخرین جزئیات تجربه‌ی جدید DJ Caspian رو آماده می‌کنیم. سایت موقتاً در حال به‌روزرسانیه و به‌زودی با حال‌وهوایی تازه برمی‌گرده.</p>
-<div class="rule"></div>
-<div class="label">زمان باقی‌مانده تا بازگشایی سایت</div>
+<div class="grid" aria-hidden="true"></div><div class="orb" aria-hidden="true"></div>
+<section class="shell" aria-label="صفحه قرنطینه DJ Caspian">
+<div class="panel">
+<div class="topline"><span>CASPIAN NETWORK // 2026</span><span class="live"><i></i>SYSTEM UPGRADE</span></div>
+<div class="brand">
+<div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 13.5V10a8 8 0 0 1 16 0v3.5M4 12h3v6H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 1-2Zm16 0h-3v6h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-1-2ZM17 18a5 5 0 0 1-5 3h-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<div class="brandname">DJ CASPIAN<b>THE NEXT FREQUENCY</b></div>
+</div>
+<div class="kicker">WE ARE REBUILDING THE EXPERIENCE</div>
+<h1>بازگشت در <span>فرکانس بعدی</span></h1>
+<p class="copy">سیستم در حال ارتقاست. داریم تجربه‌ای تازه با انرژی بیشتر و صدایی متفاوت آماده می‌کنیم. کمی زمان بده؛ موج بعدی نزدیکه.</p>
+<div class="equalizer" aria-hidden="true"><i style="--h:8px;--d:0s"></i><i style="--h:26.47513195148677px;--d:-0.11s"></i><i style="--h:32.89337932655613px;--d:-0.22s"></i><i style="--h:23.066189210549307px;--d:-0.33s"></i><i style="--h:12.593206964664574px;--d:-0.44s"></i><i style="--h:29.25507292715916px;--d:-0.55s"></i><i style="--h:32.045862806461315px;--d:-0.66s"></i><i style="--h:19.144305093380453px;--d:-0.77s"></i><i style="--h:17.03003424573131px;--d:-0.88s"></i><i style="--h:31.311366654891618px;--d:0s"></i><i style="--h:30.379684195492043px;--d:-0.11s"></i><i style="--h:14.84300351955706px;--d:-0.22s"></i><i style="--h:21.15942624049628px;--d:-0.33s"></i><i style="--h:32.57400484526872px;--d:-0.44s"></i><i style="--h:27.95156997821681px;--d:-0.55s"></i><i style="--h:10.308726002459272px;--d:-0.66s"></i><i style="--h:24.8407942451277px;--d:-0.77s"></i><i style="--h:32.999999894590346px;--d:-0.88s"></i><i style="--h:24.844187392571406px;--d:0s"></i><i style="--h:10.304154078066583px;--d:-0.11s"></i><i style="--h:27.948802918065773px;--d:-0.22s"></i><i style="--h:32.5748484348307px;--d:-0.33s"></i><i style="--h:21.163329952608215px;--d:-0.44s"></i><i style="--h:14.838587250264407px;--d:-0.55s"></i><i style="--h:30.3776374295778px;--d:-0.66s"></i><i style="--h:31.313025113283036px;--d:-0.77s"></i><i style="--h:17.034315617273535px;--d:-0.88s"></i><i style="--h:19.140194834876144px;--d:0s"></i><i style="--h:32.04460601869051px;--d:-0.11s"></i><i style="--h:29.25748979073691px;--d:-0.22s"></i><i style="--h:12.597720232658574px;--d:-0.33s"></i><i style="--h:23.062524900121254px;--d:-0.44s"></i><i style="--h:32.89295530535px;--d:-0.55s"></i><i style="--h:26.4782249360508px;--d:-0.66s"></i><i style="--h:8.00459150635357px;--d:-0.77s"></i></div>
+<div class="separator">COUNTDOWN TO RECONNECTION</div>
 <div class="timer" role="timer" aria-label="زمان باقی‌مانده تا بازگشایی">
 <div class="unit"><span class="value" id="hours">12</span><span class="name">ساعت</span></div>
 <div class="unit"><span class="value" id="minutes">00</span><span class="name">دقیقه</span></div>
 <div class="unit"><span class="value" id="seconds">00</span><span class="name">ثانیه</span></div>
 </div>
-<div class="status"><span class="dot"></span><span id="status">در حال آماده‌سازی نسخه‌ی جدید</span></div>
-<div class="footer">MUSIC · ENERGY · CASPIAN</div>
+<div class="status"><i></i><span id="status">در حال آماده‌سازی نسخه جدید</span></div>
+<div class="bottom"><span>NO SIGNAL LOST · JUST RELOADING</span><span>DJ CASPIAN ©</span></div>
+</div>
 </section>
 </main>
 <script>
