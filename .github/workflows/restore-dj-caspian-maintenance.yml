@@ -34,10 +34,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ "$(date -u +%F)" != "2026-11-01" ]]; then
-            echo "This one-time restoration is only valid on 2026-11-01 UTC."
-            exit 0
+          restore_after="$(date -u -d '2026-11-01T01:07:00Z' +%s)"
+          now="$(date -u +%s)"
+          if (( now < restore_after )); then
+            echo "The original site is scheduled to restore at 2026-11-01 01:07 UTC. Refusing to deploy it early."
+            exit 1
           fi
+          git cat-file -e 'fa174bc3551254ed42fbc79b897552a01cd229fb:dj-caspian---spotify-music-&-vip-hub/index.html'
           git show 'fa174bc3551254ed42fbc79b897552a01cd229fb:dj-caspian---spotify-music-&-vip-hub/index.html' > index.html
 
       - name: Set up Node.js
