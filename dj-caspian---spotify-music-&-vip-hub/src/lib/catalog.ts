@@ -39,6 +39,40 @@ function coverUrl(path: string | null): string {
   return supabase.storage.from('covers').getPublicUrl(path).data.publicUrl;
 }
 
+// Uploaded MP3s may not have duration metadata in the database. Read the real
+// duration from the stream gateway so the player and track cards show accurate times.
+const audioDurationCache = new Map<string, Promise<number>>();
+
+function readAudioDuration(trackId: string): Promise<number> {
+  const cached = audioDurationCache.get(trackId);
+  if (cached) return cached;
+
+  const request = new Promise<number>((resolve) => {
+    const audio = new Audio();
+    let settled = false;
+    const finish = (duration: number) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeout);
+      audio.onloadedmetadata = null;
+      audio.onerror = null;
+      audio.removeAttribute('src');
+      audio.load();
+      resolve(Number.isFinite(duration) && duration > 0 ? Math.round(duration) : 0);
+    };
+
+    const timeout = window.setTimeout(() => finish(0), 7000);
+    audio.preload = 'metadata';
+    audio.crossOrigin = 'anonymous';
+    audio.onloadedmetadata = () => finish(audio.duration);
+    audio.onerror = () => finish(0);
+    audio.src = audioStreamUrl(trackId);
+  });
+
+  audioDurationCache.set(trackId, request);
+  return request;
+}
+
 async function mapTrack(row: TrackRow): Promise<Track> {
   const preset = PRESET_VALUES.includes(row.synth_preset as (typeof PRESET_VALUES)[number])
     ? (row.synth_preset as Track['synthPreset'])
@@ -48,7 +82,7 @@ async function mapTrack(row: TrackRow): Promise<Track> {
     title: row.title,
     artist: row.artist,
     album: row.album,
-    duration: secondsFromDuration(row.duration),
+    duration: secondsFromDuration(row.duration) || (row.audio_path ? await readAudioDuration(row.id) : 0),
     coverUrl: coverUrl(row.cover_path),
     audioUrl: row.audio_path ? audioStreamUrl(row.id) : undefined,
     synthPreset: preset,
