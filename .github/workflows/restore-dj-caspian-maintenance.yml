@@ -22,17 +22,18 @@ jobs:
           ref: main
           persist-credentials: true
 
-      - name: Restore the preserved original entry page
+      - name: Restore the preserved original entry page once
         shell: bash
         run: |
           set -euo pipefail
-          cp 'dj-caspian---spotify-music-&-vip-hub/index.original.html' 'dj-caspian---spotify-music-&-vip-hub/index.html'
-          if git diff --quiet -- 'dj-caspian---spotify-music-&-vip-hub/index.html'; then
-            echo "Original entry page is already restored."
+          if [[ "$(date -u +%F)" != "2026-11-01" ]]; then
+            echo "This one-time maintenance restoration is only valid on 2026-11-01 UTC."
             exit 0
           fi
+          cp 'dj-caspian---spotify-music-&-vip-hub/index.original.html' 'dj-caspian---spotify-music-&-vip-hub/index.html'
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -- 'dj-caspian---spotify-music-&-vip-hub/index.html'
+          git rm -- '.github/workflows/restore-dj-caspian-maintenance.yml'
           git commit -m 'Restore DJ Caspian site after maintenance'
           git push origin main
