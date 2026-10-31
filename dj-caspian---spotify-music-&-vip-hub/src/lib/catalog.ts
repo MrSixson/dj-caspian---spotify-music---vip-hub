@@ -146,6 +146,27 @@ async function validateMp3File(file: File): Promise<void> {
   }
 }
 
+async function refreshUploadSession(): Promise<void> {
+  const { data: current, error: sessionError } = await supabase.auth.getSession();
+  if (sessionError) {
+    throw new Error(`بررسی نشست ورود ناموفق بود: ${sessionError.message}`);
+  }
+  if (!current.session) {
+    throw new Error('نشست ورود منقضی شده است. از حساب مدیریت خارج شو و دوباره وارد شو.');
+  }
+
+  // Force Supabase to rotate the access token before a potentially long upload.
+  const { data, error } = await supabase.auth.refreshSession();
+  if (error || !data.session?.access_token) {
+    throw new Error(`تازه‌سازی مجوز آپلود ناموفق بود: ${error?.message || 'توکن تازه دریافت نشد'}`);
+  }
+
+  const expiresAt = data.session.expires_at;
+  if (expiresAt && expiresAt <= Math.floor(Date.now() / 1000)) {
+    throw new Error('توکن ورود هنوز منقضی است. ساعت دستگاه را بررسی و دوباره وارد حساب شو.');
+  }
+}
+
 export async function uploadTrackAssets(input: {
   audioFile: File;
   coverFile?: File;
@@ -161,6 +182,7 @@ export async function uploadTrackAssets(input: {
   coverUrl?: string;
 }): Promise<Track> {
   await validateMp3File(input.audioFile);
+  await refreshUploadSession();
 
   const safeBase = input.audioFile.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 70) || 'track';
   const unique = crypto.randomUUID();
