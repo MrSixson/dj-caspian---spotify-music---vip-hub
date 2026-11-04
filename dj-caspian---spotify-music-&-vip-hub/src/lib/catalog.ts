@@ -55,18 +55,30 @@ function readAudioDuration(trackId: string): Promise<number> {
       settled = true;
       window.clearTimeout(timeout);
       audio.onloadedmetadata = null;
+      audio.ondurationchange = null;
       audio.onerror = null;
       audio.removeAttribute('src');
       audio.load();
-      resolve(Number.isFinite(duration) && duration > 0 ? Math.round(duration) : 0);
+      const validDuration = Number.isFinite(duration) && duration > 0
+        ? Math.round(duration)
+        : 0;
+      // Do not cache failed metadata reads: a later catalog refresh can retry.
+      if (!validDuration) audioDurationCache.delete(trackId);
+      resolve(validDuration);
     };
 
-    const timeout = window.setTimeout(() => finish(0), 7000);
-    audio.preload = 'metadata';
+    // The gateway may need extra time to wake up and deliver MP3 metadata.
+    // A short timeout used to cache zero-length results for the whole session.
+    const timeout = window.setTimeout(() => finish(0), 20000);
+    audio.preload = 'auto';
     audio.crossOrigin = 'anonymous';
     audio.onloadedmetadata = () => finish(audio.duration);
+    audio.ondurationchange = () => {
+      if (Number.isFinite(audio.duration) && audio.duration > 0) finish(audio.duration);
+    };
     audio.onerror = () => finish(0);
     audio.src = audioStreamUrl(trackId);
+    audio.load();
   });
 
   audioDurationCache.set(trackId, request);
