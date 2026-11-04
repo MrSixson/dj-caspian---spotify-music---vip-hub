@@ -97,7 +97,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
       {/* 1. ULTRA SLEEK PROFILE HEADER BANNER */}
       <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#141414] via-[#1a231d] to-[#121212] border border-neutral-700/60 p-6 sm:p-8 shadow-2xl">
         {/* Glow Effects */}
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#1db954]/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#d6b45c]/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-10 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -106,7 +106,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
               <img
                 src={user.avatarUrl}
                 alt={user.displayName}
-                className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover border-2 border-[#1db954] shadow-xl"
+                className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover border-2 border-[#d6b45c] shadow-xl"
               />
               {user.isVip && (
                 <div className="absolute -top-2 -right-2 bg-gradient-to-tr from-amber-500 to-yellow-300 text-black p-1.5 rounded-full shadow-lg">
@@ -154,7 +154,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
               <button
                 type="button"
                 onClick={onNavigateToAdmin}
-                className="py-2.5 px-4 rounded-xl bg-[#1db954] hover:bg-[#1ed760] text-black font-bold text-xs flex items-center gap-2 transition-all shadow-lg shadow-[#1db954]/20 cursor-pointer"
+                className="py-2.5 px-4 rounded-xl bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-bold text-xs flex items-center gap-2 transition-all shadow-lg shadow-[#d6b45c]/20 cursor-pointer"
               >
                 <Shield className="w-4 h-4" />
                 <span>ورود به اتاق‌های مدیریت</span>
@@ -198,9 +198,9 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
         <div className="bg-[#181818] border border-neutral-800 rounded-2xl p-4">
           <div className="flex items-center justify-between text-neutral-400 text-xs mb-1">
             <span>پلی‌لیست‌های اختصاصی</span>
-            <ListMusic className="w-4 h-4 text-[#1db954]" />
+            <ListMusic className="w-4 h-4 text-[#d6b45c]" />
           </div>
-          <div className="text-2xl font-black text-[#1db954]">
+          <div className="text-2xl font-black text-[#d6b45c]">
             {user.customPlaylists?.length || 0}
           </div>
           <div className="text-[11px] text-neutral-500 mt-0.5">پلی‌لیست شخصی شما</div>
@@ -239,7 +239,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
           onClick={() => setActiveTab('liked')}
           className={`py-2 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer ${
             activeTab === 'liked'
-              ? 'bg-[#1db954] text-black shadow-lg shadow-[#1db954]/20'
+              ? 'bg-[#d6b45c] text-black shadow-lg shadow-[#d6b45c]/20'
               : 'bg-[#181818] text-neutral-400 hover:text-white'
           }`}
         >
@@ -251,7 +251,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
           onClick={() => setActiveTab('playlists')}
           className={`py-2 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer ${
             activeTab === 'playlists'
-              ? 'bg-[#1db954] text-black shadow-lg shadow-[#1db954]/20'
+              ? 'bg-[#d6b45c] text-black shadow-lg shadow-[#d6b45c]/20'
               : 'bg-[#181818] text-neutral-400 hover:text-white'
           }`}
         >
@@ -312,7 +312,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                         className="w-12 h-12 rounded-xl object-cover shrink-0"
                       />
                       <div className="min-w-0">
-                        <div className={`font-bold text-sm truncate ${isCurrent ? 'text-[#1db954]' : 'text-white'}`}>
+                        <div className={`font-bold text-sm truncate ${isCurrent ? 'text-[#d6b45c]' : 'text-white'}`}>
                           {track.title}
                         </div>
                         <div className="text-xs text-neutral-400 truncate mt-0.5 flex items-center gap-2">
@@ -334,7 +334,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                         }}
                         className="p-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-white cursor-pointer"
                       >
-                        {isCurrent ? <Pause className="w-4 h-4 text-[#1db954]" /> : <Play className="w-4 h-4 ml-0.5" />}
+                        {isCurrent ? <Pause className="w-4 h-4 text-[#d6b45c]" /> : <Play className="w-4 h-4 ml-0.5" />}
                       </button>
 
                       <button
@@ -345,7 +345,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                         }}
                         className={`py-1.5 px-3 rounded-full text-xs font-bold flex items-center gap-1 cursor-pointer ${
                           user.isVip
-                            ? 'bg-[#1db954] hover:bg-[#1ed760] text-black shadow-sm'
+                            ? 'bg-[#d6b45c] hover:bg-[#f0d88a] text-black shadow-sm'
                             : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
                         }`}
                       >
@@ -378,12 +378,12 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <ListMusic className="w-5 h-5 text-[#1db954]" />
+              <ListMusic className="w-5 h-5 text-[#d6b45c]" />
               <span>پلی‌لیست‌های دست‌ساز شما</span>
             </h3>
             <button
               onClick={() => setIsNewPlaylistOpen(true)}
-              className="py-2 px-4 rounded-xl bg-[#1db954] hover:bg-[#1ed760] text-black font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-md"
+              className="py-2 px-4 rounded-xl bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-md"
             >
               <Plus className="w-4 h-4" />
               <span>ساخت پلی‌لیست جدید</span>
@@ -399,7 +399,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
               </p>
               <button
                 onClick={() => setIsNewPlaylistOpen(true)}
-                className="py-2 px-5 rounded-full bg-[#1db954] text-black font-bold text-xs cursor-pointer hover:bg-[#1ed760]"
+                className="py-2 px-5 rounded-full bg-[#d6b45c] text-black font-bold text-xs cursor-pointer hover:bg-[#f0d88a]"
               >
                 ایجاد اولین پلی‌لیست
               </button>
@@ -418,7 +418,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                     />
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="w-10 h-10 rounded-full bg-[#1db954] text-black flex items-center justify-center shadow-lg">
+                      <div className="w-10 h-10 rounded-full bg-[#d6b45c] text-black flex items-center justify-center shadow-lg">
                         <Play className="w-5 h-5 fill-black ml-0.5" />
                       </div>
                     </div>
@@ -475,7 +475,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                 type="text"
                 value={editDisplayName}
                 onChange={(e) => setEditDisplayName(e.target.value)}
-                className="w-full bg-[#242424] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl px-3 py-2 text-xs text-white"
+                className="w-full bg-[#242424] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl px-3 py-2 text-xs text-white"
               />
             </div>
 
@@ -485,7 +485,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                 type="text"
                 value={editEmail}
                 onChange={(e) => setEditEmail(e.target.value)}
-                className="w-full bg-[#242424] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl px-3 py-2 text-xs text-white font-mono"
+                className="w-full bg-[#242424] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl px-3 py-2 text-xs text-white font-mono"
                 dir="ltr"
               />
             </div>
@@ -493,7 +493,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
             <button
               type="button"
               onClick={handleSaveProfile}
-              className="py-2.5 px-6 rounded-full bg-[#1db954] hover:bg-[#1ed760] text-black font-bold text-xs flex items-center gap-2 cursor-pointer shadow-md mt-2"
+              className="py-2.5 px-6 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-bold text-xs flex items-center gap-2 cursor-pointer shadow-md mt-2"
             >
               <Save className="w-4 h-4" />
               <span>ذخیره تغییرات</span>
@@ -507,7 +507,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in">
           <div className="relative w-full max-w-md bg-[#181818] border border-neutral-700 rounded-3xl p-6 space-y-4">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <ListMusic className="w-5 h-5 text-[#1db954]" />
+              <ListMusic className="w-5 h-5 text-[#d6b45c]" />
               <span>ایجاد پلی‌لیست شخصی جدید</span>
             </h3>
 
@@ -520,7 +520,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                   placeholder="مثال: ریمیکس‌های مسافرت"
                   value={newPlaylistTitle}
                   onChange={(e) => setNewPlaylistTitle(e.target.value)}
-                  className="w-full bg-[#242424] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl px-3 py-2 text-xs text-white"
+                  className="w-full bg-[#242424] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl px-3 py-2 text-xs text-white"
                 />
               </div>
 
@@ -531,7 +531,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                   placeholder="توضیحاتی برای پلی‌لیست..."
                   value={newPlaylistDesc}
                   onChange={(e) => setNewPlaylistDesc(e.target.value)}
-                  className="w-full bg-[#242424] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl px-3 py-2 text-xs text-white"
+                  className="w-full bg-[#242424] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl px-3 py-2 text-xs text-white"
                 />
               </div>
 
@@ -545,7 +545,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="py-2 px-5 rounded-full bg-[#1db954] text-black text-xs font-bold cursor-pointer hover:bg-[#1ed760]"
+                  className="py-2 px-5 rounded-full bg-[#d6b45c] text-black text-xs font-bold cursor-pointer hover:bg-[#f0d88a]"
                 >
                   ایجاد پلی‌لیست
                 </button>
