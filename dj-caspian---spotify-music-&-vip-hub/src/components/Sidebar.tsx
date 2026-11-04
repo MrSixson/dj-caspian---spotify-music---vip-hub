@@ -52,13 +52,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
           className="flex items-center gap-3 cursor-pointer group"
         >
           {/* Spotify Green Wave Icon */}
-          <div className="w-10 h-10 rounded-full bg-[#1db954] flex items-center justify-center text-black shadow-lg shadow-[#1db954]/20 group-hover:scale-105 transition-transform">
+          <div className="w-10 h-10 rounded-full bg-[#d6b45c] flex items-center justify-center text-black shadow-lg shadow-[#d6b45c]/20 group-hover:scale-105 transition-transform">
             <Disc3 className="w-6 h-6 animate-[spin_8s_linear_infinite]" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
               <span className="font-black text-lg text-white tracking-wider">CASPIAN</span>
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#1db954] text-black">
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#d6b45c] text-black">
                 SPOTIFY
               </span>
             </div>
@@ -93,7 +93,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   : 'text-neutral-400 hover:text-white hover:bg-neutral-900/60'
               }`}
             >
-              <Icon className={`w-5 h-5 ${isActive ? 'text-[#1db954]' : ''}`} />
+              <Icon className={`w-5 h-5 ${isActive ? 'text-[#d6b45c]' : ''}`} />
               <span>{item.label}</span>
             </button>
           );
@@ -116,7 +116,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }`}
         >
           <div className="flex items-center gap-3.5">
-            <LayoutDashboard className={`w-5 h-5 ${currentView === 'dashboard' ? 'text-[#1db954]' : ''}`} />
+            <LayoutDashboard className={`w-5 h-5 ${currentView === 'dashboard' ? 'text-[#d6b45c]' : ''}`} />
             <span>داشبورد کاربری من</span>
           </div>
           {currentUser && (
@@ -167,8 +167,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             }}
             className={`w-full flex items-center justify-between p-3 rounded-2xl text-xs font-bold transition-all cursor-pointer shadow-lg ${
               currentView === 'admin'
-                ? 'bg-[#1db954] text-black shadow-[#1db954]/30'
-                : 'bg-emerald-950/60 hover:bg-emerald-900 border border-[#1db954]/60 text-[#1db954] hover:text-white'
+                ? 'bg-[#d6b45c] text-black shadow-[#d6b45c]/30'
+                : 'bg-blue-950/60 hover:bg-blue-900 border border-[#d6b45c]/60 text-[#d6b45c] hover:text-white'
             }`}
           >
             <div className="flex items-center gap-2.5">
@@ -215,7 +215,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             }}
             className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-neutral-400 hover:text-white hover:bg-neutral-900/40 transition-colors text-right truncate cursor-pointer"
           >
-            <div className="w-1.5 h-1.5 rounded-full bg-[#1db954]/60" />
+            <div className="w-1.5 h-1.5 rounded-full bg-[#d6b45c]/60" />
             <span className="truncate">{pl.title}</span>
           </button>
         ))}
@@ -235,7 +235,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <img
                 src={currentUser.avatarUrl}
                 alt={currentUser.displayName}
-                className="w-9 h-9 rounded-xl object-cover border border-neutral-700 group-hover:border-[#1db954] transition-colors"
+                className="w-9 h-9 rounded-xl object-cover border border-neutral-700 group-hover:border-[#d6b45c] transition-colors"
               />
               <div className="min-w-0 flex-1">
                 <div className="font-bold text-xs text-white truncate flex items-center gap-1">
@@ -250,7 +250,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
             <div className="flex items-center justify-between text-[11px] pt-1 border-t border-neutral-800/80">
               <span className="text-neutral-400">داشبورد کاربری من</span>
-              <span className="text-[#1db954] font-bold group-hover:underline">ورود به پنل ←</span>
+              <span className="text-[#d6b45c] font-bold group-hover:underline">ورود به پنل ←</span>
             </div>
           </div>
         ) : (
@@ -264,7 +264,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onOpenAuthModal();
                 onCloseMobile();
               }}
-              className="w-full py-2 rounded-xl bg-[#1db954] hover:bg-[#1ed760] text-black font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-[#1db954]/20"
+              className="w-full py-2 rounded-xl bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-[#d6b45c]/20"
             >
               <LogIn className="w-3.5 h-3.5" />
               <span>ورود یا ثبت‌نام</span>
