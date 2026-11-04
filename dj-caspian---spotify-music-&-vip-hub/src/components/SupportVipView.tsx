@@ -120,12 +120,12 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
       <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#121212] via-[#1a2e20] to-[#0f1f14] border border-[#2a4533] p-6 sm:p-10 shadow-2xl">
         <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 justify-between">
           <div className="space-y-3 text-center md:text-right">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1db954]/20 border border-[#1db954]/40 text-[#1db954] text-xs font-semibold">
-              <Crown className="w-4 h-4 fill-[#1db954]" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#d6b45c]/20 border border-[#d6b45c]/40 text-[#d6b45c] text-xs font-semibold">
+              <Crown className="w-4 h-4 fill-[#d6b45c]" />
               <span>پشتیبانی مالی مستقیم و دریافت عضویت VIP</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-              حمایت از <span className="text-[#1db954]">DJ Caspian</span> & اشتراک دانلود
+              حمایت از <span className="text-[#d6b45c]">DJ Caspian</span> & اشتراک دانلود
             </h1>
             <p className="text-neutral-300 text-sm sm:text-base max-w-xl leading-relaxed">
               با حمایت مالی به ارزش <strong className="text-emerald-400 font-bold">۱۰ تتر (USDT)</strong> یا <strong className="text-amber-400 font-bold">{DJ_CASPIAN_INFO.payment.tomanDisplay}</strong>، اشتراک VIP دائمی شما فعال شده و تمامی ترک‌ها با کیفیت اورجینال ۳۲۰kbps و FLAC قابل دانلود خواهند شد.
@@ -151,8 +151,8 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
 
       {/* VIP Benefits Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-[#181818] border border-neutral-800 rounded-2xl p-5 hover:border-[#1db954]/40 transition-colors">
-          <div className="w-10 h-10 rounded-xl bg-[#1db954]/10 border border-[#1db954]/30 flex items-center justify-center text-[#1db954] mb-3">
+        <div className="bg-[#181818] border border-neutral-800 rounded-2xl p-5 hover:border-[#d6b45c]/40 transition-colors">
+          <div className="w-10 h-10 rounded-xl bg-[#d6b45c]/10 border border-[#d6b45c]/30 flex items-center justify-center text-[#d6b45c] mb-3">
             <Sparkles className="w-5 h-5" />
           </div>
           <h3 className="text-white font-bold text-base mb-1">دانلود ۳۲۰kbps و FLAC</h3>
@@ -186,7 +186,7 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-[#1db954] text-black font-black flex items-center justify-center text-sm">
+            <div className="w-7 h-7 rounded-full bg-[#d6b45c] text-black font-black flex items-center justify-center text-sm">
               ۱
             </div>
             <h2 className="text-xl font-bold text-white">انتخاب روش پرداخت و واریز حمایت مالی</h2>
@@ -220,7 +220,7 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
             }}
             className={`flex-1 py-2.5 px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${
               activeTab === 'crypto'
-                ? 'bg-gradient-to-r from-[#1db954] to-emerald-500 text-black shadow-lg shadow-[#1db954]/20'
+                ? 'bg-gradient-to-r from-[#d6b45c] to-emerald-500 text-black shadow-lg shadow-[#d6b45c]/20'
                 : 'text-neutral-400 hover:text-white'
             }`}
           >
@@ -282,7 +282,7 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
                     onClick={() => copyToClipboard(DJ_CASPIAN_INFO.payment.card.cardNumber.replace(/-/g, ''), 'card-num', 'شماره کارت')}
                     className="p-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 hover:text-white transition-colors cursor-pointer shrink-0 flex items-center gap-1.5 text-xs font-semibold"
                   >
-                    {copiedKey === 'card-num' ? <Check className="w-4 h-4 text-[#1db954]" /> : <Copy className="w-4 h-4" />}
+                    {copiedKey === 'card-num' ? <Check className="w-4 h-4 text-[#d6b45c]" /> : <Copy className="w-4 h-4" />}
                     <span>{copiedKey === 'card-num' ? 'کپی شد' : 'کپی کارت'}</span>
                   </button>
                 </div>
@@ -299,7 +299,7 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
                     onClick={() => copyToClipboard(DJ_CASPIAN_INFO.payment.card.shabaNumber, 'shaba-num', 'شماره شبا')}
                     className="p-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 hover:text-white transition-colors cursor-pointer shrink-0 flex items-center gap-1.5 text-xs font-semibold"
                   >
-                    {copiedKey === 'shaba-num' ? <Check className="w-4 h-4 text-[#1db954]" /> : <Copy className="w-4 h-4" />}
+                    {copiedKey === 'shaba-num' ? <Check className="w-4 h-4 text-[#d6b45c]" /> : <Copy className="w-4 h-4" />}
                     <span>کپی شبا</span>
                   </button>
                 </div>
@@ -331,7 +331,7 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
                     onClick={() => setCryptoNetwork(net)}
                     className={`py-2 px-4 rounded-xl text-xs sm:text-sm font-bold border transition-all cursor-pointer ${
                       cryptoNetwork === net
-                        ? 'bg-[#1db954]/20 border-[#1db954] text-[#1db954] shadow-md'
+                        ? 'bg-[#d6b45c]/20 border-[#d6b45c] text-[#d6b45c] shadow-md'
                         : 'bg-neutral-900 border-neutral-700 text-neutral-400 hover:text-white'
                     }`}
                   >
@@ -393,7 +393,7 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
                     <button
                       type="button"
                       onClick={() => copyToClipboard(getCryptoAddress(), 'crypto-addr', `آدرس ${cryptoNetwork}`)}
-                      className="py-2 px-3 rounded-lg bg-[#1db954] hover:bg-[#1ed760] text-black font-bold text-xs transition-colors shrink-0 flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="py-2 px-3 rounded-lg bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-bold text-xs transition-colors shrink-0 flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       {copiedKey === 'crypto-addr' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                       <span>{copiedKey === 'crypto-addr' ? 'کپی شد' : 'کپی آدرس'}</span>
@@ -430,15 +430,15 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
         </p>
 
         {submittedTicketId ? (
-          <div className="bg-gradient-to-b from-[#183424] to-[#122419] border border-[#1db954]/50 rounded-3xl p-6 sm:p-8 text-center space-y-4">
-            <div className="w-16 h-16 rounded-full bg-[#1db954]/20 border border-[#1db954] flex items-center justify-center mx-auto text-[#1db954]">
+          <div className="bg-gradient-to-b from-[#183424] to-[#122419] border border-[#d6b45c]/50 rounded-3xl p-6 sm:p-8 text-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-[#d6b45c]/20 border border-[#d6b45c] flex items-center justify-center mx-auto text-[#d6b45c]">
               <Check className="w-8 h-8" />
             </div>
 
             <div className="space-y-1">
               <h3 className="text-2xl font-bold text-white">فیش شما با موفقیت به مدیریت ارسال شد!</h3>
               <p className="text-neutral-300 text-sm">
-                کد پیگیری ثبت شده: <strong className="font-mono text-[#1db954] text-lg">{submittedTicketId}</strong>
+                کد پیگیری ثبت شده: <strong className="font-mono text-[#d6b45c] text-lg">{submittedTicketId}</strong>
               </p>
             </div>
 
@@ -455,7 +455,7 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
                   setReceiptImage(null);
                   setNotes('');
                 }}
-                className="py-2.5 px-6 rounded-full bg-[#1db954] hover:bg-[#1ed760] text-black font-bold text-sm transition-all cursor-pointer shadow-lg shadow-[#1db954]/20"
+                className="py-2.5 px-6 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-bold text-sm transition-all cursor-pointer shadow-lg shadow-[#d6b45c]/20"
               >
                 ثبت فیش دیگر
               </button>
@@ -472,7 +472,7 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
                   placeholder="مثال: کامران سهرابی"
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
-                  className="w-full bg-[#242424] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-500"
+                  className="w-full bg-[#242424] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-500"
                 />
               </div>
 
@@ -484,7 +484,7 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
                   placeholder="مثال: 09121234567 یا @djfan"
                   value={userContact}
                   onChange={(e) => setUserContact(e.target.value)}
-                  className="w-full bg-[#242424] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-500"
+                  className="w-full bg-[#242424] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-500"
                 />
               </div>
             </div>
@@ -499,7 +499,7 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
                     setSelectedMethod(m);
                     setSelectedAmount(m === 'card' ? '3,۰۰۰,۰۰۰ تومان' : '10 USDT');
                   }}
-                  className="w-full bg-[#242424] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl px-4 py-2.5 text-sm text-white"
+                  className="w-full bg-[#242424] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl px-4 py-2.5 text-sm text-white"
                 >
                   <option value="card">کارت به کارت ({DJ_CASPIAN_INFO.payment.tomanDisplay})</option>
                   <option value="crypto">ارز دیجیتال تتر (10 USDT)</option>
@@ -516,7 +516,7 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
                   placeholder={selectedMethod === 'card' ? 'مثال: ۹۸۴۵۲۱۰۳۷۸۴۹' : 'مثال: 0x8f72c918a90218...'}
                   value={txHash}
                   onChange={(e) => setTxHash(e.target.value)}
-                  className="w-full bg-[#242424] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-500 font-mono text-left"
+                  className="w-full bg-[#242424] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-500 font-mono text-left"
                   dir="ltr"
                 />
               </div>
@@ -528,7 +528,7 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
                 تصویر فیش یا اسکرین‌شات واریزی (اختیاری ولی تایید را بسیار سریع‌تر می‌کند):
               </label>
               
-              <div className="border-2 border-dashed border-neutral-700 hover:border-[#1db954] rounded-2xl p-4 text-center bg-[#202020] transition-colors">
+              <div className="border-2 border-dashed border-neutral-700 hover:border-[#d6b45c] rounded-2xl p-4 text-center bg-[#202020] transition-colors">
                 {receiptImage ? (
                   <div className="flex flex-col items-center gap-3">
                     <img 
@@ -571,14 +571,14 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
                 placeholder="مثلاً: واریز از بانک سامان به نام کامران انجام شد، سپاس از موزیک‌های قوی‌تون..."
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="w-full bg-[#242424] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl px-4 py-2 text-sm text-white placeholder-neutral-500 resize-none"
+                className="w-full bg-[#242424] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl px-4 py-2 text-sm text-white placeholder-neutral-500 resize-none"
               />
             </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3.5 px-6 rounded-full bg-[#1db954] hover:bg-[#1ed760] disabled:bg-neutral-700 text-black font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-[#1db954]/20 hover:scale-[1.01]"
+              className="w-full py-3.5 px-6 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] disabled:bg-neutral-700 text-black font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-[#d6b45c]/20 hover:scale-[1.01]"
             >
               {isSubmitting ? (
                 <>
