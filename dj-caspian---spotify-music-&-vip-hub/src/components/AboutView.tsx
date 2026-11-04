@@ -50,15 +50,15 @@ export const AboutView: React.FC<AboutViewProps> = ({
                 <img
                   src={DJ_CASPIAN_INFO.avatarUrl}
                   alt={DJ_CASPIAN_INFO.name}
-                  className="w-36 h-36 sm:w-44 sm:h-44 rounded-full object-cover border-4 border-[#1db954] shadow-2xl"
+                  className="w-36 h-36 sm:w-44 sm:h-44 rounded-full object-cover border-4 border-[#d6b45c] shadow-2xl"
                 />
-                <div className="absolute bottom-2 right-2 bg-[#1db954] text-black p-1.5 rounded-full shadow-lg">
+                <div className="absolute bottom-2 right-2 bg-[#d6b45c] text-black p-1.5 rounded-full shadow-lg">
                   <CheckCircle2 className="w-5 h-5" />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-[#1db954]/40 text-[#1db954] text-xs font-semibold">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-[#d6b45c]/40 text-[#d6b45c] text-xs font-semibold">
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>آرتیست و پرودیوسر موسیقی الکترونیک</span>
                 </div>
@@ -76,12 +76,12 @@ export const AboutView: React.FC<AboutViewProps> = ({
 
                 <div className="flex items-center justify-center sm:justify-start gap-4 text-xs font-semibold text-neutral-300 pt-1">
                   <span className="flex items-center gap-1.5">
-                    <Headphones className="w-3.5 h-3.5 text-[#1db954]" />
+                    <Headphones className="w-3.5 h-3.5 text-[#d6b45c]" />
                     {DJ_CASPIAN_INFO.monthlyListeners}
                   </span>
                   <span>•</span>
                   <span className="flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5 text-[#1db954]" />
+                    <Users className="w-3.5 h-3.5 text-[#d6b45c]" />
                     {DJ_CASPIAN_INFO.followers}
                   </span>
                 </div>
@@ -102,7 +102,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="md:col-span-2 bg-[#181818] border border-neutral-800 rounded-3xl p-6 sm:p-8 space-y-4">
             <div className="flex items-center gap-2 text-white font-bold text-lg border-b border-neutral-800 pb-3">
-              <Disc3 className="w-5 h-5 text-[#1db954]" />
+              <Disc3 className="w-5 h-5 text-[#d6b45c]" />
               <h2>داستان و بیوگرافی دی‌جی کاسپین</h2>
             </div>
 
@@ -116,7 +116,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3">
               <div className="p-3 rounded-2xl bg-neutral-900 border border-neutral-800 text-center">
-                <Sliders className="w-5 h-5 text-[#1db954] mx-auto mb-1" />
+                <Sliders className="w-5 h-5 text-[#d6b45c] mx-auto mb-1" />
                 <div className="font-bold text-xs text-white">۳۲۰ kbps Lossless</div>
                 <div className="text-[10px] text-neutral-500">کیفیت استودیویی</div>
               </div>
@@ -142,14 +142,14 @@ export const AboutView: React.FC<AboutViewProps> = ({
           <div className="bg-[#181818] border border-neutral-800 rounded-3xl p-6 sm:p-8 space-y-4 flex flex-col justify-between">
             <div>
               <div className="flex items-center gap-2 text-white font-bold text-lg border-b border-neutral-800 pb-3">
-                <Music className="w-5 h-5 text-[#1db954]" />
+                <Music className="w-5 h-5 text-[#d6b45c]" />
                 <h3>سبک‌های موسیقی</h3>
               </div>
 
               <div className="space-y-3 mt-4">
                 <div className="flex items-center justify-between p-2.5 rounded-xl bg-neutral-900 border border-neutral-800">
                   <span className="text-xs font-bold text-white">Persian Club Remixes</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-[#1db954]">۱۲۴ - ۱۲۸ BPM</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-[#d6b45c]">۱۲۴ - ۱۲۸ BPM</span>
                 </div>
                 <div className="flex items-center justify-between p-2.5 rounded-xl bg-neutral-900 border border-neutral-800">
                   <span className="text-xs font-bold text-white">Melodic Techno</span>
@@ -166,7 +166,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
               </div>
             </div>
 
-            <div className="p-3 rounded-2xl bg-emerald-950/40 border border-emerald-800/40 text-xs text-neutral-300 leading-relaxed text-center">
+            <div className="p-3 rounded-2xl bg-blue-950/40 border border-emerald-800/40 text-xs text-neutral-300 leading-relaxed text-center">
               تمامی قطعات بدون تگ تبلیغاتی و در دو نسخه رادیویی و Extended کلاب منتشر می‌شوند.
             </div>
           </div>
@@ -229,7 +229,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
                     className="p-1 text-neutral-400 hover:text-white cursor-pointer"
                     title="کپی شماره کارت"
                   >
-                    {copiedKey === 'card' ? <Check className="w-4 h-4 text-[#1db954]" /> : <Copy className="w-4 h-4" />}
+                    {copiedKey === 'card' ? <Check className="w-4 h-4 text-[#d6b45c]" /> : <Copy className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
@@ -253,7 +253,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
           <div className="bg-gradient-to-br from-[#101c18] via-[#161616] to-[#121212] border border-emerald-500/30 rounded-3xl p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-[#1db954]">
+                <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-[#d6b45c]">
                   ₮
                 </div>
                 <div>
@@ -261,7 +261,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
                   <span className="text-[11px] text-neutral-400">شبکه‌های TRC20 و BEP20</span>
                 </div>
               </div>
-              <span className="text-xs font-black px-2.5 py-1 rounded-full bg-emerald-500/20 text-[#1db954] border border-emerald-500/40 font-mono">
+              <span className="text-xs font-black px-2.5 py-1 rounded-full bg-emerald-500/20 text-[#d6b45c] border border-emerald-500/40 font-mono">
                 {DJ_CASPIAN_INFO.payment.tetherPriceUsdt} USDT
               </span>
             </div>
@@ -272,7 +272,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
                   <span>آدرس تتر شبکه TRC-20 (ترون):</span>
                   <button
                     onClick={() => copyToClipboard(DJ_CASPIAN_INFO.payment.crypto.trc20Address, 'trc20', 'آدرس تتر TRC20')}
-                    className="text-[#1db954] hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-[#d6b45c] hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     {copiedKey === 'trc20' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                     <span>کپی آدرس</span>
@@ -288,7 +288,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
                   <span>آدرس تتر شبکه BEP-20 (اسمارت چین):</span>
                   <button
                     onClick={() => copyToClipboard(DJ_CASPIAN_INFO.payment.crypto.bep20Address, 'bep20', 'آدرس تتر BEP20')}
-                    className="text-[#1db954] hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-[#d6b45c] hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     {copiedKey === 'bep20' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                     <span>کپی آدرس</span>
@@ -302,7 +302,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
 
             <button
               onClick={onNavigateToSupport}
-              className="w-full py-2.5 px-4 rounded-xl bg-[#1db954] hover:bg-[#1ed760] text-black font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-[#1db954]/20"
+              className="w-full py-2.5 px-4 rounded-xl bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-[#d6b45c]/20"
             >
               <span>ثبت کد رهگیری تراکنش (TxID)</span>
               <ArrowLeft className="w-3.5 h-3.5" />
@@ -448,7 +448,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
                 className="p-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors cursor-pointer"
                 title="کپی لینک تلگرام"
               >
-                {copiedKey === 'tg' ? <Check className="w-4 h-4 text-[#1db954]" /> : <Copy className="w-4 h-4" />}
+                {copiedKey === 'tg' ? <Check className="w-4 h-4 text-[#d6b45c]" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
           </div>
@@ -496,7 +496,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
                 className="p-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors cursor-pointer"
                 title="کپی لینک اینستاگرام"
               >
-                {copiedKey === 'insta' ? <Check className="w-4 h-4 text-[#1db954]" /> : <Copy className="w-4 h-4" />}
+                {copiedKey === 'insta' ? <Check className="w-4 h-4 text-[#d6b45c]" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
           </div>
@@ -542,7 +542,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
                 className="p-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors cursor-pointer"
                 title="کپی لینک دیسکورد"
               >
-                {copiedKey === 'discord' ? <Check className="w-4 h-4 text-[#1db954]" /> : <Copy className="w-4 h-4" />}
+                {copiedKey === 'discord' ? <Check className="w-4 h-4 text-[#d6b45c]" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
           </div>
@@ -592,22 +592,22 @@ export const AboutView: React.FC<AboutViewProps> = ({
           </div>
 
           {/* 5. وب‌سایت رسمی کاسپین */}
-          <div className="group bg-[#181818] hover:bg-[#202020] border border-[#1db954]/20 hover:border-[#1db954]/50 rounded-3xl p-6 transition-all space-y-4 flex flex-col justify-between shadow-xl md:col-span-2 lg:col-span-2">
+          <div className="group bg-[#181818] hover:bg-[#202020] border border-[#d6b45c]/20 hover:border-[#d6b45c]/50 rounded-3xl p-6 transition-all space-y-4 flex flex-col justify-between shadow-xl md:col-span-2 lg:col-span-2">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="w-12 h-12 rounded-2xl bg-[#1db954]/20 text-[#1db954] flex items-center justify-center border border-[#1db954]/30 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-2xl bg-[#d6b45c]/20 text-[#d6b45c] flex items-center justify-center border border-[#d6b45c]/30 group-hover:scale-110 transition-transform">
                   <Globe className="w-6 h-6" />
                 </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1db954]/10 text-[#1db954] border border-[#1db954]/30">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#d6b45c]/10 text-[#d6b45c] border border-[#d6b45c]/30">
                   🔹️ Website
                 </span>
               </div>
 
               <div>
-                <h3 className="text-base font-bold text-white group-hover:text-[#1db954] transition-colors">
+                <h3 className="text-base font-bold text-white group-hover:text-[#d6b45c] transition-colors">
                   {DJ_CASPIAN_INFO.socials.website.title}
                 </h3>
-                <div className="font-mono text-xs text-[#1db954] mt-0.5" dir="ltr">
+                <div className="font-mono text-xs text-[#d6b45c] mt-0.5" dir="ltr">
                   Website: {DJ_CASPIAN_INFO.socials.website.url}
                 </div>
               </div>
