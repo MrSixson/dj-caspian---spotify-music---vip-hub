@@ -20,14 +20,14 @@ export const ToastContainer: React.FC<ToastProps> = ({ toasts, onDismiss }) => {
           key={toast.id}
           className={`pointer-events-auto flex items-center justify-between p-3.5 rounded-xl shadow-2xl border text-sm backdrop-blur-md transition-all animate-in fade-in slide-in-from-top-4 duration-300 ${
             toast.type === 'success'
-              ? 'bg-[#183424]/90 border-[#1db954]/50 text-white'
+              ? 'bg-[#183424]/90 border-[#d6b45c]/50 text-white'
               : toast.type === 'error'
               ? 'bg-[#3b1818]/90 border-red-500/50 text-white'
               : 'bg-[#242424]/90 border-neutral-700 text-neutral-200'
           }`}
         >
           <div className="flex items-center gap-2.5">
-            {toast.type === 'success' && <CheckCircle2 className="w-5 h-5 text-[#1db954] shrink-0" />}
+            {toast.type === 'success' && <CheckCircle2 className="w-5 h-5 text-[#d6b45c] shrink-0" />}
             {toast.type === 'error' && <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />}
             {toast.type === 'info' && <Info className="w-5 h-5 text-cyan-400 shrink-0" />}
             <span className="font-medium text-xs md:text-sm leading-relaxed">{toast.text}</span>
