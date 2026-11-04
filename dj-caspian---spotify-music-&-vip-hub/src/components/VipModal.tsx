@@ -19,7 +19,7 @@ export const VipModal: React.FC<VipModalProps> = ({ isOpen, onClose, onGoToSuppo
         dir="rtl"
       >
         {/* Decorative background glow */}
-        <div className="absolute -top-24 -right-24 w-60 h-60 bg-[#1db954]/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 -right-24 w-60 h-60 bg-[#d6b45c]/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -left-24 w-60 h-60 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
 
         {/* Close Button */}
@@ -47,13 +47,13 @@ export const VipModal: React.FC<VipModalProps> = ({ isOpen, onClose, onGoToSuppo
 
           {trackTitle && (
             <p className="text-xs text-neutral-400 mb-4 bg-neutral-900/80 px-3 py-1.5 rounded-lg border border-neutral-800 flex items-center gap-2">
-              <Download className="w-3.5 h-3.5 text-[#1db954]" />
+              <Download className="w-3.5 h-3.5 text-[#d6b45c]" />
               <span>قطعه انتخابی: <strong className="text-white">{trackTitle}</strong></span>
             </p>
           )}
 
           <p className="text-neutral-300 text-sm leading-relaxed mb-6">
-            گوش دادن آنلاین به تمام قطعات و ریمیکس‌های دی‌جی کاسپین کاملاً رایگان است. اما برای <span className="text-[#1db954] font-bold">دانلود فایل‌های اصلی و باکیفیت استودیویی (۳۲۰kbps و FLAC)</span> نیاز به فعال‌سازی اشتراک VIP دارید.
+            گوش دادن آنلاین به تمام قطعات و ریمیکس‌های دی‌جی کاسپین کاملاً رایگان است. اما برای <span className="text-[#d6b45c] font-bold">دانلود فایل‌های اصلی و باکیفیت استودیویی (۳۲۰kbps و FLAC)</span> نیاز به فعال‌سازی اشتراک VIP دارید.
           </p>
         </div>
 
@@ -80,11 +80,11 @@ export const VipModal: React.FC<VipModalProps> = ({ isOpen, onClose, onGoToSuppo
 
           <div className="pt-2 text-xs text-neutral-400 space-y-1.5 border-t border-neutral-800/80">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-[#1db954] shrink-0" />
+              <ShieldCheck className="w-4 h-4 text-[#d6b45c] shrink-0" />
               <span>واریز انجام دهید و کد پیگیری یا عکس فیش را در بخش تیکت بفرستید.</span>
             </div>
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-[#1db954] shrink-0" />
+              <ShieldCheck className="w-4 h-4 text-[#d6b45c] shrink-0" />
               <span>دی‌جی کاسپین با بررسی فیش، VIP شما را سریعاً فعال می‌کند.</span>
             </div>
           </div>
@@ -97,7 +97,7 @@ export const VipModal: React.FC<VipModalProps> = ({ isOpen, onClose, onGoToSuppo
               onClose();
               onGoToSupport();
             }}
-            className="w-full sm:flex-1 py-3 px-5 rounded-full bg-[#1db954] hover:bg-[#1ed760] text-black font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-[#1db954]/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+            className="w-full sm:flex-1 py-3 px-5 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-[#d6b45c]/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
           >
             <span>ورود به صفحه پرداخت و ارسال تیکت</span>
             <ArrowLeft className="w-4 h-4" />
