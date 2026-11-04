@@ -70,7 +70,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                   className="w-14 h-14 rounded-lg object-cover"
                 />
                 <div className="min-w-0 flex-1">
-                  <div className="font-bold text-sm text-white group-hover:text-[#1db954] truncate">
+                  <div className="font-bold text-sm text-white group-hover:text-[#d6b45c] truncate">
                     {pl.title}
                   </div>
                   <div className="text-[11px] text-neutral-400 truncate mt-0.5">
@@ -117,7 +117,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                       className="w-12 h-12 rounded-lg object-cover shrink-0"
                     />
                     <div className="min-w-0">
-                      <div className={`font-bold text-sm truncate ${isCurrent ? 'text-[#1db954]' : 'text-white'}`}>
+                      <div className={`font-bold text-sm truncate ${isCurrent ? 'text-[#d6b45c]' : 'text-white'}`}>
                         {track.title}
                       </div>
                       <div className="text-xs text-neutral-400 truncate mt-0.5 flex items-center gap-1.5">
@@ -135,9 +135,9 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                         e.stopPropagation();
                         onToggleLike(track.id);
                       }}
-                      className={`p-1.5 cursor-pointer ${isLiked ? 'text-[#1db954]' : 'text-neutral-500 hover:text-white'}`}
+                      className={`p-1.5 cursor-pointer ${isLiked ? 'text-[#d6b45c]' : 'text-neutral-500 hover:text-white'}`}
                     >
-                      <Heart className={`w-4 h-4 ${isLiked ? 'fill-[#1db954]' : ''}`} />
+                      <Heart className={`w-4 h-4 ${isLiked ? 'fill-[#d6b45c]' : ''}`} />
                     </button>
 
                     <button
@@ -148,7 +148,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                       }}
                       className={`py-1 px-2.5 rounded-full text-xs font-bold flex items-center gap-1 cursor-pointer ${
                         isUserVip
-                          ? 'bg-[#1db954] text-black hover:bg-[#1ed760]'
+                          ? 'bg-[#d6b45c] text-black hover:bg-[#f0d88a]'
                           : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
                       }`}
                     >
