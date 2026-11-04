@@ -94,9 +94,9 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
             {/* Equalizer animation overlay when playing */}
             {isPlaying && (
               <div className="absolute bottom-1 right-1 flex items-end gap-0.5 bg-black/60 px-1 py-0.5 rounded">
-                <span className="w-0.5 bg-[#1db954] animate-eq-1" />
-                <span className="w-0.5 bg-[#1db954] animate-eq-2" />
-                <span className="w-0.5 bg-[#1db954] animate-eq-3" />
+                <span className="w-0.5 bg-[#d6b45c] animate-eq-1" />
+                <span className="w-0.5 bg-[#d6b45c] animate-eq-2" />
+                <span className="w-0.5 bg-[#d6b45c] animate-eq-3" />
               </div>
             )}
           </div>
@@ -119,11 +119,11 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
             type="button"
             onClick={() => onToggleLike(currentTrack.id)}
             className={`p-1.5 rounded-full transition-colors cursor-pointer shrink-0 ${
-              isLiked ? 'text-[#1db954]' : 'text-neutral-400 hover:text-white'
+              isLiked ? 'text-[#d6b45c]' : 'text-neutral-400 hover:text-white'
             }`}
             title={isLiked ? 'حذف از آهنگ‌های لایک شده' : 'افزودن به آهنگ‌های لایک شده'}
           >
-            <Heart className={`w-4 h-4 ${isLiked ? 'fill-[#1db954]' : ''}`} />
+            <Heart className={`w-4 h-4 ${isLiked ? 'fill-[#d6b45c]' : ''}`} />
           </button>
         </div>
 
@@ -133,7 +133,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
             <button
               onClick={onToggleShuffle}
               className={`p-1.5 rounded-full text-xs transition-colors cursor-pointer hidden sm:block ${
-                isShuffle ? 'text-[#1db954]' : 'text-neutral-400 hover:text-white'
+                isShuffle ? 'text-[#d6b45c]' : 'text-neutral-400 hover:text-white'
               }`}
               title="پخش تصادفی (Shuffle)"
             >
@@ -150,7 +150,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
 
             <button
               onClick={onTogglePlay}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#1db954] hover:bg-[#1ed760] text-black flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg shadow-[#1db954]/30"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg shadow-[#d6b45c]/30"
               title={isPlaying ? 'توقف' : 'پخش'}
             >
               {isPlaying ? (
@@ -171,7 +171,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
             <button
               onClick={onToggleRepeat}
               className={`p-1.5 rounded-full text-xs transition-colors cursor-pointer hidden sm:block ${
-                isRepeat ? 'text-[#1db954]' : 'text-neutral-400 hover:text-white'
+                isRepeat ? 'text-[#d6b45c]' : 'text-neutral-400 hover:text-white'
               }`}
               title="تکرار (Repeat)"
             >
@@ -204,7 +204,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
             onClick={() => onDownloadTrack(currentTrack)}
             className={`flex items-center gap-1.5 py-1.5 px-2.5 sm:px-3.5 rounded-full text-xs font-bold transition-all cursor-pointer shadow-sm ${
               isUserVip
-                ? 'bg-[#1db954] hover:bg-[#1ed760] text-black shadow-[#1db954]/20 hover:scale-105'
+                ? 'bg-[#d6b45c] hover:bg-[#f0d88a] text-black shadow-[#d6b45c]/20 hover:scale-105'
                 : 'bg-gradient-to-r from-amber-500/20 to-amber-600/30 hover:from-amber-500/40 hover:to-amber-600/50 border border-amber-500/50 text-amber-300'
             }`}
             title={isUserVip ? 'دانلود فایل استودیویی با کیفیت ۳۲۰' : 'دانلود قطعه (ویژه اعضای VIP)'}
