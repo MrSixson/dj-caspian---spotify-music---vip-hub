@@ -68,7 +68,7 @@ export const TopNav: React.FC<TopNavProps> = ({
                 onNavigate('search');
               }
             }}
-            className="w-full bg-[#1c1c1c] hover:bg-[#222222] focus:bg-[#222222] border border-neutral-800 focus:border-[#1db954] focus:outline-none rounded-full py-2 pr-9 pl-4 text-xs sm:text-sm text-white placeholder-neutral-500 transition-colors"
+            className="w-full bg-[#1c1c1c] hover:bg-[#222222] focus:bg-[#222222] border border-neutral-800 focus:border-[#d6b45c] focus:outline-none rounded-full py-2 pr-9 pl-4 text-xs sm:text-sm text-white placeholder-neutral-500 transition-colors"
           />
         </div>
       </div>
@@ -99,8 +99,8 @@ export const TopNav: React.FC<TopNavProps> = ({
             onClick={() => onNavigate('admin')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer shadow-md ${
               currentView === 'admin'
-                ? 'bg-[#1db954] text-black shadow-[#1db954]/20'
-                : 'bg-emerald-950/60 hover:bg-emerald-900 border border-[#1db954]/60 text-[#1db954] hover:text-white'
+                ? 'bg-[#d6b45c] text-black shadow-[#d6b45c]/20'
+                : 'bg-blue-950/60 hover:bg-blue-900 border border-[#d6b45c]/60 text-[#d6b45c] hover:text-white'
             }`}
             title="ورود به اتاق‌های مدیریت DJ Caspian"
           >
@@ -116,7 +116,7 @@ export const TopNav: React.FC<TopNavProps> = ({
             onClick={() => onNavigate('dashboard')}
             className={`flex items-center gap-2 p-1 pl-3 rounded-full border transition-all cursor-pointer ${
               currentView === 'dashboard'
-                ? 'bg-neutral-800 border-[#1db954]'
+                ? 'bg-neutral-800 border-[#d6b45c]'
                 : 'bg-neutral-900 hover:bg-neutral-800 border-neutral-700/80 hover:border-neutral-600'
             }`}
             title="مشاهده داشبورد و پروفایل من"
@@ -146,7 +146,7 @@ export const TopNav: React.FC<TopNavProps> = ({
         ) : (
           <button
             onClick={onOpenAuthModal}
-            className="flex items-center gap-1.5 py-1.5 px-3.5 rounded-full bg-[#1db954] hover:bg-[#1ed760] text-black font-bold text-xs transition-all shadow-md shadow-[#1db954]/20 hover:scale-105 cursor-pointer"
+            className="flex items-center gap-1.5 py-1.5 px-3.5 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-bold text-xs transition-all shadow-md shadow-[#d6b45c]/20 hover:scale-105 cursor-pointer"
           >
             <LogIn className="w-3.5 h-3.5" />
             <span>ورود / ثبت‌نام</span>
