@@ -69,8 +69,8 @@ export const VisualizerModal: React.FC<VisualizerModalProps> = ({
 
           // Gradient color: Spotify emerald to vibrant cyan
           const grad = ctx.createLinearGradient(0, height, 0, height - barHeight);
-          grad.addColorStop(0, '#1db954');
-          grad.addColorStop(0.5, '#1ed760');
+          grad.addColorStop(0, '#d6b45c');
+          grad.addColorStop(0.5, '#f0d88a');
           grad.addColorStop(1, '#38ef7d');
 
           ctx.fillStyle = grad;
@@ -110,8 +110,8 @@ export const VisualizerModal: React.FC<VisualizerModalProps> = ({
         {/* Top Bar inside Visualizer */}
         <div className="flex items-center justify-between z-10">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-[#1db954] animate-ping" />
-            <span className="text-xs font-bold text-[#1db954] tracking-wider uppercase">
+            <div className="w-3 h-3 rounded-full bg-[#d6b45c] animate-ping" />
+            <span className="text-xs font-bold text-[#d6b45c] tracking-wider uppercase">
               DJ Caspian Live Arena Studio
             </span>
           </div>
@@ -128,7 +128,7 @@ export const VisualizerModal: React.FC<VisualizerModalProps> = ({
         <div className="my-auto py-6 flex flex-col md:flex-row items-center justify-center gap-8 z-10">
           <div className="relative group shrink-0">
             <div className={`w-52 h-52 sm:w-72 sm:h-72 rounded-3xl overflow-hidden shadow-2xl border-2 border-neutral-700/60 transition-transform duration-700 ${
-              isPlaying ? 'scale-105 shadow-[#1db954]/20' : ''
+              isPlaying ? 'scale-105 shadow-[#d6b45c]/20' : ''
             }`}>
               <img
                 src={track.coverUrl}
@@ -148,7 +148,7 @@ export const VisualizerModal: React.FC<VisualizerModalProps> = ({
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-900/90 text-neutral-300 text-xs border border-neutral-800 font-mono">
               <span>{track.genre}</span>
               <span>•</span>
-              <span className="text-[#1db954] font-bold">{track.bpm} BPM</span>
+              <span className="text-[#d6b45c] font-bold">{track.bpm} BPM</span>
             </div>
 
             <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
@@ -170,11 +170,11 @@ export const VisualizerModal: React.FC<VisualizerModalProps> = ({
                 onClick={() => onToggleLike(track.id)}
                 className={`py-2 px-4 rounded-full text-xs font-bold flex items-center gap-2 transition-colors cursor-pointer border ${
                   isLiked
-                    ? 'bg-[#1db954]/20 border-[#1db954] text-[#1db954]'
+                    ? 'bg-[#d6b45c]/20 border-[#d6b45c] text-[#d6b45c]'
                     : 'bg-neutral-800 border-neutral-700 text-neutral-300 hover:text-white'
                 }`}
               >
-                <Heart className={`w-4 h-4 ${isLiked ? 'fill-[#1db954]' : ''}`} />
+                <Heart className={`w-4 h-4 ${isLiked ? 'fill-[#d6b45c]' : ''}`} />
                 <span>{isLiked ? 'پسندیده شد' : 'علاقه‌مندی'}</span>
               </button>
 
@@ -182,7 +182,7 @@ export const VisualizerModal: React.FC<VisualizerModalProps> = ({
                 onClick={() => onDownloadTrack(track)}
                 className={`py-2 px-5 rounded-full text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-lg ${
                   isUserVip
-                    ? 'bg-[#1db954] hover:bg-[#1ed760] text-black shadow-[#1db954]/20'
+                    ? 'bg-[#d6b45c] hover:bg-[#f0d88a] text-black shadow-[#d6b45c]/20'
                     : 'bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-amber-500/20'
                 }`}
               >
@@ -223,7 +223,7 @@ export const VisualizerModal: React.FC<VisualizerModalProps> = ({
 
           <button
             onClick={onTogglePlay}
-            className="w-14 h-14 rounded-full bg-[#1db954] hover:bg-[#1ed760] text-black flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-xl shadow-[#1db954]/30 cursor-pointer"
+            className="w-14 h-14 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-xl shadow-[#d6b45c]/30 cursor-pointer"
           >
             {isPlaying ? (
               <Pause className="w-7 h-7 fill-black" />
