@@ -1,13 +1,16 @@
 @import "tailwindcss";
 
+/* CASPIAN MASTER BRAND: carbon blue / black / gold */
 :root {
   color-scheme: dark;
-  --caspian-bg: #080b12;
-  --caspian-panel: rgba(17, 23, 34, .82);
-  --caspian-line: rgba(148, 163, 184, .13);
-  --caspian-green: #1ed760;
-  --caspian-cyan: #38d9ff;
-  --caspian-gold: #e9bd68;
+  --caspian-bg: #05080e;
+  --caspian-panel: rgba(12, 23, 40, .88);
+  --caspian-line: rgba(212, 175, 55, .18);
+  --caspian-blue: #12345a;
+  --caspian-blue-bright: #24558a;
+  --caspian-gold: #d6b45c;
+  --caspian-gold-light: #f0d88a;
+  --caspian-text: #f5f3ed;
 }
 
 @layer base {
@@ -17,116 +20,98 @@
     margin: 0;
     min-height: 100vh;
     font-family: 'Vazirmatn', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    color: var(--caspian-text);
     background:
-      radial-gradient(ellipse at 12% 0%, rgba(24, 91, 105, .20), transparent 34rem),
-      radial-gradient(ellipse at 88% 12%, rgba(20, 110, 67, .16), transparent 32rem),
-      radial-gradient(ellipse at 50% 100%, rgba(13, 47, 70, .18), transparent 38rem),
+      radial-gradient(ellipse at 10% 0%, rgba(18,52,90,.42), transparent 34rem),
+      radial-gradient(ellipse at 92% 14%, rgba(214,180,92,.10), transparent 30rem),
+      radial-gradient(ellipse at 50% 100%, rgba(12,34,60,.32), transparent 40rem),
       var(--caspian-bg);
-    color: #f8fafc;
   }
   button, a, input { -webkit-tap-highlight-color: transparent; }
   button { transition: transform .22s ease, filter .22s ease, border-color .22s ease, background-color .22s ease; }
   button:active { transform: scale(.975); }
-  ::selection { background: rgba(30, 215, 96, .35); color: white; }
+  ::selection { background: rgba(214,180,92,.35); color: white; }
 }
-
-/* Premium Caspian atmosphere */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  opacity: .16;
-  background-image: linear-gradient(rgba(148,163,184,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,.045) 1px, transparent 1px);
-  background-size: 54px 54px;
+  opacity: .18;
+  background-image: linear-gradient(rgba(212,175,55,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(212,175,55,.055) 1px, transparent 1px);
+  background-size: 58px 58px;
   mask-image: linear-gradient(to bottom, black, transparent 78%);
 }
 #root { min-height: 100vh; position: relative; isolation: isolate; }
 #root > div { background-color: transparent !important; }
 aside > div {
-  background: linear-gradient(180deg, rgba(9,13,21,.98), rgba(5,8,14,.98)) !important;
+  background: linear-gradient(180deg, rgba(8,18,32,.99), rgba(3,7,13,.99)) !important;
   border-color: var(--caspian-line) !important;
-  box-shadow: 18px 0 60px rgba(0,0,0,.22);
+  box-shadow: 18px 0 60px rgba(0,0,0,.35), inset -1px 0 rgba(214,180,92,.06);
 }
 header {
-  background: rgba(8,12,19,.78) !important;
+  background: rgba(5,10,18,.84) !important;
   border-color: var(--caspian-line) !important;
-  backdrop-filter: blur(22px) saturate(150%) !important;
-  box-shadow: 0 12px 38px rgba(0,0,0,.14);
+  backdrop-filter: blur(22px) saturate(145%) !important;
+  box-shadow: 0 12px 38px rgba(0,0,0,.25);
 }
 main {
   scrollbar-gutter: stable;
-  background:
-    radial-gradient(ellipse at 50% 0%, rgba(21,91,79,.09), transparent 38rem);
+  background: radial-gradient(ellipse at 50% 0%, rgba(18,52,90,.17), transparent 40rem);
 }
 main > div { animation: caspian-enter .55s cubic-bezier(.2,.75,.25,1) both; }
 @keyframes caspian-enter {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
-/* Glass panels and elevated cards */
-.rounded-3xl, .rounded-2xl, .rounded-xl {
-  border-color: var(--caspian-line);
-}
+.rounded-3xl, .rounded-2xl, .rounded-xl { border-color: var(--caspian-line); }
 main .rounded-3xl, main .rounded-2xl {
-  box-shadow: 0 18px 55px rgba(0,0,0,.18);
-}
-main .rounded-3xl {
-  backdrop-filter: blur(12px);
+  box-shadow: 0 18px 55px rgba(0,0,0,.25);
+  backdrop-filter: blur(14px);
 }
 main .group:hover {
-  border-color: rgba(56,217,255,.28);
-  box-shadow: 0 12px 34px rgba(0,0,0,.24);
+  border-color: rgba(214,180,92,.42);
+  box-shadow: 0 14px 38px rgba(0,0,0,.32), 0 0 22px rgba(18,52,90,.18);
 }
-main button:hover { filter: brightness(1.08); }
+main button:hover { filter: brightness(1.1); }
 main img { transition: transform .45s cubic-bezier(.2,.7,.2,1), filter .35s ease; }
-main .group:hover img { filter: saturate(1.12); }
-
-/* Artist hero: cinematic lighting without changing its data */
-main .rounded-3xl.overflow-hidden {
-  position: relative;
-  isolation: isolate;
-}
+main .group:hover img { filter: saturate(1.08); }
+main .rounded-3xl.overflow-hidden { position: relative; isolation: isolate; }
 main .rounded-3xl.overflow-hidden::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  background: linear-gradient(115deg, transparent 20%, rgba(56,217,255,.055) 48%, transparent 72%);
+  background: linear-gradient(115deg, transparent 18%, rgba(214,180,92,.08) 48%, transparent 76%);
 }
 main .rounded-3xl.overflow-hidden > * { position: relative; }
 main .rounded-3xl.overflow-hidden > div { z-index: 2; }
 
-/* Accent controls */
-input[type=range] { accent-color: var(--caspian-green); }
-input:focus-visible, button:focus-visible {
-  outline: 2px solid rgba(56,217,255,.8);
+/* Brand accents: gold replaces Spotify green; carbon blue anchors controls */
+input[type=range] { accent-color: var(--caspian-gold); }
+input:focus-visible, button:focus-visible, a:focus-visible {
+  outline: 2px solid var(--caspian-gold-light);
   outline-offset: 3px;
 }
 footer {
-  background: rgba(7,11,18,.91) !important;
-  border-color: rgba(56,217,255,.16) !important;
-  backdrop-filter: blur(24px) saturate(160%) !important;
-  box-shadow: 0 -18px 55px rgba(0,0,0,.36);
+  background: rgba(4,8,15,.96) !important;
+  border-color: rgba(214,180,92,.25) !important;
+  backdrop-filter: blur(24px) saturate(150%) !important;
+  box-shadow: 0 -18px 55px rgba(0,0,0,.48), 0 -1px rgba(214,180,92,.08);
 }
-footer img { box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 8px 25px rgba(0,0,0,.4); }
-
-/* Scrollbar */
+footer img { box-shadow: 0 0 0 1px rgba(214,180,92,.22), 0 8px 25px rgba(0,0,0,.5); }
 ::-webkit-scrollbar { width: 7px; height: 7px; }
-::-webkit-scrollbar-track { background: #090d14; }
-::-webkit-scrollbar-thumb { background: #263443; border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: #3d6570; }
-
-/* Equalizer */
+::-webkit-scrollbar-track { background: #05080e; }
+::-webkit-scrollbar-thumb { background: #234365; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #b18d3e; }
 @keyframes eq-bounce-1 { 0%,100% { height: 4px; } 50% { height: 16px; } }
 @keyframes eq-bounce-2 { 0%,100% { height: 14px; } 50% { height: 6px; } }
 @keyframes eq-bounce-3 { 0%,100% { height: 8px; } 50% { height: 18px; } }
-.animate-eq-1 { animation: eq-bounce-1 .8s ease-in-out infinite; }
-.animate-eq-2 { animation: eq-bounce-2 .7s ease-in-out infinite .2s; }
-.animate-eq-3 { animation: eq-bounce-3 .9s ease-in-out infinite .4s; }
+.animate-eq-1 { animation: eq-bounce-1 .8s ease-in-out infinite; background-color: var(--caspian-gold) !important; }
+.animate-eq-2 { animation: eq-bounce-2 .7s ease-in-out infinite .2s; background-color: var(--caspian-blue-bright) !important; }
+.animate-eq-3 { animation: eq-bounce-3 .9s ease-in-out infinite .4s; background-color: var(--caspian-gold-light) !important; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
