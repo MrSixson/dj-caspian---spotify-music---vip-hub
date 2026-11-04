@@ -57,7 +57,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
     <div className="p-4 sm:p-8 space-y-6 animate-in fade-in duration-300" dir="rtl">
       <div>
         <h1 className="text-2xl sm:text-3xl font-black text-white flex items-center gap-2.5">
-          <Search className="w-7 h-7 text-[#1db954]" />
+          <Search className="w-7 h-7 text-[#d6b45c]" />
           <span>جستجو و مرور سبک‌های دی‌جی کاسپین</span>
         </h1>
         <p className="text-xs sm:text-sm text-neutral-400 mt-1">
@@ -125,7 +125,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
                         e.stopPropagation();
                         onPlayTrack(track);
                       }}
-                      className="w-10 h-10 rounded-full bg-[#1db954] text-black flex items-center justify-center shadow-xl hover:scale-105 cursor-pointer"
+                      className="w-10 h-10 rounded-full bg-[#d6b45c] text-black flex items-center justify-center shadow-xl hover:scale-105 cursor-pointer"
                     >
                       {isCurrent ? <Pause className="w-5 h-5 fill-black" /> : <Play className="w-5 h-5 fill-black ml-0.5" />}
                     </button>
@@ -139,7 +139,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
                 </div>
 
                 <div>
-                  <h3 className={`font-bold text-sm truncate ${isCurrent ? 'text-[#1db954]' : 'text-white'}`}>
+                  <h3 className={`font-bold text-sm truncate ${isCurrent ? 'text-[#d6b45c]' : 'text-white'}`}>
                     {track.title}
                   </h3>
                   <div className="text-xs text-neutral-400 flex items-center justify-between mt-1">
@@ -157,9 +157,9 @@ export const SearchView: React.FC<SearchViewProps> = ({
                         e.stopPropagation();
                         onToggleLike(track.id);
                       }}
-                      className={`p-1 text-xs ${isLiked ? 'text-[#1db954]' : 'text-neutral-500 hover:text-white'}`}
+                      className={`p-1 text-xs ${isLiked ? 'text-[#d6b45c]' : 'text-neutral-500 hover:text-white'}`}
                     >
-                      <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-[#1db954]' : ''}`} />
+                      <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-[#d6b45c]' : ''}`} />
                     </button>
                     <button
                       type="button"
@@ -168,7 +168,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
                         onDownloadTrack(track);
                       }}
                       className={`p-1.5 rounded-full ${
-                        isUserVip ? 'text-[#1db954] hover:bg-[#1db954]/20' : 'text-amber-400 hover:bg-amber-400/20'
+                        isUserVip ? 'text-[#d6b45c] hover:bg-[#d6b45c]/20' : 'text-amber-400 hover:bg-amber-400/20'
                       }`}
                     >
                       <Download className="w-3.5 h-3.5" />
