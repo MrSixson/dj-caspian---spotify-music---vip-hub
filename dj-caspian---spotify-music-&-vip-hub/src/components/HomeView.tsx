@@ -62,16 +62,16 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <img
                 src={DJ_CASPIAN_INFO.avatarUrl}
                 alt="DJ Caspian"
-                className="w-32 h-32 sm:w-44 sm:h-44 rounded-full object-cover border-4 border-[#1db954] shadow-2xl"
+                className="w-32 h-32 sm:w-44 sm:h-44 rounded-full object-cover border-4 border-[#d6b45c] shadow-2xl"
               />
-              <div className="absolute bottom-1 right-2 bg-[#1db954] text-black p-1.5 rounded-full shadow-lg">
+              <div className="absolute bottom-1 right-2 bg-[#d6b45c] text-black p-1.5 rounded-full shadow-lg">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
             </div>
 
             <div className="space-y-2">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-semibold">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#1db954]" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#d6b45c]" />
                 <span>آرتیست رسمی و تایید شده اسپاتیفای</span>
               </div>
 
@@ -96,7 +96,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             {featuredTrack && (
               <button
                 onClick={() => onPlayTrack(featuredTrack)}
-                className="py-3 px-6 rounded-full bg-[#1db954] hover:bg-[#1ed760] text-black font-black text-sm flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 shadow-xl shadow-[#1db954]/30 cursor-pointer"
+                className="py-3 px-6 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-black text-sm flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 shadow-xl shadow-[#d6b45c]/30 cursor-pointer"
               >
                 {currentTrackId === featuredTrack.id && isPlaying ? (
                   <>
@@ -146,7 +146,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     className="w-16 h-16 sm:w-20 sm:h-20 object-cover shrink-0"
                   />
                   <div className="p-3 min-w-0 flex-1">
-                    <div className={`font-bold text-xs sm:text-sm truncate ${isCurrent ? 'text-[#1db954]' : 'text-white'}`}>
+                    <div className={`font-bold text-xs sm:text-sm truncate ${isCurrent ? 'text-[#d6b45c]' : 'text-white'}`}>
                       {track.title}
                     </div>
                     <div className="text-[11px] text-neutral-400 truncate mt-0.5">
@@ -156,7 +156,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
                   {/* Floating Play Button */}
                   <div className="ml-3 sm:ml-4 opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-xl group-hover:translate-x-0">
-                    <div className="w-10 h-10 rounded-full bg-[#1db954] text-black flex items-center justify-center hover:scale-105 transition-transform">
+                    <div className="w-10 h-10 rounded-full bg-[#d6b45c] text-black flex items-center justify-center hover:scale-105 transition-transform">
                       {isCurrent ? <Pause className="w-5 h-5 fill-black" /> : <Play className="w-5 h-5 fill-black mr-0.5" />}
                     </div>
                   </div>
@@ -172,7 +172,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-              <Disc3 className="w-6 h-6 text-[#1db954]" />
+              <Disc3 className="w-6 h-6 text-[#d6b45c]" />
               <span>محبوب‌ترین ریمیکس‌ها و آهنگ‌های DJ Caspian</span>
             </h2>
             <p className="text-xs text-neutral-400 mt-0.5">
@@ -187,7 +187,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         {/* Tracks Table Header or Empty State */}
         {tracks.length === 0 ? (
           <div className="bg-[#181818]/90 border border-neutral-800/80 rounded-3xl p-10 sm:p-14 text-center space-y-4">
-            <div className="w-16 h-16 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center mx-auto text-[#1db954]">
+            <div className="w-16 h-16 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center mx-auto text-[#d6b45c]">
               <Music className="w-8 h-8" />
             </div>
             <div className="space-y-1.5">
@@ -225,9 +225,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     <span className="group-hover:hidden text-neutral-400 font-mono">
                       {isCurrent ? (
                         <div className="flex items-end gap-0.5 h-3">
-                          <span className="w-0.5 bg-[#1db954] animate-eq-1" />
-                          <span className="w-0.5 bg-[#1db954] animate-eq-2" />
-                          <span className="w-0.5 bg-[#1db954] animate-eq-3" />
+                          <span className="w-0.5 bg-[#d6b45c] animate-eq-1" />
+                          <span className="w-0.5 bg-[#d6b45c] animate-eq-2" />
+                          <span className="w-0.5 bg-[#d6b45c] animate-eq-3" />
                         </div>
                       ) : (
                         idx + 1
@@ -238,9 +238,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
                         e.stopPropagation();
                         onPlayTrack(track);
                       }}
-                      className="hidden group-hover:block text-white hover:text-[#1db954] cursor-pointer"
+                      className="hidden group-hover:block text-white hover:text-[#d6b45c] cursor-pointer"
                     >
-                      {isCurrent ? <Pause className="w-4 h-4 text-[#1db954]" /> : <Play className="w-4 h-4 fill-white" />}
+                      {isCurrent ? <Pause className="w-4 h-4 text-[#d6b45c]" /> : <Play className="w-4 h-4 fill-white" />}
                     </button>
                   </div>
 
@@ -252,7 +252,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                       className="w-10 h-10 rounded-lg object-cover shrink-0"
                     />
                     <div className="min-w-0">
-                      <div className={`font-bold text-xs sm:text-sm truncate ${isCurrent ? 'text-[#1db954]' : 'text-white'}`}>
+                      <div className={`font-bold text-xs sm:text-sm truncate ${isCurrent ? 'text-[#d6b45c]' : 'text-white'}`}>
                         {track.title}
                       </div>
                       <div className="text-[11px] text-neutral-400 truncate flex items-center gap-1.5">
@@ -290,11 +290,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
                         onToggleLike(track.id);
                       }}
                       className={`p-1.5 rounded-full transition-colors cursor-pointer ${
-                        isLiked ? 'text-[#1db954]' : 'text-neutral-500 hover:text-white'
+                        isLiked ? 'text-[#d6b45c]' : 'text-neutral-500 hover:text-white'
                       }`}
                       title="علاقه‌مندی"
                     >
-                      <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-[#1db954]' : ''}`} />
+                      <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-[#d6b45c]' : ''}`} />
                     </button>
 
                     {/* Download Button */}
@@ -306,7 +306,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                       }}
                       className={`py-1 px-2.5 rounded-full font-bold text-[11px] flex items-center gap-1 transition-all cursor-pointer ${
                         isUserVip
-                          ? 'bg-[#1db954] hover:bg-[#1ed760] text-black shadow-sm'
+                          ? 'bg-[#d6b45c] hover:bg-[#f0d88a] text-black shadow-sm'
                           : 'bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/40'
                       }`}
                       title={isUserVip ? 'دانلود فایل اصلی ۳۲۰' : 'دانلود قطعه (نیاز به اشتراک VIP)'}
@@ -359,14 +359,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="w-10 h-10 rounded-full bg-[#1db954] text-black flex items-center justify-center shadow-xl hover:scale-105">
+                    <div className="w-10 h-10 rounded-full bg-[#d6b45c] text-black flex items-center justify-center shadow-xl hover:scale-105">
                       <Play className="w-5 h-5 fill-black ml-0.5" />
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="font-bold text-white text-sm group-hover:text-[#1db954] transition-colors">
+                  <h3 className="font-bold text-white text-sm group-hover:text-[#d6b45c] transition-colors">
                     {pl.title}
                   </h3>
                   <p className="text-xs text-neutral-400 line-clamp-2 mt-1 leading-relaxed">
@@ -439,7 +439,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 shrink-0 w-full md:w-auto">
           <button
             onClick={onNavigateToAbout}
-            className="py-3 px-6 rounded-full bg-[#1db954] hover:bg-[#1ed760] text-black font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-lg shadow-[#1db954]/20 text-center"
+            className="py-3 px-6 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-lg shadow-[#d6b45c]/20 text-center"
           >
             مشاهده بیوگرافی و شبکه‌ها
           </button>
