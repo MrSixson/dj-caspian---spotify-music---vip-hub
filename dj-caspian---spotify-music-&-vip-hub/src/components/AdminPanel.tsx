@@ -245,7 +245,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           <button
             type="button"
             onClick={onOpenAuthModal}
-            className="w-full py-3.5 px-6 rounded-full bg-[#1db954] hover:bg-[#1ed760] text-black font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-[#1db954]/20"
+            className="w-full py-3.5 px-6 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-[#d6b45c]/20"
           >
             <LogIn className="w-4 h-4" />
             <span>ورود به حساب کاربری</span>
@@ -265,16 +265,16 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <img
               src={DJ_CASPIAN_INFO.avatarUrl}
               alt="DJ Caspian"
-              className="w-14 h-14 rounded-2xl object-cover border-2 border-[#1db954]"
+              className="w-14 h-14 rounded-2xl object-cover border-2 border-[#d6b45c]"
             />
-            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#1db954] rounded-full flex items-center justify-center text-black font-black text-[10px]">
+            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#d6b45c] rounded-full flex items-center justify-center text-black font-black text-[10px]">
               ✓
             </div>
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-black text-white">اتاق مدیریت دی‌جی کاسپین</h1>
-              <span className="px-2.5 py-0.5 rounded-full bg-[#1db954]/20 text-[#1db954] border border-[#1db954]/40 text-[11px] font-bold">
+              <span className="px-2.5 py-0.5 rounded-full bg-[#d6b45c]/20 text-[#d6b45c] border border-[#d6b45c]/40 text-[11px] font-bold">
                 مدیر کل (AminJodaie)
               </span>
             </div>
@@ -290,7 +290,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               setUploadStep(1);
               setIsAddTrackOpen(true);
             }}
-            className="py-2.5 px-4 rounded-xl bg-[#1db954] hover:bg-[#1ed760] text-black font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-all shadow-lg shadow-[#1db954]/20 cursor-pointer"
+            className="py-2.5 px-4 rounded-xl bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-all shadow-lg shadow-[#d6b45c]/20 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>+ آپلود آهنگ جدید</span>
@@ -300,7 +300,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             onClick={() => setIsNewPlaylistOpen(true)}
             className="py-2.5 px-4 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-all cursor-pointer border border-neutral-700"
           >
-            <ListMusic className="w-4 h-4 text-[#1db954]" />
+            <ListMusic className="w-4 h-4 text-[#d6b45c]" />
             <span>+ ساخت پلی‌لیست</span>
           </button>
         </div>
@@ -311,7 +311,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         <div className="bg-[#181818] border border-neutral-800 rounded-2xl p-4">
           <div className="flex items-center justify-between text-neutral-400 text-xs mb-1">
             <span>آهنگ‌های منتشر شده</span>
-            <Music className="w-4 h-4 text-[#1db954]" />
+            <Music className="w-4 h-4 text-[#d6b45c]" />
           </div>
           <div className="text-2xl font-black text-white">{tracks.length}</div>
           <div className="text-[11px] text-neutral-500 mt-0.5">در دسترس عموم</div>
@@ -352,7 +352,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             onClick={() => setActiveTab('tracks')}
             className={`py-2 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center gap-2 ${
               activeTab === 'tracks'
-                ? 'bg-[#1db954] text-black shadow-lg shadow-[#1db954]/20'
+                ? 'bg-[#d6b45c] text-black shadow-lg shadow-[#d6b45c]/20'
                 : 'text-neutral-400 hover:text-white bg-[#181818]'
             }`}
           >
@@ -406,7 +406,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 setUploadStep(1);
                 setIsAddTrackOpen(true);
               }}
-              className="py-2 px-4 rounded-xl bg-[#1db954] text-black font-bold text-xs flex items-center gap-1.5 cursor-pointer hover:bg-[#1ed760]"
+              className="py-2 px-4 rounded-xl bg-[#d6b45c] text-black font-bold text-xs flex items-center gap-1.5 cursor-pointer hover:bg-[#f0d88a]"
             >
               <Plus className="w-4 h-4" />
               <span>آپلود قطعه جدید</span>
@@ -415,7 +415,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
           {tracks.length === 0 ? (
             <div className="bg-[#181818] border border-dashed border-neutral-700 rounded-3xl p-12 text-center space-y-4">
-              <div className="w-16 h-16 rounded-2xl bg-neutral-900 border border-neutral-800 flex items-center justify-center mx-auto text-[#1db954]">
+              <div className="w-16 h-16 rounded-2xl bg-neutral-900 border border-neutral-800 flex items-center justify-center mx-auto text-[#d6b45c]">
                 <Music className="w-8 h-8" />
               </div>
               <div className="space-y-1">
@@ -429,7 +429,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   setUploadStep(1);
                   setIsAddTrackOpen(true);
                 }}
-                className="py-3 px-6 rounded-full bg-[#1db954] hover:bg-[#1ed760] text-black font-bold text-xs transition-all shadow-lg shadow-[#1db954]/20 cursor-pointer"
+                className="py-3 px-6 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-bold text-xs transition-all shadow-lg shadow-[#d6b45c]/20 cursor-pointer"
               >
                 + شروع آپلود اولین آهنگ
               </button>
@@ -459,13 +459,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           onClick={() => onPlayTrack(track)}
                           className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg cursor-pointer text-white"
                         >
-                          {isCurrent ? <Pause className="w-5 h-5 text-[#1db954]" /> : <Play className="w-5 h-5 ml-0.5" />}
+                          {isCurrent ? <Pause className="w-5 h-5 text-[#d6b45c]" /> : <Play className="w-5 h-5 ml-0.5" />}
                         </button>
                       </div>
 
                       <div className="min-w-0">
                         <div className="font-bold text-white text-sm truncate flex items-center gap-1.5">
-                          <span className={isCurrent ? 'text-[#1db954]' : ''}>{track.title}</span>
+                          <span className={isCurrent ? 'text-[#d6b45c]' : ''}>{track.title}</span>
                           {track.isVipOnlyDownload && (
                             <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-400 text-[10px] font-semibold border border-amber-500/30">
                               VIP
@@ -489,7 +489,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         className="p-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 transition-colors cursor-pointer"
                         title={isCurrent ? 'توقف' : 'پخش آهنگ'}
                       >
-                        {isCurrent ? <Pause className="w-4 h-4 text-[#1db954]" /> : <Play className="w-4 h-4 ml-0.5" />}
+                        {isCurrent ? <Pause className="w-4 h-4 text-[#d6b45c]" /> : <Play className="w-4 h-4 ml-0.5" />}
                       </button>
 
                       <button
@@ -709,7 +709,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           onChange={(e) =>
                             setEditingTicketNotes((prev) => ({ ...prev, [ticket.id]: e.target.value }))
                           }
-                          className="w-full bg-[#242424] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl px-3 py-2 text-xs text-white"
+                          className="w-full bg-[#242424] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl px-3 py-2 text-xs text-white"
                         />
                       </div>
 
@@ -724,7 +724,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           className={`py-2 px-4 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                             ticket.status === 'approved'
                               ? 'bg-emerald-600/30 text-emerald-300 border border-emerald-500/50'
-                              : 'bg-[#1db954] hover:bg-[#1ed760] text-black shadow-lg shadow-[#1db954]/20'
+                              : 'bg-[#d6b45c] hover:bg-[#f0d88a] text-black shadow-lg shadow-[#d6b45c]/20'
                           }`}
                         >
                           <CheckCircle className="w-4 h-4" />
@@ -767,7 +767,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             {/* Header */}
             <div className="flex items-center justify-between pb-4 border-b border-neutral-800">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-[#1db954] text-black flex items-center justify-center font-bold">
+                <div className="w-9 h-9 rounded-xl bg-[#d6b45c] text-black flex items-center justify-center font-bold">
                   <Upload className="w-5 h-5" />
                 </div>
                 <div>
@@ -789,8 +789,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             {/* STEP 1: AUDIO UPLOAD */}
             {uploadStep === 1 && (
               <div className="space-y-6 pt-5">
-                <div className="border-2 border-dashed border-[#1db954]/50 hover:border-[#1db954] bg-[#222222]/60 rounded-3xl p-8 text-center transition-colors">
-                  <div className="w-16 h-16 rounded-full bg-[#1db954]/20 border border-[#1db954]/40 flex items-center justify-center mx-auto text-[#1db954] mb-3">
+                <div className="border-2 border-dashed border-[#d6b45c]/50 hover:border-[#d6b45c] bg-[#222222]/60 rounded-3xl p-8 text-center transition-colors">
+                  <div className="w-16 h-16 rounded-full bg-[#d6b45c]/20 border border-[#d6b45c]/40 flex items-center justify-center mx-auto text-[#d6b45c] mb-3">
                     <FileAudio className="w-8 h-8" />
                   </div>
 
@@ -801,7 +801,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     فایل موزیک خود را از کامپیوتر یا موبایل انتخاب کنید تا مستقیماً به استودیو اضافه شود.
                   </p>
 
-                  <label className="inline-flex items-center gap-2 py-3 px-6 rounded-full bg-[#1db954] hover:bg-[#1ed760] text-black font-bold text-xs cursor-pointer shadow-lg shadow-[#1db954]/20 transition-all hover:scale-105">
+                  <label className="inline-flex items-center gap-2 py-3 px-6 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-bold text-xs cursor-pointer shadow-lg shadow-[#d6b45c]/20 transition-all hover:scale-105">
                     <Upload className="w-4 h-4" />
                     <span>انتخاب فایل موزیک از دستگاه</span>
                     <input
@@ -822,7 +822,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <div className="p-4 bg-neutral-900/80 rounded-2xl border border-neutral-800 space-y-2">
                   <div className="flex items-center justify-between text-xs text-neutral-300 font-bold">
                     <span>یا تولید الگوی ریتم و درامز زنده دی‌جی کاسپین:</span>
-                    <span className="text-[#1db954]">موتور سنتز هوشمند</span>
+                    <span className="text-[#d6b45c]">موتور سنتز هوشمند</span>
                   </div>
                   <select
                     value={newSynthPreset}
@@ -853,7 +853,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 
                 {/* Audio file indicator */}
                 {newAudioFileName && (
-                  <div className="p-3 bg-emerald-950/40 border border-emerald-500/30 rounded-xl flex items-center justify-between text-xs text-emerald-300">
+                  <div className="p-3 bg-blue-950/40 border border-emerald-500/30 rounded-xl flex items-center justify-between text-xs text-emerald-300">
                     <div className="flex items-center gap-2 truncate">
                       <FileAudio className="w-4 h-4 shrink-0 text-emerald-400" />
                       <span className="truncate">فایل متصل شده: {newAudioFileName}</span>
@@ -877,7 +877,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       placeholder="مثال: Caspian Sunset (Extended Mix)"
                       value={newTitle}
                       onChange={(e) => setNewTitle(e.target.value)}
-                      className="w-full bg-[#242424] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white"
+                      className="w-full bg-[#242424] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white"
                     />
                   </div>
 
@@ -887,7 +887,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       type="text"
                       value={newArtist}
                       onChange={(e) => setNewArtist(e.target.value)}
-                      className="w-full bg-[#242424] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white"
+                      className="w-full bg-[#242424] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white"
                     />
                   </div>
                 </div>
@@ -898,7 +898,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     <select
                       value={newGenre}
                       onChange={(e) => setNewGenre(e.target.value)}
-                      className="w-full bg-[#242424] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl px-3 py-2 text-xs text-white"
+                      className="w-full bg-[#242424] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl px-3 py-2 text-xs text-white"
                     >
                       <option value="Melodic Techno">Melodic Techno</option>
                       <option value="Persian Club">Persian Club</option>
@@ -933,7 +933,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 {/* Profile Cover Image Upload Section */}
                 <div className="space-y-2 bg-[#202020] p-4 rounded-2xl border border-neutral-700">
                   <label className="text-xs text-white font-bold block flex items-center gap-1.5">
-                    <ImageIcon className="w-4 h-4 text-[#1db954]" />
+                    <ImageIcon className="w-4 h-4 text-[#d6b45c]" />
                     <span>تصویر پروفایل و کاور آهنگ:</span>
                   </label>
 
@@ -942,7 +942,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       <img
                         src={newCoverUrl}
                         alt="پیش‌نمایش کاور"
-                        className="w-20 h-20 rounded-2xl object-cover border-2 border-[#1db954] shadow-md"
+                        className="w-20 h-20 rounded-2xl object-cover border-2 border-[#d6b45c] shadow-md"
                       />
                     ) : (
                       <div className="w-20 h-20 rounded-2xl bg-neutral-800 border border-neutral-700 flex items-center justify-center text-neutral-500 text-xs">
@@ -969,7 +969,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                             key={i}
                             type="button"
                             onClick={() => setNewCoverUrl(pUrl)}
-                            className="w-6 h-6 rounded-md overflow-hidden border border-neutral-700 hover:border-[#1db954]"
+                            className="w-6 h-6 rounded-md overflow-hidden border border-neutral-700 hover:border-[#d6b45c]"
                           >
                             <img src={pUrl} alt="" className="w-full h-full object-cover" />
                           </button>
@@ -1001,7 +1001,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     placeholder="مثلاً: جدیدترین ریمیکس ۲۰۲۶ دی‌جی کاسپین با بیس‌لاین کلاب..."
                     value={newDescription}
                     onChange={(e) => setNewDescription(e.target.value)}
-                    className="w-full bg-[#242424] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl px-3 py-2 text-xs text-white resize-none"
+                    className="w-full bg-[#242424] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl px-3 py-2 text-xs text-white resize-none"
                   />
                 </div>
 
@@ -1017,7 +1017,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                   <button
                     type="submit"
-                    className="py-3 px-8 rounded-full bg-[#1db954] hover:bg-[#1ed760] text-black font-black text-xs flex items-center gap-2 transition-all cursor-pointer shadow-xl shadow-[#1db954]/25 hover:scale-105"
+                    className="py-3 px-8 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-black text-xs flex items-center gap-2 transition-all cursor-pointer shadow-xl shadow-[#d6b45c]/25 hover:scale-105"
                   >
                     <Check className="w-4 h-4" />
                     <span>انتشار نهایی آهنگ روی سایت (پخش زنده برای همه)</span>
