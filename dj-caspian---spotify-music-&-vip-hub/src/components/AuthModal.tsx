@@ -100,7 +100,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl animate-in fade-in duration-200 select-none" dir="rtl">
       <div className="relative w-full max-w-md bg-gradient-to-b from-[#181818] via-[#141414] to-[#0d0d0d] border border-neutral-700/80 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden">
         {/* Glow Effects */}
-        <div className="absolute -top-20 -right-20 w-48 h-48 bg-[#1db954]/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-20 -right-20 w-48 h-48 bg-[#d6b45c]/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
 
         {/* Close Button */}
@@ -113,7 +113,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
         {/* Brand Header */}
         <div className="text-center space-y-1 mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-[#1db954] text-black flex items-center justify-center mx-auto shadow-lg shadow-[#1db954]/30 mb-2">
+          <div className="w-12 h-12 rounded-2xl bg-[#d6b45c] text-black flex items-center justify-center mx-auto shadow-lg shadow-[#d6b45c]/30 mb-2">
             <Disc3 className="w-7 h-7 animate-[spin_8s_linear_infinite]" />
           </div>
           <h2 className="text-2xl font-black text-white tracking-tight">
@@ -134,7 +134,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             }}
             className={`flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
               mode === 'login'
-                ? 'bg-[#1db954] text-black shadow-md'
+                ? 'bg-[#d6b45c] text-black shadow-md'
                 : 'text-neutral-400 hover:text-white'
             }`}
           >
@@ -150,7 +150,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             }}
             className={`flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
               mode === 'register'
-                ? 'bg-[#1db954] text-black shadow-md'
+                ? 'bg-[#d6b45c] text-black shadow-md'
                 : 'text-neutral-400 hover:text-white'
             }`}
           >
@@ -172,7 +172,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   placeholder="مثال: AminJodaie یا ایمیل"
                   value={loginUsername}
                   onChange={(e) => setLoginUsername(e.target.value)}
-                  className="w-full bg-[#202020] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl py-2.5 pr-10 pl-4 text-xs sm:text-sm text-white placeholder-neutral-500 font-mono text-right"
+                  className="w-full bg-[#202020] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl py-2.5 pr-10 pl-4 text-xs sm:text-sm text-white placeholder-neutral-500 font-mono text-right"
                   dir="ltr"
                 />
               </div>
@@ -188,7 +188,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   placeholder="رمز عبور شما"
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
-                  className="w-full bg-[#202020] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl py-2.5 pr-10 pl-4 text-xs sm:text-sm text-white placeholder-neutral-500 font-mono text-left"
+                  className="w-full bg-[#202020] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl py-2.5 pr-10 pl-4 text-xs sm:text-sm text-white placeholder-neutral-500 font-mono text-left"
                   dir="ltr"
                 />
               </div>
@@ -203,7 +203,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
             <button
               type="submit"
-              className="w-full py-3 px-6 rounded-full bg-[#1db954] hover:bg-[#1ed760] text-black font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-[#1db954]/20 hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full py-3 px-6 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-[#d6b45c]/20 hover:scale-[1.02] active:scale-[0.98]"
             >
               <LogIn className="w-4 h-4" />
               <span>ورود به حساب کاربری</span>
@@ -222,7 +222,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 placeholder="مثال: آرین تهرانی"
                 value={regDisplayName}
                 onChange={(e) => setRegDisplayName(e.target.value)}
-                className="w-full bg-[#202020] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl py-2 px-3 text-xs sm:text-sm text-white"
+                className="w-full bg-[#202020] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl py-2 px-3 text-xs sm:text-sm text-white"
               />
             </div>
 
@@ -234,7 +234,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 placeholder="مثال: ArianClub"
                 value={regUsername}
                 onChange={(e) => setRegUsername(e.target.value)}
-                className="w-full bg-[#202020] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl py-2 px-3 text-xs sm:text-sm text-white font-mono text-left"
+                className="w-full bg-[#202020] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl py-2 px-3 text-xs sm:text-sm text-white font-mono text-left"
                 dir="ltr"
               />
             </div>
@@ -247,7 +247,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 placeholder="email@example.com"
                 value={regEmail}
                 onChange={(e) => setRegEmail(e.target.value)}
-                className="w-full bg-[#202020] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl py-2 px-3 text-xs sm:text-sm text-white font-mono text-left"
+                className="w-full bg-[#202020] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl py-2 px-3 text-xs sm:text-sm text-white font-mono text-left"
                 dir="ltr"
               />
             </div>
@@ -261,7 +261,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   placeholder="حداقل ۸ کاراکتر"
                   value={regPassword}
                   onChange={(e) => setRegPassword(e.target.value)}
-                  className="w-full bg-[#202020] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl py-2 px-3 text-xs sm:text-sm text-white font-mono"
+                  className="w-full bg-[#202020] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl py-2 px-3 text-xs sm:text-sm text-white font-mono"
                   dir="ltr"
                 />
               </div>
@@ -274,7 +274,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   placeholder="تکرار رمز"
                   value={regConfirmPassword}
                   onChange={(e) => setRegConfirmPassword(e.target.value)}
-                  className="w-full bg-[#202020] border border-neutral-700 focus:border-[#1db954] focus:outline-none rounded-xl py-2 px-3 text-xs sm:text-sm text-white font-mono"
+                  className="w-full bg-[#202020] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl py-2 px-3 text-xs sm:text-sm text-white font-mono"
                   dir="ltr"
                 />
               </div>
@@ -289,7 +289,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
             <button
               type="submit"
-              className="w-full py-3 px-6 rounded-full bg-[#1db954] hover:bg-[#1ed760] text-black font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-[#1db954]/20 hover:scale-[1.02] active:scale-[0.98] mt-2"
+              className="w-full py-3 px-6 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-[#d6b45c]/20 hover:scale-[1.02] active:scale-[0.98] mt-2"
             >
               <UserPlus className="w-4 h-4" />
               <span>ساخت حساب کاربری و ورود</span>
