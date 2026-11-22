@@ -766,6 +766,7 @@ export default function App() {
               onPlayTrack={handlePlayTrack}
               onToggleLike={handleToggleLike}
               onDownloadTrack={handleDownloadTrack}
+              onAddToQueue={handleAddToQueue}
             />
           )}
 
@@ -780,6 +781,7 @@ export default function App() {
               onPlayTrack={handlePlayTrack}
               onToggleLike={handleToggleLike}
               onDownloadTrack={handleDownloadTrack}
+              onAddToQueue={handleAddToQueue}
               onSelectPlaylist={(pl) => {
                 showToast(`پلی‌لیست "${pl.title}" انتخاب شد`, 'info');
               }}
@@ -797,6 +799,7 @@ export default function App() {
               onPlayTrack={handlePlayTrack}
               onToggleLike={handleToggleLike}
               onDownloadTrack={handleDownloadTrack}
+              onAddToQueue={handleAddToQueue}
               onSelectPlaylist={(pl) => {
                 showToast(`پلی‌لیست "${pl.title}" انتخاب شد`, 'info');
               }}
