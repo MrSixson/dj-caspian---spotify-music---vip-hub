@@ -30,12 +30,12 @@ export const TopNav: React.FC<TopNavProps> = ({
   const isOwnerAdmin = currentUser?.role === 'admin' && currentUser?.username === 'AminJodaie';
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between gap-3 sm:gap-4 px-3 sm:px-8 py-3 bg-[#101010]/95 backdrop-blur-md border-b border-neutral-900/80 select-none" dir="rtl">
+    <header className="caspian-v2-topnav sticky top-0 z-30 flex items-center justify-between gap-3 sm:gap-4 px-3 sm:px-8 py-3 select-none" dir="rtl">
       {/* Right side in RTL: Mobile menu & Search */}
       <div className="flex items-center gap-2.5 sm:gap-3 flex-1 max-w-xl">
         <button
           onClick={onOpenMobileMenu}
-          className="md:hidden p-2 text-neutral-400 hover:text-white bg-neutral-900 rounded-xl"
+          className="md:hidden p-2 text-neutral-400 hover:text-white bg-[#0c1726] rounded-xl border border-white/10"
         >
           <Menu className="w-5 h-5" />
         </button>
@@ -68,7 +68,7 @@ export const TopNav: React.FC<TopNavProps> = ({
                 onNavigate('search');
               }
             }}
-            className="w-full bg-[#1c1c1c] hover:bg-[#222222] focus:bg-[#222222] border border-neutral-800 focus:border-[#d6b45c] focus:outline-none rounded-full py-2 pr-9 pl-4 text-xs sm:text-sm text-white placeholder-neutral-500 transition-colors"
+            className="w-full bg-[#0b1522] hover:bg-[#102039] focus:bg-[#102039] border border-[#d6b45c]/15 focus:border-[#d6b45c] focus:outline-none rounded-full py-2 pr-9 pl-4 text-xs sm:text-sm text-white placeholder-neutral-500 transition-colors"
           />
         </div>
       </div>
