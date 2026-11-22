@@ -222,6 +222,16 @@ export default function App() {
   }, [playQueue]);
 
   useEffect(() => {
+    if (!tracks.length || !playQueue.length) return;
+    const catalogById = new Map(tracks.map((track) => [track.id, track] as const));
+    const validQueue = playQueue.map((track) => catalogById.get(track.id)).filter((track): track is Track => Boolean(track));
+    if (validQueue.length !== playQueue.length || validQueue.some((track, index) => track !== playQueue[index])) {
+      playQueueRef.current = validQueue;
+      setPlayQueue(validQueue);
+    }
+  }, [tracks]);
+
+  useEffect(() => {
     isRepeatRef.current = isRepeat;
   }, [isRepeat]);
 
