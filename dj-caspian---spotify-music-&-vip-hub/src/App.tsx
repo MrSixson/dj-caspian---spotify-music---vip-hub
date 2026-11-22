@@ -82,7 +82,7 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(tracks[0]?.duration || 218);
-  const [volume, setVolume] = useState(() => { try { const saved = Number(localStorage.getItem('caspian_player_volume')); return Number.isFinite(saved) && saved >= 0 && saved <= 1 ? saved : 0.85; } catch { return 0.85; } });
+  const [volume, setVolume] = useState(() => { try { const raw = localStorage.getItem('caspian_player_volume'); const saved = raw === null ? 0.85 : Number(raw); return Number.isFinite(saved) && saved >= 0 && saved <= 1 ? saved : 0.85; } catch { return 0.85; } });
   const [isMuted, setIsMuted] = useState(false);
   const [isShuffle, setIsShuffle] = useState(() => localStorage.getItem('caspian_player_shuffle') === 'true');
   const [isRepeat, setIsRepeat] = useState(() => localStorage.getItem('caspian_player_repeat') === 'true');
