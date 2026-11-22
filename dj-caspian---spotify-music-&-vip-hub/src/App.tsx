@@ -96,6 +96,8 @@ export default function App() {
   });
   const [isQueueOpen, setIsQueueOpen] = useState(false);
   const handledEndedTrackRef = useRef<string | null>(null);
+  const playQueueRef = useRef<Track[]>([]);
+  const isRepeatRef = useRef(false);
 
   // 7. Modals & Notifications
   const [isVipModalOpen, setIsVipModalOpen] = useState(false);
@@ -211,8 +213,13 @@ export default function App() {
   }, [recentlyPlayedIds]);
 
   useEffect(() => {
+    playQueueRef.current = playQueue;
     localStorage.setItem('caspian_play_queue', JSON.stringify(playQueue));
   }, [playQueue]);
+
+  useEffect(() => {
+    isRepeatRef.current = isRepeat;
+  }, [isRepeat]);
 
   const navigateToView = (view: typeof currentView) => {
     if ((view === 'dashboard' || view === 'liked') && !currentUser) {
@@ -270,7 +277,7 @@ export default function App() {
           setCurrentTime(secs);
           if (track.duration > 0 && secs >= track.duration && handledEndedTrackRef.current !== track.id) {
             handledEndedTrackRef.current = track.id;
-            if (isRepeat) void handlePlayTrack(track);
+            if (isRepeatRef.current) void handlePlayTrack(track);
             else handleNextTrack();
           }
         }
@@ -320,8 +327,9 @@ export default function App() {
   };
 
   const handleNextTrack = () => {
-    if (playQueue.length > 0) {
-      const [nextTrack, ...remaining] = playQueue;
+    if (playQueueRef.current.length > 0) {
+      const [nextTrack, ...remaining] = playQueueRef.current;
+      playQueueRef.current = remaining;
       setPlayQueue(remaining);
       void handlePlayTrack(nextTrack);
       return;
@@ -338,22 +346,25 @@ export default function App() {
   };
 
   const handleAddToQueue = (track: Track) => {
-    setPlayQueue((previous) => [...previous, track]);
+    const nextQueue = [...playQueueRef.current, track];
+    playQueueRef.current = nextQueue;
+    setPlayQueue(nextQueue);
     showToast(`«${track.title}» به صف پخش اضافه شد.`, 'success');
   };
 
   const handleRemoveFromQueue = (index: number) => {
-    setPlayQueue((previous) => previous.filter((_, itemIndex) => itemIndex !== index));
+    const nextQueue = playQueueRef.current.filter((_, itemIndex) => itemIndex !== index);
+    playQueueRef.current = nextQueue;
+    setPlayQueue(nextQueue);
   };
 
   const handleMoveQueueItem = (index: number, direction: -1 | 1) => {
-    setPlayQueue((previous) => {
-      const target = index + direction;
-      if (target < 0 || target >= previous.length) return previous;
-      const next = [...previous];
-      [next[index], next[target]] = [next[target], next[index]];
-      return next;
-    });
+    const target = index + direction;
+    if (target < 0 || target >= playQueueRef.current.length) return;
+    const nextQueue = [...playQueueRef.current];
+    [nextQueue[index], nextQueue[target]] = [nextQueue[target], nextQueue[index]];
+    playQueueRef.current = nextQueue;
+    setPlayQueue(nextQueue);
   };
 
   const handlePreviousTrack = () => {
@@ -863,12 +874,12 @@ export default function App() {
         queue={playQueue}
         onClose={() => setIsQueueOpen(false)}
         onPlayTrack={(track, index) => {
-          setPlayQueue((previous) => previous.filter((_, itemIndex) => itemIndex !== index));
+          handleRemoveFromQueue(index);
           void handlePlayTrack(track);
         }}
         onRemove={handleRemoveFromQueue}
         onMove={handleMoveQueueItem}
-        onClear={() => setPlayQueue([])}
+        onClear={() => { playQueueRef.current = []; setPlayQueue([]); }}
       />
 
       {/* Auth Modal (Login & Register) */}
