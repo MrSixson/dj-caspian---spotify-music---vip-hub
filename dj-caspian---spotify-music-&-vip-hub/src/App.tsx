@@ -884,9 +884,8 @@ export default function App() {
               onCreateUserPlaylist={handleCreateUserPlaylist}
               onDeleteUserPlaylist={handleDeleteUserPlaylist}
               onAddTrackToUserPlaylist={handleAddTrackToUserPlaylist}
-              onSelectPlaylist={(pl) => {
-                showToast(`پلی‌لیست "${pl.title}" انتخاب شد`, 'info');
-              }}
+              onSelectPlaylist={(pl) => setSelectedPlaylistId(pl.id)}
+              onClearSelectedPlaylist={() => setSelectedPlaylistId(null)}
               filterLikedOnly={true}
             />
           )}
