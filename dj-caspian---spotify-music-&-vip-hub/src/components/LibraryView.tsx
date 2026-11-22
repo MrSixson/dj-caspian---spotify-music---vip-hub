@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Heart, Music2, Play, Pause, Download, Crown, Disc3, ListMusic, ListPlus, Plus, X, Trash2, Check } from 'lucide-react';
 import { Track, Playlist } from '../types';
 
@@ -13,6 +13,7 @@ interface LibraryViewProps {
   onToggleLike: (trackId: string) => void;
   onDownloadTrack: (track: Track) => void;
   onAddToQueue: (track: Track) => void;
+  selectedPlaylistId?: string | null;
   userPlaylists: Playlist[];
   onCreateUserPlaylist: (title: string, description: string) => void;
   onDeleteUserPlaylist: (playlistId: string) => void;
@@ -37,6 +38,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
   onToggleLike,
   onDownloadTrack,
   onAddToQueue,
+  selectedPlaylistId = null,
   userPlaylists,
   onCreateUserPlaylist,
   onDeleteUserPlaylist,
@@ -49,6 +51,12 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
   const [playlistTitle, setPlaylistTitle] = useState('');
   const [playlistDescription, setPlaylistDescription] = useState('');
   const [trackToAdd, setTrackToAdd] = useState<Track | null>(null);
+
+  useEffect(() => {
+    if (!selectedPlaylistId) return;
+    const target = playlists.find((playlist) => playlist.id === selectedPlaylistId);
+    setSelectedPlaylist(target || null);
+  }, [selectedPlaylistId, playlists]);
   const displayedTracks = selectedPlaylist
     ? tracks.filter((track) => selectedPlaylist.trackIds.includes(track.id))
     : filterLikedOnly
