@@ -8,6 +8,9 @@ Season 2 is developed on `season-2-v2.0.0`. The production `main` branch remains
 - New artist-led discovery home with fresh releases, playlists and popular tracks.
 - Persistent recently-played history stored locally on the visitor's device.
 - Responsive discovery cards, track rows, navigation and persistent player.
+- Live catalog search across track title, artist, genre, album and description.
+- Dynamic genre filters, sorting by newest / popularity / title, plus artist and album discovery shortcuts.
+- Redesigned library and favorites views with VIP-aware download actions.
 - Official DJ Caspian logo across app branding, auth, update-break page and browser/social metadata.
 - Persian-first SEO metadata, MusicGroup structured data, robots.txt and sitemap.xml.
 - Reuse the existing Supabase auth, catalog, likes, VIP entitlements, receipts and admin workflows. Do not reset or overwrite production data.
