@@ -320,3 +320,22 @@ aside > div.caspian-v2-sidebar {
   .caspian-v2-artist-footer { padding: 19px; }
   .caspian-v2-list-row { gap: 9px; padding-inline: 10px; }
 }
+
+
+.caspian-v2-recent-row {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+  padding: 11px;
+  border: 1px solid rgba(151,181,214,.10);
+  border-radius: 18px;
+  background: rgba(10,22,37,.76);
+  text-align: right;
+  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+.caspian-v2-recent-row:hover {
+  transform: translateY(-2px);
+  border-color: rgba(214,180,92,.3);
+  background: rgba(19,39,62,.9);
+}
