@@ -204,7 +204,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             currentView === 'liked' ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-white'
           }`}
         >
-          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-600 to-purple-400 flex items-center justify-center text-white shrink-0">
+          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#24558a] to-[#d6b45c] flex items-center justify-center text-white shrink-0">
             <Heart className="w-3.5 h-3.5 fill-white" />
           </div>
           <span className="truncate">آهنگ‌های لایک شده</span>
