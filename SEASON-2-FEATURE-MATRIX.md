@@ -9,6 +9,10 @@ Production `main` remains isolated until all release gates pass.
 - Persistent player controls, shuffle and repeat toggle.
 - Interactive playback queue: add current track, inspect upcoming tracks, play queued track, reorder, remove and clear.
 - Queue persists in localStorage on the current device; track-end auto-advance reads live queue state and repeat-one state.
+- One-click add-to-queue actions are available from Home, Search and Library track cards.
+- Volume, shuffle and repeat-one preferences persist locally.
+- Keyboard shortcuts: Space play/pause, arrow keys seek, Ctrl/Cmd+K opens search, Escape closes overlays.
+- Shuffle avoids immediately selecting the currently playing track when multiple tracks exist.
 - Artist and album collection detail views with real catalog tracks.
 - Playlist detail view with the playlist's actual track membership.
 - Taste-based recommendations using the user's real liked/recent tracks, artist and genre affinity, and catalog play counts.
@@ -43,6 +47,13 @@ Production `main` remains isolated until all release gates pass.
 - Podcasts, audiobooks, music videos, events and merch from authorized providers.
 - Offline mode for eligible licensed/user-owned assets.
 - Remote device control only with a supported receiver integration.
+
+## Visual and performance pass
+- Cinematic layered gradients, gold/blue edge lighting, improved card depth and hierarchy.
+- Responsive player sizing for narrow mobile screens and safe-area padding.
+- Memoized Home recommendations, popular tracks, recent-track lookup and Search filtering.
+- Removed blanket blur from every content card to reduce GPU compositing cost.
+- Update-break countdown stops its one-second timer after expiry.
 
 ## Release gates
 1. TypeScript and production build pass on the latest branch head.
