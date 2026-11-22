@@ -55,7 +55,7 @@ export const TopNav: React.FC<TopNavProps> = ({
           <Search className="w-4 h-4 absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400" />
           <input
             type="text"
-            placeholder="جستجوی آهنگ، ریمیکس، سبک یا آلبوم..."
+            placeholder="جستجوی آهنگ، ریمیکس، سبک یا آلبوم... (Ctrl+K)" title="جستجو با Ctrl+K"
             value={searchQuery}
             onChange={(e) => {
               onSearchChange(e.target.value);
