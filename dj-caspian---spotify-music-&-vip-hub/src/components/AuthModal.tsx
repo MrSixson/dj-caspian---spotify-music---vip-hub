@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   X, LogIn, UserPlus, Shield, Crown, User, Lock, 
-  Mail, Sparkles, CheckCircle2, AlertCircle, ArrowLeft, Disc3
+  Mail, Sparkles, CheckCircle2, AlertCircle, ArrowLeft
 } from 'lucide-react';
 import { UserAccount } from '../types';
 import { signInWithEmail, signUpWithEmail } from '../lib/auth';
