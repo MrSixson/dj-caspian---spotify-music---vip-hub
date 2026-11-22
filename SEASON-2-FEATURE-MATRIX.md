@@ -10,6 +10,8 @@ Production `main` remains isolated until all release gates pass.
 - Interactive playback queue: add current track, inspect upcoming tracks, play queued track, reorder, remove and clear.
 - Queue persists in localStorage on the current device; track-end auto-advance reads live queue state and repeat-one state.
 - One-click add-to-queue actions are available from Home, Search and Library track cards.
+- Create personal playlists per signed-in account, add tracks from the Library, open them from Home/Sidebar/Library, and delete them.
+- Personal playlists are currently stored locally on this device per account; they are not synced to Supabase or other devices.
 - Volume, shuffle and repeat-one preferences persist locally.
 - Keyboard shortcuts: Space play/pause, arrow keys seek, Ctrl/Cmd+K opens search, Escape closes overlays.
 - Shuffle avoids immediately selecting the currently playing track when multiple tracks exist.
@@ -32,7 +34,7 @@ Production `main` remains isolated until all release gates pass.
 - Radio, recommendations, Discover Weekly, Release Radar and Daily Mix.
 
 ### Personal library
-- User playlist CRUD, reorder, public/private sharing and collaboration.
+- Cloud-synced user playlists, playlist editing/reordering, public/private sharing and collaboration.
 - Synced history, saved artists/albums and smart filters.
 - Taste profile, listening stats and Wrapped.
 
