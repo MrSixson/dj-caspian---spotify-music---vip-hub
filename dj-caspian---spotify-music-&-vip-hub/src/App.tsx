@@ -59,6 +59,8 @@ export default function App() {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [userPlaylists, setUserPlaylists] = useState<Playlist[]>([]);
   const userPlaylistsReadyRef = useRef<string | null>(null);
+  const skipUserPlaylistSaveRef = useRef(false);
+  const [selectedPlaylistId, setSelectedPlaylistId] = useState<string | null>(null);
 
   // 3. Persistent VIP Tickets
   const [tickets, setTickets] = useState<VipTicket[]>([]);
@@ -118,10 +120,12 @@ export default function App() {
 
   useEffect(() => {
     if (!currentUser?.id) {
+      skipUserPlaylistSaveRef.current = true;
       userPlaylistsReadyRef.current = null;
       setUserPlaylists([]);
       return;
     }
+    skipUserPlaylistSaveRef.current = true;
     const storageKey = `caspian_user_playlists:${currentUser.id}`;
     try {
       const saved = localStorage.getItem(storageKey);
@@ -134,6 +138,7 @@ export default function App() {
   }, [currentUser?.id]);
 
   useEffect(() => {
+    if (skipUserPlaylistSaveRef.current) { skipUserPlaylistSaveRef.current = false; return; }
     if (!currentUser?.id || userPlaylistsReadyRef.current !== currentUser.id) return;
     localStorage.setItem(`caspian_user_playlists:${currentUser.id}`, JSON.stringify(userPlaylists));
   }, [currentUser?.id, userPlaylists]);
@@ -773,8 +778,8 @@ export default function App() {
         onNavigate={navigateToView}
         playlists={[...userPlaylists, ...playlists]}
         onSelectPlaylist={(pl) => {
-          setCurrentView('home');
-          showToast(`پلی‌لیست "${pl.title}" باز شد`, 'info');
+          setSelectedPlaylistId(pl.id);
+          setCurrentView('library');
         }}
         likedCount={likedTrackIds.length}
         isUserVip={isUserVip}
@@ -818,7 +823,8 @@ export default function App() {
               onNavigateToSearch={() => setCurrentView('search')}
               onNavigateToLibrary={() => setCurrentView('library')}
               onSelectPlaylist={(pl) => {
-                showToast(`پلی‌لیست "${pl.title}" انتخاب شد`, 'info');
+                setSelectedPlaylistId(pl.id);
+                setCurrentView('library');
               }}
             />
           )}
@@ -851,6 +857,7 @@ export default function App() {
               onToggleLike={handleToggleLike}
               onDownloadTrack={handleDownloadTrack}
               onAddToQueue={handleAddToQueue}
+              selectedPlaylistId={selectedPlaylistId}
               userPlaylists={userPlaylists}
               onCreateUserPlaylist={handleCreateUserPlaylist}
               onDeleteUserPlaylist={handleDeleteUserPlaylist}
@@ -873,6 +880,7 @@ export default function App() {
               onToggleLike={handleToggleLike}
               onDownloadTrack={handleDownloadTrack}
               onAddToQueue={handleAddToQueue}
+              selectedPlaylistId={selectedPlaylistId}
               userPlaylists={userPlaylists}
               onCreateUserPlaylist={handleCreateUserPlaylist}
               onDeleteUserPlaylist={handleDeleteUserPlaylist}
