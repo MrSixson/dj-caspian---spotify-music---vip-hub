@@ -7,6 +7,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { TopNav } from './components/TopNav';
 import { PlayerBar } from './components/PlayerBar';
+import { QueuePanel } from './components/QueuePanel';
 import { HomeView } from './components/HomeView';
 import { SupportVipView } from './components/SupportVipView';
 import { AboutView } from './components/AboutView';
@@ -85,6 +86,9 @@ export default function App() {
   const [isMuted, setIsMuted] = useState(false);
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
+  const [playQueue, setPlayQueue] = useState<Track[]>([]);
+  const [isQueueOpen, setIsQueueOpen] = useState(false);
+  const handledEndedTrackRef = useRef<string | null>(null);
 
   // 7. Modals & Notifications
   const [isVipModalOpen, setIsVipModalOpen] = useState(false);
@@ -232,6 +236,7 @@ export default function App() {
 
   // Play a specific track
   const handlePlayTrack = async (track: Track) => {
+    handledEndedTrackRef.current = null;
     setRecentlyPlayedIds((previous) => [track.id, ...previous.filter((id) => id !== track.id)].slice(0, 12));
     if (currentTrack?.id === track.id && isPlaying) {
       audioEngine.pause();
@@ -252,8 +257,10 @@ export default function App() {
         track.synthPreset || 'festival_drop',
         (secs) => {
           setCurrentTime(secs);
-          if (track.duration > 0 && secs >= track.duration) {
-            handleNextTrack();
+          if (track.duration > 0 && secs >= track.duration && handledEndedTrackRef.current !== track.id) {
+            handledEndedTrackRef.current = track.id;
+            if (isRepeat) void handlePlayTrack(track);
+            else handleNextTrack();
           }
         }
       );
@@ -302,6 +309,12 @@ export default function App() {
   };
 
   const handleNextTrack = () => {
+    if (playQueue.length > 0) {
+      const [nextTrack, ...remaining] = playQueue;
+      setPlayQueue(remaining);
+      void handlePlayTrack(nextTrack);
+      return;
+    }
     if (tracks.length === 0) return;
     if (isShuffle) {
       const randomIndex = Math.floor(Math.random() * tracks.length);
@@ -311,6 +324,25 @@ export default function App() {
     const currentIndex = tracks.findIndex((t) => t.id === currentTrack?.id);
     const nextIndex = (currentIndex + 1) % tracks.length;
     handlePlayTrack(tracks[nextIndex]);
+  };
+
+  const handleAddToQueue = (track: Track) => {
+    setPlayQueue((previous) => [...previous, track]);
+    showToast(`«${track.title}» به صف پخش اضافه شد.`, 'success');
+  };
+
+  const handleRemoveFromQueue = (index: number) => {
+    setPlayQueue((previous) => previous.filter((_, itemIndex) => itemIndex !== index));
+  };
+
+  const handleMoveQueueItem = (index: number, direction: -1 | 1) => {
+    setPlayQueue((previous) => {
+      const target = index + direction;
+      if (target < 0 || target >= previous.length) return previous;
+      const next = [...previous];
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    });
   };
 
   const handlePreviousTrack = () => {
@@ -809,6 +841,23 @@ export default function App() {
         onToggleLike={handleToggleLike}
         onDownloadTrack={handleDownloadTrack}
         onOpenVisualizer={() => setIsVisualizerOpen(true)}
+        queueCount={playQueue.length}
+        onOpenQueue={() => setIsQueueOpen(true)}
+        onAddToQueue={() => currentTrack && handleAddToQueue(currentTrack)}
+      />
+
+      <QueuePanel
+        isOpen={isQueueOpen}
+        currentTrack={currentTrack}
+        queue={playQueue}
+        onClose={() => setIsQueueOpen(false)}
+        onPlayTrack={(track, index) => {
+          setPlayQueue((previous) => previous.filter((_, itemIndex) => itemIndex !== index));
+          void handlePlayTrack(track);
+        }}
+        onRemove={handleRemoveFromQueue}
+        onMove={handleMoveQueueItem}
+        onClear={() => setPlayQueue([])}
       />
 
       {/* Auth Modal (Login & Register) */}
