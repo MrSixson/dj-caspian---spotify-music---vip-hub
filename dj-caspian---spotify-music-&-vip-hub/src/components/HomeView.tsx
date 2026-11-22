@@ -51,6 +51,23 @@ export const HomeView: React.FC<HomeViewProps> = ({
   const popularTracks = [...tracks].sort((a, b) => (b.plays || 0) - (a.plays || 0)).slice(0, 6);
   const latestTracks = tracks.slice(0, 8);
   const recentTracks = recentlyPlayedIds.map((id) => tracks.find((track) => track.id === id)).filter((track): track is Track => Boolean(track));
+  const tasteSeeds = tracks.filter((track) => likedTrackIds.includes(track.id) || recentlyPlayedIds.includes(track.id));
+  const genreAffinity = new Map<string, number>();
+  const artistAffinity = new Map<string, number>();
+  tasteSeeds.forEach((track) => {
+    if (track.genre) genreAffinity.set(track.genre, (genreAffinity.get(track.genre) || 0) + 1);
+    if (track.artist) artistAffinity.set(track.artist, (artistAffinity.get(track.artist) || 0) + 1);
+  });
+  const recommendedTracks = tracks
+    .filter((track) => !likedTrackIds.includes(track.id) && !recentlyPlayedIds.includes(track.id))
+    .map((track) => ({
+      track,
+      score: (genreAffinity.get(track.genre) || 0) * 3 + (artistAffinity.get(track.artist) || 0) * 2 + Math.log1p(Math.max(0, track.plays || 0)),
+    }))
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 6)
+    .map((item) => item.track);
 
   return (
     <div className="caspian-v2-home space-y-10 sm:space-y-14 p-4 sm:p-7 lg:p-9" dir="rtl">
@@ -199,6 +216,30 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   <span className="mt-1 block truncate text-xs text-slate-400">{track.artist}</span>
                 </span>
                 <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#d6b45c]/20 bg-[#d6b45c]/[0.08] text-[#e8c875] transition group-hover:bg-[#d6b45c] group-hover:text-[#07101b]"><Play className="h-4 w-4 fill-current" /></span>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Personalized recommendations based on actual likes and listening history */}
+      {recommendedTracks.length > 0 && (
+        <section className="space-y-5">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <div className="caspian-v2-kicker">YOUR TASTE, YOUR DISCOVERY</div>
+              <h2 className="mt-2 text-xl font-black text-white sm:text-2xl">پیشنهادهای کاسپین برای تو</h2>
+              <p className="mt-1 text-xs text-slate-400">بر اساس سبک‌ها و هنرمندانی که واقعاً گوش داده‌ای یا ذخیره کرده‌ای</p>
+            </div>
+            <span className="text-[10px] text-slate-500">PERSONALIZED</span>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+            {recommendedTracks.map((track) => (
+              <button key={track.id} type="button" onClick={() => onPlayTrack(track)} className="caspian-v2-track-card group text-right">
+                <img src={track.coverUrl} alt={track.title} loading="lazy" className="aspect-square w-full rounded-2xl object-cover transition duration-700 group-hover:scale-[1.02]" />
+                <span className="mt-3 block truncate text-sm font-extrabold text-white group-hover:text-[#f0d88a]">{track.title}</span>
+                <span className="mt-1 block truncate text-xs text-slate-400">{track.artist}</span>
+                <span className="mt-2 block truncate text-[10px] text-slate-500">{track.genre}</span>
               </button>
             ))}
           </div>
