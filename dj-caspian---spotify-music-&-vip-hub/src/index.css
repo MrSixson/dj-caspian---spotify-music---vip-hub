@@ -339,3 +339,57 @@ aside > div.caspian-v2-sidebar {
   border-color: rgba(214,180,92,.3);
   background: rgba(19,39,62,.9);
 }
+
+
+.caspian-v2-search { width: 100%; max-width: 1680px; margin-inline: auto; }
+.caspian-v2-searchbox {
+  display: flex;
+  min-height: 62px;
+  align-items: center;
+  gap: 13px;
+  padding: 0 18px;
+  border: 1px solid rgba(214,180,92,.22);
+  border-radius: 19px;
+  background: linear-gradient(110deg, rgba(14,31,51,.96), rgba(7,17,30,.96));
+  box-shadow: 0 16px 44px rgba(0,0,0,.2), inset 0 1px rgba(255,255,255,.04);
+}
+.caspian-v2-searchbox:focus-within {
+  border-color: rgba(214,180,92,.55);
+  box-shadow: 0 0 0 3px rgba(214,180,92,.07), 0 18px 48px rgba(0,0,0,.25);
+}
+.caspian-v2-filter-pill {
+  padding: 9px 15px;
+  border: 1px solid rgba(151,181,214,.13);
+  border-radius: 999px;
+  background: rgba(12,25,42,.86);
+  color: #aab9cb;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  transition: all .2s ease;
+}
+.caspian-v2-filter-pill:hover {
+  color: white;
+  border-color: rgba(214,180,92,.3);
+  background: rgba(25,52,81,.82);
+}
+.caspian-v2-filter-pill.is-active {
+  color: #07101b;
+  border-color: #d6b45c;
+  background: linear-gradient(135deg, #f0d88a, #d6b45c);
+  box-shadow: 0 6px 20px rgba(214,180,92,.16);
+}
+.caspian-v2-collection-card {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(151,181,214,.10);
+  border-radius: 18px;
+  background: rgba(10,22,37,.78);
+  text-align: right;
+  transition: transform .2s ease, border-color .2s ease, background .2s ease;
+}
+.caspian-v2-collection-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(214,180,92,.32);
+  background: rgba(18,39,63,.92);
+}
