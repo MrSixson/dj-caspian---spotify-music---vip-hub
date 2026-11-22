@@ -549,9 +549,6 @@ header.caspian-v2-topnav {
     radial-gradient(ellipse at 50% 0%, rgba(27,69,111,.26), transparent 70%),
     linear-gradient(145deg, rgba(10,24,40,.9), rgba(5,12,21,.95));
 }
-img[loading="lazy"] {
-  content-visibility: auto;
-}
 @media (min-width: 768px) {
   .caspian-v2-sidebar {
     width: 17rem;
