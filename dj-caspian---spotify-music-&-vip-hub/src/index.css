@@ -120,3 +120,203 @@ footer img { box-shadow: 0 0 0 1px rgba(214,180,92,.22), 0 8px 25px rgba(0,0,0,.
   main { padding-bottom: 7.5rem; }
   footer { padding-bottom: max(.65rem, env(safe-area-inset-bottom)); }
 }
+
+/* =========================================================
+   CASPIAN SEASON 02 — carbon blue / midnight / champagne gold
+   ========================================================= */
+.caspian-v2-shell {
+  background: #040912;
+  background-image: radial-gradient(ellipse at 65% -15%, rgba(28,72,119,.22), transparent 42rem);
+}
+.caspian-v2-content { background: transparent; }
+.caspian-v2-main {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(23,63,105,.13), transparent 42rem),
+    linear-gradient(180deg, #07111f 0%, #050a12 60%, #040810 100%);
+  scrollbar-color: #294c70 #050a12;
+}
+.caspian-v2-sidebar,
+aside > div.caspian-v2-sidebar {
+  background: linear-gradient(180deg, #081626 0%, #050b14 100%) !important;
+  border-color: rgba(214,180,92,.16) !important;
+  box-shadow: 16px 0 48px rgba(0,0,0,.32), inset -1px 0 rgba(214,180,92,.06);
+}
+.caspian-v2-sidebar nav button { border: 1px solid transparent; }
+.caspian-v2-sidebar nav button:hover {
+  background: rgba(31,67,103,.34) !important;
+  border-color: rgba(214,180,92,.12);
+}
+.caspian-v2-topnav {
+  background: rgba(5,12,22,.88) !important;
+  border-bottom: 1px solid rgba(214,180,92,.13) !important;
+  box-shadow: 0 12px 36px rgba(0,0,0,.22);
+  backdrop-filter: blur(24px) saturate(145%) !important;
+}
+.caspian-v2-player {
+  background: rgba(4,10,18,.96) !important;
+  border-top: 1px solid rgba(214,180,92,.22) !important;
+  box-shadow: 0 -16px 55px rgba(0,0,0,.55), 0 -1px rgba(120,180,230,.06);
+  backdrop-filter: blur(26px) saturate(150%) !important;
+}
+.caspian-v2-player input[type="range"] { accent-color: #d6b45c; }
+.caspian-v2-home { width: 100%; max-width: 1680px; margin-inline: auto; }
+.caspian-v2-hero {
+  border: 1px solid rgba(214,180,92,.20);
+  background: #071322;
+  box-shadow: 0 28px 90px rgba(0,0,0,.36), inset 0 1px rgba(255,255,255,.05);
+}
+.caspian-v2-logo-orbit { animation: caspian-orbit-glow 6s ease-in-out infinite; }
+@keyframes caspian-orbit-glow {
+  0%,100% { filter: drop-shadow(0 0 0 rgba(214,180,92,0)); transform: translateY(0); }
+  50% { filter: drop-shadow(0 0 18px rgba(214,180,92,.12)); transform: translateY(-4px); }
+}
+.caspian-v2-kicker {
+  color: #b9cbe0;
+  font: 800 9px/1.5 "Plus Jakarta Sans", sans-serif;
+  letter-spacing: .24em;
+  direction: ltr;
+  text-align: right;
+  opacity: .68;
+}
+.caspian-v2-shortcut {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 14px;
+  padding: 17px;
+  text-align: right;
+  border: 1px solid rgba(151,181,214,.12);
+  border-radius: 19px;
+  background: linear-gradient(125deg, rgba(17,38,61,.88), rgba(7,16,28,.92));
+  box-shadow: 0 12px 34px rgba(0,0,0,.18);
+  transition: border-color .22s ease, transform .22s ease, background .22s ease;
+}
+.caspian-v2-shortcut:hover {
+  transform: translateY(-3px);
+  border-color: rgba(214,180,92,.38);
+  background: linear-gradient(125deg, rgba(24,54,84,.92), rgba(8,18,31,.96));
+}
+.caspian-v2-shortcut-icon {
+  display: flex;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(119,178,224,.2);
+  border-radius: 15px;
+  color: #a8d5fa;
+  background: linear-gradient(145deg, rgba(38,91,139,.32), rgba(15,37,62,.55));
+}
+.caspian-v2-shortcut-gold {
+  color: #f0d88a;
+  border-color: rgba(214,180,92,.28);
+  background: linear-gradient(145deg, rgba(214,180,92,.18), rgba(91,67,25,.2));
+}
+.caspian-v2-track-card {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(151,181,214,.10);
+  border-radius: 22px;
+  background: linear-gradient(155deg, rgba(15,31,49,.92), rgba(6,13,23,.96));
+  box-shadow: 0 14px 36px rgba(0,0,0,.18);
+  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+.caspian-v2-track-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(214,180,92,.34);
+  box-shadow: 0 22px 48px rgba(0,0,0,.3), 0 0 24px rgba(31,82,130,.12);
+}
+.caspian-v2-playlist-card {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(151,181,214,.10);
+  border-radius: 22px;
+  background: rgba(10,22,37,.78);
+  transition: transform .25s ease, border-color .25s ease, background .25s ease;
+}
+.caspian-v2-playlist-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(214,180,92,.32);
+  background: rgba(17,36,58,.92);
+}
+.caspian-v2-empty {
+  display: flex;
+  min-height: 245px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 34px 20px;
+  text-align: center;
+  border: 1px dashed rgba(144,176,210,.22);
+  border-radius: 26px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(27,69,111,.24), transparent 70%), rgba(7,16,28,.72);
+}
+.caspian-v2-empty-icon {
+  display: flex;
+  width: 62px;
+  height: 62px;
+  align-items: center;
+  justify-content: center;
+  color: #e8c875;
+  border: 1px solid rgba(214,180,92,.22);
+  border-radius: 20px;
+  background: rgba(214,180,92,.08);
+}
+.caspian-v2-playlist-empty {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid rgba(151,181,214,.11);
+  border-radius: 22px;
+  background: rgba(8,19,33,.76);
+}
+.caspian-v2-list {
+  overflow: hidden;
+  border: 1px solid rgba(151,181,214,.12);
+  border-radius: 22px;
+  background: rgba(8,18,31,.8);
+}
+.caspian-v2-list-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 68px;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(151,181,214,.08);
+  transition: background .2s ease;
+}
+.caspian-v2-list-row:last-child { border-bottom: 0; }
+.caspian-v2-list-row:hover { background: rgba(29,58,88,.34); }
+.caspian-v2-artist-footer {
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+  border: 1px solid rgba(214,180,92,.17);
+  border-radius: 26px;
+  background:
+    radial-gradient(ellipse at 0% 50%, rgba(27,72,116,.3), transparent 50%),
+    linear-gradient(120deg, rgba(12,28,46,.98), rgba(6,13,23,.98));
+  box-shadow: 0 20px 60px rgba(0,0,0,.22);
+}
+.caspian-v2-artist-footer::after {
+  content: "";
+  position: absolute;
+  top: -70px;
+  left: -60px;
+  width: 210px;
+  height: 210px;
+  border: 1px solid rgba(214,180,92,.1);
+  border-radius: 50%;
+  pointer-events: none;
+}
+@media (max-width: 640px) {
+  .caspian-v2-home { padding-inline: 14px; }
+  .caspian-v2-hero { border-radius: 25px; }
+  .caspian-v2-shortcut { padding: 13px; gap: 10px; }
+  .caspian-v2-shortcut-icon { width: 42px; height: 42px; border-radius: 13px; }
+  .caspian-v2-artist-footer { padding: 19px; }
+  .caspian-v2-list-row { gap: 9px; padding-inline: 10px; }
+}
