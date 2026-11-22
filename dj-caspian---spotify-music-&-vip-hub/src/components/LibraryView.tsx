@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Heart, Music2, Play, Pause, Download, Crown, Disc3, ListMusic } from 'lucide-react';
 import { Track, Playlist } from '../types';
 
@@ -34,9 +34,12 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
   onSelectPlaylist,
   filterLikedOnly = false,
 }) => {
-  const displayedTracks = filterLikedOnly
-    ? tracks.filter((track) => likedTrackIds.includes(track.id))
-    : tracks;
+  const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null);
+  const displayedTracks = selectedPlaylist
+    ? tracks.filter((track) => selectedPlaylist.trackIds.includes(track.id))
+    : filterLikedOnly
+      ? tracks.filter((track) => likedTrackIds.includes(track.id))
+      : tracks;
 
   return (
     <div className="caspian-v2-library space-y-9 p-4 sm:p-7 lg:p-9" dir="rtl">
@@ -45,13 +48,14 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
           {filterLikedOnly ? <Heart className="h-7 w-7 fill-current" /> : <ListMusic className="h-7 w-7" />}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="caspian-v2-kicker">{filterLikedOnly ? 'YOUR FAVORITES' : 'YOUR MUSIC SPACE'}</div>
-          <h1 className="mt-2 text-2xl font-black text-white sm:text-4xl">{filterLikedOnly ? 'آهنگ‌های موردعلاقه' : 'کتابخانه موسیقی'}</h1>
-          <p className="mt-2 text-xs leading-6 text-slate-400">{displayedTracks.length} قطعه در این بخش · {filterLikedOnly ? 'مجموعه شخصی تو از آهنگ‌های ذخیره‌شده' : 'آثار، پلی‌لیست‌ها و آرشیو DJ Caspian'}</p>
+          <div className="caspian-v2-kicker">{selectedPlaylist ? 'PLAYLIST DETAILS' : filterLikedOnly ? 'YOUR FAVORITES' : 'YOUR MUSIC SPACE'}</div>
+          <h1 className="mt-2 text-2xl font-black text-white sm:text-4xl">{selectedPlaylist ? selectedPlaylist.title : filterLikedOnly ? 'آهنگ‌های موردعلاقه' : 'کتابخانه موسیقی'}</h1>
+          <p className="mt-2 text-xs leading-6 text-slate-400">{displayedTracks.length} قطعه در این بخش · {selectedPlaylist ? selectedPlaylist.description || 'پلی‌لیست انتخاب‌شده از آرشیو کاسپین' : filterLikedOnly ? 'مجموعه شخصی تو از آهنگ‌های ذخیره‌شده' : 'آثار، پلی‌لیست‌ها و آرشیو DJ Caspian'}</p>
         </div>
+        {selectedPlaylist && <button type="button" onClick={() => setSelectedPlaylist(null)} className="mt-4 rounded-full border border-white/15 bg-white/[0.05] px-4 py-2 text-xs font-bold text-white hover:border-[#d6b45c]/40">بازگشت به همه مجموعه‌ها</button>}
       </section>
 
-      {!filterLikedOnly && (
+      {!filterLikedOnly && !selectedPlaylist && (
         <section className="space-y-4">
           <div className="flex items-end justify-between">
             <div>
@@ -71,7 +75,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
           ) : (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
               {playlists.map((playlist) => (
-                <button key={playlist.id} type="button" onClick={() => onSelectPlaylist(playlist)} className="caspian-v2-playlist-card group text-right">
+                <button key={playlist.id} type="button" onClick={() => { setSelectedPlaylist(playlist); onSelectPlaylist(playlist); }} className="caspian-v2-playlist-card group text-right">
                   <div className="relative overflow-hidden rounded-2xl">
                     <img src={playlist.coverUrl} alt={playlist.title} loading="lazy" className="aspect-square w-full object-cover transition duration-700 group-hover:scale-105" />
                     <span className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent" />
@@ -89,8 +93,8 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
       <section className="space-y-4">
         <div className="flex items-end justify-between gap-3">
           <div>
-            <div className="caspian-v2-kicker">{filterLikedOnly ? 'SAVED BY YOU' : 'ALL RELEASES'}</div>
-            <h2 className="mt-2 text-xl font-black text-white">{filterLikedOnly ? 'آهنگ‌های ذخیره‌شده' : 'تمام قطعه‌ها'}</h2>
+            <div className="caspian-v2-kicker">{selectedPlaylist ? 'PLAYLIST TRACKS' : filterLikedOnly ? 'SAVED BY YOU' : 'ALL RELEASES'}</div>
+            <h2 className="mt-2 text-xl font-black text-white">{selectedPlaylist ? 'آهنگ‌های این پلی‌لیست' : filterLikedOnly ? 'آهنگ‌های ذخیره‌شده' : 'تمام قطعه‌ها'}</h2>
           </div>
           <span className="text-xs text-slate-500">{displayedTracks.length} قطعه</span>
         </div>
@@ -98,8 +102,8 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
         {displayedTracks.length === 0 ? (
           <div className="caspian-v2-empty">
             <div className="caspian-v2-empty-icon">{filterLikedOnly ? <Heart className="h-8 w-8" /> : <Music2 className="h-8 w-8" />}</div>
-            <h3 className="text-lg font-extrabold text-white">{filterLikedOnly ? 'هنوز آهنگی ذخیره نکرده‌ای' : 'آرشیو موسیقی هنوز خالی است'}</h3>
-            <p className="max-w-lg text-sm leading-7 text-slate-400">{filterLikedOnly ? 'با زدن دکمه قلب کنار هر قطعه، آن را به این فهرست اضافه کن.' : 'به‌محض انتشار آثار تازه، قطعه‌ها در این بخش قرار می‌گیرند.'}</p>
+            <h3 className="text-lg font-extrabold text-white">{selectedPlaylist ? 'این پلی‌لیست هنوز آهنگی ندارد' : filterLikedOnly ? 'هنوز آهنگی ذخیره نکرده‌ای' : 'آرشیو موسیقی هنوز خالی است'}</h3>
+            <p className="max-w-lg text-sm leading-7 text-slate-400">{selectedPlaylist ? 'به‌زودی آهنگ‌های این مجموعه نمایش داده می‌شوند.' : filterLikedOnly ? 'با زدن دکمه قلب کنار هر قطعه، آن را به این فهرست اضافه کن.' : 'به‌محض انتشار آثار تازه، قطعه‌ها در این بخش قرار می‌گیرند.'}</p>
           </div>
         ) : (
           <div className="caspian-v2-list">
