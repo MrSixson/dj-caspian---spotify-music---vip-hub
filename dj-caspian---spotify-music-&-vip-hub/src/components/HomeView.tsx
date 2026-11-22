@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-  Play, Pause, Heart, Download, Crown, Sparkles, CheckCircle2,
-  Music2, ArrowLeft, Headphones, Disc3, Radio, Clock3, Waves
+  Play, Pause, Heart, Download, Crown,
+  Music2, ArrowLeft, Headphones, Disc3, Radio, Waves
 } from 'lucide-react';
 import { Track, Playlist } from '../types';
 import { DJ_CASPIAN_INFO } from '../data/initialData';
@@ -9,6 +9,7 @@ import { DJ_CASPIAN_INFO } from '../data/initialData';
 interface HomeViewProps {
   tracks: Track[];
   playlists: Playlist[];
+  recentlyPlayedIds: string[];
   currentTrackId: string | null;
   isPlaying: boolean;
   likedTrackIds: string[];
@@ -32,6 +33,7 @@ const formatDuration = (seconds: number) => {
 export const HomeView: React.FC<HomeViewProps> = ({
   tracks,
   playlists,
+  recentlyPlayedIds,
   currentTrackId,
   isPlaying,
   likedTrackIds,
@@ -48,6 +50,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   const featuredTrack = tracks[0] || null;
   const popularTracks = [...tracks].sort((a, b) => (b.plays || 0) - (a.plays || 0)).slice(0, 6);
   const latestTracks = tracks.slice(0, 8);
+  const recentTracks = recentlyPlayedIds.map((id) => tracks.find((track) => track.id === id)).filter((track): track is Track => Boolean(track));
 
   return (
     <div className="caspian-v2-home space-y-10 sm:space-y-14 p-4 sm:p-7 lg:p-9" dir="rtl">
@@ -176,6 +179,31 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </button>
         </div>
       </section>
+
+      {/* Recently played: persisted locally on this device */}
+      {recentTracks.length > 0 && (
+        <section className="space-y-4">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <div className="caspian-v2-kicker">PICK UP WHERE YOU LEFT OFF</div>
+              <h2 className="mt-2 text-xl font-black text-white sm:text-2xl">اخیراً گوش داده‌ای</h2>
+            </div>
+            <span className="text-xs text-slate-500">روی هر قطعه بزن تا دوباره پخش شود</span>
+          </div>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+            {recentTracks.slice(0, 6).map((track) => (
+              <button key={track.id} type="button" onClick={() => onPlayTrack(track)} className="caspian-v2-recent-row group">
+                <img src={track.coverUrl} alt="" loading="lazy" className="h-12 w-12 rounded-xl object-cover" />
+                <span className="min-w-0 flex-1 text-right">
+                  <span className="block truncate text-sm font-bold text-white">{track.title}</span>
+                  <span className="mt-1 block truncate text-xs text-slate-400">{track.artist}</span>
+                </span>
+                <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#d6b45c]/20 bg-[#d6b45c]/[0.08] text-[#e8c875] transition group-hover:bg-[#d6b45c] group-hover:text-[#07101b]"><Play className="h-4 w-4 fill-current" /></span>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Fresh releases */}
       <section className="space-y-5">
