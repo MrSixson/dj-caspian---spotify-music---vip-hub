@@ -54,7 +54,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
 }) => {
   if (!currentTrack) {
     return (
-      <footer className="fixed bottom-0 left-0 right-0 z-40 bg-[#181818] border-t border-neutral-800/80 px-4 py-3 text-center text-xs text-neutral-400 select-none">
+      <footer className="caspian-v2-player fixed bottom-0 left-0 right-0 z-40 px-4 py-3 text-center text-xs text-neutral-400 select-none">
         یک آهنگ برای پخش انتخاب کنید
       </footer>
     );
@@ -70,7 +70,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 z-40 bg-[#121212]/95 backdrop-blur-lg border-t border-neutral-800 px-3 sm:px-6 py-2.5 sm:py-3 select-none" dir="rtl">
+    <footer className="caspian-v2-player fixed bottom-0 left-0 right-0 z-40 px-3 sm:px-6 py-2.5 sm:py-3 select-none" dir="rtl">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
         
         {/* RIGHT (Track Info & Artwork in RTL) */}
@@ -150,7 +150,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
 
             <button
               onClick={onTogglePlay}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg shadow-[#d6b45c]/30"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-[#07101b] flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg shadow-[#d6b45c]/30"
               title={isPlaying ? 'توقف' : 'پخش'}
             >
               {isPlaying ? (
