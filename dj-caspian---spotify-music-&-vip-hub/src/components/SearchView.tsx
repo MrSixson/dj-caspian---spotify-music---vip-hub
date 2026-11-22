@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Search, Play, Pause, Heart, Download, Crown, Disc3, X, SlidersHorizontal, Music2, UserRound, Album, ListPlus } from 'lucide-react';
 import { Track } from '../types';
 
@@ -34,6 +34,10 @@ export const SearchView: React.FC<SearchViewProps> = ({
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [selectedCollection, setSelectedCollection] = useState<{ type: 'artist' | 'album'; name: string } | null>(null);
   const [sortMode, setSortMode] = useState<SortMode>('newest');
+
+  useEffect(() => {
+    if (searchQuery.trim()) setSelectedCollection(null);
+  }, [searchQuery]);
 
   const genres = useMemo(() => Array.from(new Set(tracks.map((track) => track.genre).filter(Boolean))).sort(), [tracks]);
   const artists = useMemo(() => Array.from(new Set(tracks.map((track) => track.artist).filter(Boolean))).slice(0, 8), [tracks]);
