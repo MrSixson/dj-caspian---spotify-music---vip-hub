@@ -31,7 +31,11 @@ import { UpdateBreak } from './components/UpdateBreak';
 export default function App() {
   const updateBreakEndsAt = new Date('2026-11-25T09:34:00Z').getTime();
   const [clockNow, setClockNow] = useState(() => Date.now());
-  useEffect(() => { const interval = window.setInterval(() => setClockNow(Date.now()), 1000); return () => window.clearInterval(interval); }, []);
+  useEffect(() => {
+    if (clockNow >= updateBreakEndsAt) return;
+    const interval = window.setInterval(() => setClockNow(Date.now()), 1000);
+    return () => window.clearInterval(interval);
+  }, [clockNow, updateBreakEndsAt]);
   // 1. Persistent Users & Auth State
   const [users, setUsers] = useState<UserAccount[]>(() => {
     try {
@@ -421,7 +425,7 @@ export default function App() {
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [handleTogglePlay, currentTrack, currentTime, duration]);
+  }, [handleTogglePlay, currentTrack, currentTime, duration, isPlaying, tracks]);
 
   const handleVolumeChange = (vol: number) => {
     setVolume(vol);
