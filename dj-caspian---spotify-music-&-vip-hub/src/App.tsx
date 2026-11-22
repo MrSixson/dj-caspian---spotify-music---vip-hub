@@ -7,6 +7,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { TopNav } from './components/TopNav';
 import { PlayerBar } from './components/PlayerBar';
+import { QueuePanel } from './components/QueuePanel';
 import { HomeView } from './components/HomeView';
 import { SupportVipView } from './components/SupportVipView';
 import { AboutView } from './components/AboutView';
@@ -30,7 +31,11 @@ import { UpdateBreak } from './components/UpdateBreak';
 export default function App() {
   const updateBreakEndsAt = new Date('2026-11-25T09:34:00Z').getTime();
   const [clockNow, setClockNow] = useState(() => Date.now());
-  useEffect(() => { const interval = window.setInterval(() => setClockNow(Date.now()), 1000); return () => window.clearInterval(interval); }, []);
+  useEffect(() => {
+    if (clockNow >= updateBreakEndsAt) return;
+    const interval = window.setInterval(() => setClockNow(Date.now()), 1000);
+    return () => window.clearInterval(interval);
+  }, [clockNow, updateBreakEndsAt]);
   // 1. Persistent Users & Auth State
   const [users, setUsers] = useState<UserAccount[]>(() => {
     try {
@@ -52,6 +57,10 @@ export default function App() {
   const [tracks, setTracks] = useState<Track[]>([]);
 
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [userPlaylists, setUserPlaylists] = useState<Playlist[]>([]);
+  const userPlaylistsReadyRef = useRef<string | null>(null);
+  const skipUserPlaylistSaveRef = useRef(false);
+  const [selectedPlaylistId, setSelectedPlaylistId] = useState<string | null>(null);
 
   // 3. Persistent VIP Tickets
   const [tickets, setTickets] = useState<VipTicket[]>([]);
@@ -66,6 +75,14 @@ export default function App() {
     'home' | 'search' | 'library' | 'support' | 'tickets' | 'admin' | 'liked' | 'dashboard' | 'about'
   >('home');
   const [searchQuery, setSearchQuery] = useState('');
+  const [recentlyPlayedIds, setRecentlyPlayedIds] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('caspian_recently_played');
+      return saved ? (JSON.parse(saved) as string[]).slice(0, 12) : [];
+    } catch {
+      return [];
+    }
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // 6. Audio Playback State
@@ -73,10 +90,22 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(tracks[0]?.duration || 218);
-  const [volume, setVolume] = useState(0.85);
+  const [volume, setVolume] = useState(() => { try { const raw = localStorage.getItem('caspian_player_volume'); const saved = raw === null ? 0.85 : Number(raw); return Number.isFinite(saved) && saved >= 0 && saved <= 1 ? saved : 0.85; } catch { return 0.85; } });
   const [isMuted, setIsMuted] = useState(false);
-  const [isShuffle, setIsShuffle] = useState(false);
-  const [isRepeat, setIsRepeat] = useState(false);
+  const [isShuffle, setIsShuffle] = useState(() => localStorage.getItem('caspian_player_shuffle') === 'true');
+  const [isRepeat, setIsRepeat] = useState(() => localStorage.getItem('caspian_player_repeat') === 'true');
+  const [playQueue, setPlayQueue] = useState<Track[]>(() => {
+    try {
+      const saved = localStorage.getItem('caspian_play_queue');
+      return saved ? (JSON.parse(saved) as Track[]).filter((track) => track && typeof track.id === 'string') : [];
+    } catch {
+      return [];
+    }
+  });
+  const [isQueueOpen, setIsQueueOpen] = useState(false);
+  const handledEndedTrackRef = useRef<string | null>(null);
+  const playQueueRef = useRef<Track[]>([]);
+  const isRepeatRef = useRef(false);
 
   // 7. Modals & Notifications
   const [isVipModalOpen, setIsVipModalOpen] = useState(false);
@@ -88,6 +117,31 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('caspian_users', JSON.stringify(users));
   }, [users]);
+
+  useEffect(() => {
+    if (!currentUser?.id) {
+      skipUserPlaylistSaveRef.current = true;
+      userPlaylistsReadyRef.current = null;
+      setUserPlaylists([]);
+      return;
+    }
+    skipUserPlaylistSaveRef.current = true;
+    const storageKey = `caspian_user_playlists:${currentUser.id}`;
+    try {
+      const saved = localStorage.getItem(storageKey);
+      const parsed = saved ? JSON.parse(saved) : [];
+      setUserPlaylists(Array.isArray(parsed) ? parsed.filter((item) => item && typeof item.id === 'string' && item.id.startsWith('user-')) : []);
+    } catch {
+      setUserPlaylists([]);
+    }
+    userPlaylistsReadyRef.current = currentUser.id;
+  }, [currentUser?.id]);
+
+  useEffect(() => {
+    if (skipUserPlaylistSaveRef.current) { skipUserPlaylistSaveRef.current = false; return; }
+    if (!currentUser?.id || userPlaylistsReadyRef.current !== currentUser.id) return;
+    localStorage.setItem(`caspian_user_playlists:${currentUser.id}`, JSON.stringify(userPlaylists));
+  }, [currentUser?.id, userPlaylists]);
 
   useEffect(() => {
     if (authLoading || currentUser?.role !== 'admin') { setTickets([]); return; }
@@ -187,6 +241,33 @@ export default function App() {
     localStorage.setItem('caspian_liked_tracks', JSON.stringify(likedTrackIds));
   }, [likedTrackIds]);
 
+  useEffect(() => {
+    localStorage.setItem('caspian_recently_played', JSON.stringify(recentlyPlayedIds));
+  }, [recentlyPlayedIds]);
+
+  useEffect(() => {
+    playQueueRef.current = playQueue;
+    localStorage.setItem('caspian_play_queue', JSON.stringify(playQueue));
+  }, [playQueue]);
+
+  useEffect(() => {
+    if (!tracks.length || !playQueue.length) return;
+    const catalogById = new Map(tracks.map((track) => [track.id, track] as const));
+    const validQueue = playQueue.map((track) => catalogById.get(track.id)).filter((track): track is Track => Boolean(track));
+    if (validQueue.length !== playQueue.length || validQueue.some((track, index) => track !== playQueue[index])) {
+      playQueueRef.current = validQueue;
+      setPlayQueue(validQueue);
+    }
+  }, [tracks]);
+
+  useEffect(() => {
+    isRepeatRef.current = isRepeat;
+  }, [isRepeat]);
+
+  useEffect(() => { localStorage.setItem('caspian_player_volume', String(volume)); }, [volume]);
+  useEffect(() => { localStorage.setItem('caspian_player_shuffle', String(isShuffle)); }, [isShuffle]);
+  useEffect(() => { localStorage.setItem('caspian_player_repeat', String(isRepeat)); }, [isRepeat]);
+
   const navigateToView = (view: typeof currentView) => {
     if ((view === 'dashboard' || view === 'liked') && !currentUser) {
       showToast('برای دسترسی به این بخش ابتدا وارد حساب کاربری شوید.', 'info');
@@ -220,6 +301,8 @@ export default function App() {
 
   // Play a specific track
   const handlePlayTrack = async (track: Track) => {
+    handledEndedTrackRef.current = null;
+    setRecentlyPlayedIds((previous) => [track.id, ...previous.filter((id) => id !== track.id)].slice(0, 12));
     if (currentTrack?.id === track.id && isPlaying) {
       audioEngine.pause();
       setIsPlaying(false);
@@ -239,8 +322,10 @@ export default function App() {
         track.synthPreset || 'festival_drop',
         (secs) => {
           setCurrentTime(secs);
-          if (track.duration > 0 && secs >= track.duration) {
-            handleNextTrack();
+          if (track.duration > 0 && secs >= track.duration && handledEndedTrackRef.current !== track.id) {
+            handledEndedTrackRef.current = track.id;
+            if (isRepeatRef.current) void handlePlayTrack(track);
+            else handleNextTrack();
           }
         }
       );
@@ -276,7 +361,14 @@ export default function App() {
         currentTrack.audioUrl,
         currentTrack.bpm,
         currentTrack.synthPreset || 'festival_drop',
-        (secs) => setCurrentTime(secs)
+        (secs) => {
+          setCurrentTime(secs);
+          if (currentTrack.duration > 0 && secs >= currentTrack.duration && handledEndedTrackRef.current !== currentTrack.id) {
+            handledEndedTrackRef.current = currentTrack.id;
+            if (isRepeatRef.current) void handlePlayTrack(currentTrack);
+            else handleNextTrack();
+          }
+        }
       );
       setIsPlaying(true);
     } catch (error) {
@@ -289,15 +381,45 @@ export default function App() {
   };
 
   const handleNextTrack = () => {
+    if (playQueueRef.current.length > 0) {
+      const [nextTrack, ...remaining] = playQueueRef.current;
+      playQueueRef.current = remaining;
+      setPlayQueue(remaining);
+      void handlePlayTrack(nextTrack);
+      return;
+    }
     if (tracks.length === 0) return;
     if (isShuffle) {
-      const randomIndex = Math.floor(Math.random() * tracks.length);
-      handlePlayTrack(tracks[randomIndex]);
+      const candidates = tracks.length > 1 ? tracks.filter((track) => track.id !== currentTrack?.id) : tracks;
+      const randomIndex = Math.floor(Math.random() * candidates.length);
+      if (candidates[randomIndex]) void handlePlayTrack(candidates[randomIndex]);
       return;
     }
     const currentIndex = tracks.findIndex((t) => t.id === currentTrack?.id);
     const nextIndex = (currentIndex + 1) % tracks.length;
     handlePlayTrack(tracks[nextIndex]);
+  };
+
+  const handleAddToQueue = (track: Track) => {
+    const nextQueue = [...playQueueRef.current, track];
+    playQueueRef.current = nextQueue;
+    setPlayQueue(nextQueue);
+    showToast(`«${track.title}» به صف پخش اضافه شد.`, 'success');
+  };
+
+  const handleRemoveFromQueue = (index: number) => {
+    const nextQueue = playQueueRef.current.filter((_, itemIndex) => itemIndex !== index);
+    playQueueRef.current = nextQueue;
+    setPlayQueue(nextQueue);
+  };
+
+  const handleMoveQueueItem = (index: number, direction: -1 | 1) => {
+    const target = index + direction;
+    if (target < 0 || target >= playQueueRef.current.length) return;
+    const nextQueue = [...playQueueRef.current];
+    [nextQueue[index], nextQueue[target]] = [nextQueue[target], nextQueue[index]];
+    playQueueRef.current = nextQueue;
+    setPlayQueue(nextQueue);
   };
 
   const handlePreviousTrack = () => {
@@ -311,6 +433,39 @@ export default function App() {
     audioEngine.seek(seconds);
     setCurrentTime(seconds);
   };
+
+  // Desktop keyboard shortcuts, disabled while the user is typing in a form field.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      const typing = Boolean(target?.closest('input, textarea, select, [contenteditable="true"]'));
+      if (event.key === 'Escape') {
+        setIsQueueOpen(false);
+        setIsMobileMenuOpen(false);
+        setIsVisualizerOpen(false);
+        setIsAuthModalOpen(false);
+        return;
+      }
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setCurrentView('search');
+        return;
+      }
+      if (typing || event.altKey) return;
+      if (event.code === 'Space') {
+        event.preventDefault();
+        void handleTogglePlay();
+      } else if (event.key === 'ArrowRight' && currentTrack) {
+        event.preventDefault();
+        handleSeek(Math.max(0, currentTime - 5));
+      } else if (event.key === 'ArrowLeft' && currentTrack) {
+        event.preventDefault();
+        handleSeek(Math.min(duration || currentTrack.duration, currentTime + 5));
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [handleTogglePlay, currentTrack, currentTime, duration, isPlaying, tracks]);
 
   const handleVolumeChange = (vol: number) => {
     setVolume(vol);
@@ -474,6 +629,41 @@ export default function App() {
     showToast('آهنگ و فایل‌های وابسته با موفقیت حذف شدند.', 'success');
   };
 
+  const handleCreateUserPlaylist = (title: string, description: string) => {
+    if (!currentUser) {
+      setIsAuthModalOpen(true);
+      showToast('برای ساخت پلی‌لیست شخصی ابتدا وارد حساب کاربری شو.', 'info');
+      return;
+    }
+    const cleanTitle = title.trim();
+    if (!cleanTitle) return;
+    const newPlaylist: Playlist = {
+      id: `user-${crypto.randomUUID()}`,
+      title: cleanTitle.slice(0, 80),
+      description: description.trim().slice(0, 300),
+      coverUrl: tracks[0]?.coverUrl || 'https://irkdzjizhwxbmnnfyqsx.supabase.co/storage/v1/object/public/brand-assets/caspian-official-logo.png',
+      trackIds: [],
+    };
+    setUserPlaylists((previous) => [newPlaylist, ...previous]);
+    showToast(`پلی‌لیست «${newPlaylist.title}» ساخته شد.`, 'success');
+  };
+
+  const handleDeleteUserPlaylist = (playlistId: string) => {
+    if (!currentUser || !playlistId.startsWith('user-')) return;
+    setUserPlaylists((previous) => previous.filter((playlist) => playlist.id !== playlistId));
+    showToast('پلی‌لیست شخصی حذف شد.', 'success');
+  };
+
+  const handleAddTrackToUserPlaylist = (playlistId: string, trackId: string) => {
+    if (!currentUser || !playlistId.startsWith('user-')) return;
+    setUserPlaylists((previous) => previous.map((playlist) =>
+      playlist.id === playlistId && !playlist.trackIds.includes(trackId)
+        ? { ...playlist, trackIds: [...playlist.trackIds, trackId] }
+        : playlist
+    ));
+    showToast('آهنگ به پلی‌لیست اضافه شد.', 'success');
+  };
+
   const handleAddPlaylist = async (newPlaylist: Playlist) => {
     if (currentUser?.role !== 'admin') throw new Error('دسترسی مدیریت لازم است.');
     const id = crypto.randomUUID();
@@ -578,18 +768,18 @@ export default function App() {
   if (clockNow < updateBreakEndsAt) return <UpdateBreak endsAt={updateBreakEndsAt} />;
 
   return (
-    <div className="flex h-screen bg-[#0d0d0d] text-white font-sans overflow-hidden select-none" dir="rtl">
+    <div className="caspian-v2-shell flex h-screen text-white font-sans overflow-hidden" dir="rtl">
       {/* Toast Notifications */}
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
 
-      {/* Spotify Sidebar (Desktop + Mobile Drawer) */}
+      {/* Season 2 Sidebar (Desktop + Mobile Drawer) */}
       <Sidebar
         currentView={currentView}
         onNavigate={navigateToView}
-        playlists={playlists}
+        playlists={[...userPlaylists, ...playlists]}
         onSelectPlaylist={(pl) => {
-          setCurrentView('home');
-          showToast(`پلی‌لیست "${pl.title}" باز شد`, 'info');
+          setSelectedPlaylistId(pl.id);
+          setCurrentView('library');
         }}
         likedCount={likedTrackIds.length}
         isUserVip={isUserVip}
@@ -600,7 +790,7 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-gradient-to-b from-[#141414] via-[#101010] to-[#0a0a0a]">
+      <div className="caspian-v2-content flex-1 flex flex-col h-full min-w-0 overflow-hidden">
         {/* Top Navbar */}
         <TopNav
           currentView={currentView}
@@ -614,11 +804,12 @@ export default function App() {
         />
 
         {/* Scrollable View Content */}
-        <main className="flex-1 overflow-y-auto pb-28">
+        <main className="caspian-v2-main flex-1 overflow-y-auto pb-28">
           {currentView === 'home' && (
             <HomeView
               tracks={tracks}
-              playlists={playlists}
+              playlists={[...userPlaylists, ...playlists]}
+              recentlyPlayedIds={recentlyPlayedIds}
               currentTrackId={currentTrack?.id || null}
               isPlaying={isPlaying}
               likedTrackIds={likedTrackIds}
@@ -626,10 +817,14 @@ export default function App() {
               onPlayTrack={handlePlayTrack}
               onToggleLike={handleToggleLike}
               onDownloadTrack={handleDownloadTrack}
+              onAddToQueue={handleAddToQueue}
               onNavigateToSupport={() => setCurrentView('support')}
               onNavigateToAbout={() => setCurrentView('about')}
+              onNavigateToSearch={() => setCurrentView('search')}
+              onNavigateToLibrary={() => setCurrentView('library')}
               onSelectPlaylist={(pl) => {
-                showToast(`پلی‌لیست "${pl.title}" انتخاب شد`, 'info');
+                setSelectedPlaylistId(pl.id);
+                setCurrentView('library');
               }}
             />
           )}
@@ -646,13 +841,14 @@ export default function App() {
               onPlayTrack={handlePlayTrack}
               onToggleLike={handleToggleLike}
               onDownloadTrack={handleDownloadTrack}
+              onAddToQueue={handleAddToQueue}
             />
           )}
 
           {currentView === 'library' && (
             <LibraryView
               tracks={tracks}
-              playlists={playlists}
+              playlists={[...userPlaylists, ...playlists]}
               likedTrackIds={likedTrackIds}
               currentTrackId={currentTrack?.id || null}
               isPlaying={isPlaying}
@@ -660,16 +856,21 @@ export default function App() {
               onPlayTrack={handlePlayTrack}
               onToggleLike={handleToggleLike}
               onDownloadTrack={handleDownloadTrack}
-              onSelectPlaylist={(pl) => {
-                showToast(`پلی‌لیست "${pl.title}" انتخاب شد`, 'info');
-              }}
+              onAddToQueue={handleAddToQueue}
+              selectedPlaylistId={selectedPlaylistId}
+              userPlaylists={userPlaylists}
+              onCreateUserPlaylist={handleCreateUserPlaylist}
+              onDeleteUserPlaylist={handleDeleteUserPlaylist}
+              onAddTrackToUserPlaylist={handleAddTrackToUserPlaylist}
+              onSelectPlaylist={(pl) => setSelectedPlaylistId(pl.id)}
+              onClearSelectedPlaylist={() => setSelectedPlaylistId(null)}
             />
           )}
 
           {currentView === 'liked' && (
             <LibraryView
               tracks={tracks}
-              playlists={playlists}
+              playlists={[...userPlaylists, ...playlists]}
               likedTrackIds={likedTrackIds}
               currentTrackId={currentTrack?.id || null}
               isPlaying={isPlaying}
@@ -677,9 +878,14 @@ export default function App() {
               onPlayTrack={handlePlayTrack}
               onToggleLike={handleToggleLike}
               onDownloadTrack={handleDownloadTrack}
-              onSelectPlaylist={(pl) => {
-                showToast(`پلی‌لیست "${pl.title}" انتخاب شد`, 'info');
-              }}
+              onAddToQueue={handleAddToQueue}
+              selectedPlaylistId={selectedPlaylistId}
+              userPlaylists={userPlaylists}
+              onCreateUserPlaylist={handleCreateUserPlaylist}
+              onDeleteUserPlaylist={handleDeleteUserPlaylist}
+              onAddTrackToUserPlaylist={handleAddTrackToUserPlaylist}
+              onSelectPlaylist={(pl) => setSelectedPlaylistId(pl.id)}
+              onClearSelectedPlaylist={() => setSelectedPlaylistId(null)}
               filterLikedOnly={true}
             />
           )}
@@ -707,7 +913,7 @@ export default function App() {
                 <p className="text-neutral-400">برای دسترسی به داشبورد، لطفاً ابتدا وارد حساب کاربری خود شوید.</p>
                 <button
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="py-2.5 px-6 rounded-full bg-[#1db954] text-black font-bold text-xs"
+                  className="py-2.5 px-6 rounded-full bg-[#d6b45c] text-black font-bold text-xs"
                 >
                   ورود یا ثبت‌نام
                 </button>
@@ -759,7 +965,7 @@ export default function App() {
                 {!currentUser && (
                   <button
                     onClick={() => setIsAuthModalOpen(true)}
-                    className="py-2.5 px-6 rounded-full bg-[#1db954] text-black font-bold text-xs"
+                    className="py-2.5 px-6 rounded-full bg-[#d6b45c] text-[#07101b] font-bold text-xs"
                   >
                     ورود به حساب ادمین
                   </button>
@@ -770,7 +976,7 @@ export default function App() {
         </main>
       </div>
 
-      {/* Persistent Spotify Bottom Player */}
+      {/* Persistent Season 2 Bottom Player */}
       <PlayerBar
         currentTrack={currentTrack}
         isPlaying={isPlaying}
@@ -793,6 +999,23 @@ export default function App() {
         onToggleLike={handleToggleLike}
         onDownloadTrack={handleDownloadTrack}
         onOpenVisualizer={() => setIsVisualizerOpen(true)}
+        queueCount={playQueue.length}
+        onOpenQueue={() => setIsQueueOpen(true)}
+        onAddToQueue={() => currentTrack && handleAddToQueue(currentTrack)}
+      />
+
+      <QueuePanel
+        isOpen={isQueueOpen}
+        currentTrack={currentTrack}
+        queue={playQueue}
+        onClose={() => setIsQueueOpen(false)}
+        onPlayTrack={(track, index) => {
+          handleRemoveFromQueue(index);
+          void handlePlayTrack(track);
+        }}
+        onRemove={handleRemoveFromQueue}
+        onMove={handleMoveQueueItem}
+        onClear={() => { playQueueRef.current = []; setPlayQueue([]); }}
       />
 
       {/* Auth Modal (Login & Register) */}

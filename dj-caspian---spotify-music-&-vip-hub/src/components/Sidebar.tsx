@@ -41,7 +41,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ] as const;
 
   const content = (
-    <div className="flex flex-col h-full bg-black text-neutral-300 p-4 select-none w-64 md:w-68 border-l border-neutral-900 overflow-y-auto">
+    <div className="caspian-v2-sidebar flex flex-col h-full text-neutral-300 p-4 select-none w-64 md:w-68 border-l overflow-y-auto">
       {/* Top Branding */}
       <div className="flex items-center justify-between pb-6 pt-1 px-2">
         <div 
@@ -64,7 +64,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="flex items-center gap-1.5">
               <span className="font-black text-lg text-white tracking-wider">CASPIAN</span>
               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#d6b45c] text-black">
-                SPOTIFY
+                SEASON 2
               </span>
             </div>
             <div className="text-[10px] text-neutral-400 font-medium">DJ Caspian Official Hub</div>
@@ -94,7 +94,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }}
               className={`w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-bold text-sm transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-neutral-800 text-white'
+                  ? 'bg-[#16304b] text-white'
                   : 'text-neutral-400 hover:text-white hover:bg-neutral-900/60'
               }`}
             >
@@ -204,7 +204,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             currentView === 'liked' ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-white'
           }`}
         >
-          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-600 to-purple-400 flex items-center justify-center text-white shrink-0">
+          <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[#24558a] to-[#d6b45c] flex items-center justify-center text-white shrink-0">
             <Heart className="w-3.5 h-3.5 fill-white" />
           </div>
           <span className="truncate">آهنگ‌های لایک شده</span>

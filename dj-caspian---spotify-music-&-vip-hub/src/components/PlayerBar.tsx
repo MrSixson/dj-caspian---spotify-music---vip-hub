@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, 
-  Volume2, VolumeX, Heart, Download, Maximize2, Crown, Sparkles, Disc
+  Volume2, VolumeX, Heart, Download, Maximize2, Crown, Sparkles, Disc, ListMusic, ListPlus
 } from 'lucide-react';
 import { Track } from '../types';
 
@@ -27,6 +27,9 @@ interface PlayerBarProps {
   onToggleLike: (trackId: string) => void;
   onDownloadTrack: (track: Track) => void;
   onOpenVisualizer: () => void;
+  queueCount: number;
+  onOpenQueue: () => void;
+  onAddToQueue: () => void;
 }
 
 export const PlayerBar: React.FC<PlayerBarProps> = ({
@@ -51,10 +54,13 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
   onToggleLike,
   onDownloadTrack,
   onOpenVisualizer,
+  queueCount,
+  onOpenQueue,
+  onAddToQueue,
 }) => {
   if (!currentTrack) {
     return (
-      <footer className="fixed bottom-0 left-0 right-0 z-40 bg-[#181818] border-t border-neutral-800/80 px-4 py-3 text-center text-xs text-neutral-400 select-none">
+      <footer className="caspian-v2-player fixed bottom-0 left-0 right-0 z-40 px-4 py-3 text-center text-xs text-neutral-400 select-none">
         یک آهنگ برای پخش انتخاب کنید
       </footer>
     );
@@ -70,7 +76,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 z-40 bg-[#121212]/95 backdrop-blur-lg border-t border-neutral-800 px-3 sm:px-6 py-2.5 sm:py-3 select-none" dir="rtl">
+    <footer className="caspian-v2-player fixed bottom-0 left-0 right-0 z-40 px-3 sm:px-6 py-2.5 sm:py-3 select-none" dir="rtl">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
         
         {/* RIGHT (Track Info & Artwork in RTL) */}
@@ -150,7 +156,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
 
             <button
               onClick={onTogglePlay}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg shadow-[#d6b45c]/30"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-[#07101b] flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg shadow-[#d6b45c]/30"
               title={isPlaying ? 'توقف' : 'پخش'}
             >
               {isPlaying ? (
@@ -222,6 +228,9 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
               </>
             )}
           </button>
+
+          <button type="button" onClick={onAddToQueue} className="p-1.5 text-neutral-400 hover:text-[#d6b45c] transition-colors cursor-pointer" title="افزودن آهنگ فعلی به صف پخش" aria-label="افزودن به صف پخش"><ListPlus className="w-4 h-4" /></button>
+          <button type="button" onClick={onOpenQueue} className="relative p-1.5 text-neutral-400 hover:text-[#d6b45c] transition-colors cursor-pointer" title={`صف پخش (${queueCount})`} aria-label={`صف پخش، ${queueCount} آهنگ`}><ListMusic className="w-4 h-4" />{queueCount > 0 && <span className="absolute -top-0.5 -left-0.5 min-w-4 h-4 px-1 rounded-full bg-[#d6b45c] text-[#07101b] text-[9px] font-black flex items-center justify-center">{queueCount}</span>}</button>
 
           {/* Visualizer Trigger */}
           <button
