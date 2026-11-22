@@ -66,6 +66,14 @@ export default function App() {
     'home' | 'search' | 'library' | 'support' | 'tickets' | 'admin' | 'liked' | 'dashboard' | 'about'
   >('home');
   const [searchQuery, setSearchQuery] = useState('');
+  const [recentlyPlayedIds, setRecentlyPlayedIds] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('caspian_recently_played');
+      return saved ? (JSON.parse(saved) as string[]).slice(0, 12) : [];
+    } catch {
+      return [];
+    }
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // 6. Audio Playback State
@@ -187,6 +195,10 @@ export default function App() {
     localStorage.setItem('caspian_liked_tracks', JSON.stringify(likedTrackIds));
   }, [likedTrackIds]);
 
+  useEffect(() => {
+    localStorage.setItem('caspian_recently_played', JSON.stringify(recentlyPlayedIds));
+  }, [recentlyPlayedIds]);
+
   const navigateToView = (view: typeof currentView) => {
     if ((view === 'dashboard' || view === 'liked') && !currentUser) {
       showToast('برای دسترسی به این بخش ابتدا وارد حساب کاربری شوید.', 'info');
@@ -220,6 +232,7 @@ export default function App() {
 
   // Play a specific track
   const handlePlayTrack = async (track: Track) => {
+    setRecentlyPlayedIds((previous) => [track.id, ...previous.filter((id) => id !== track.id)].slice(0, 12));
     if (currentTrack?.id === track.id && isPlaying) {
       audioEngine.pause();
       setIsPlaying(false);
@@ -619,6 +632,7 @@ export default function App() {
             <HomeView
               tracks={tracks}
               playlists={playlists}
+              recentlyPlayedIds={recentlyPlayedIds}
               currentTrackId={currentTrack?.id || null}
               isPlaying={isPlaying}
               likedTrackIds={likedTrackIds}
