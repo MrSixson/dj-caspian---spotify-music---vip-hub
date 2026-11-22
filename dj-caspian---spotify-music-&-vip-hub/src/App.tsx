@@ -595,7 +595,7 @@ export default function App() {
       {/* Toast Notifications */}
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
 
-      {/* Spotify Sidebar (Desktop + Mobile Drawer) */}
+      {/* Season 2 Sidebar (Desktop + Mobile Drawer) */}
       <Sidebar
         currentView={currentView}
         onNavigate={navigateToView}
@@ -775,7 +775,7 @@ export default function App() {
                 {!currentUser && (
                   <button
                     onClick={() => setIsAuthModalOpen(true)}
-                    className="py-2.5 px-6 rounded-full bg-[#1db954] text-black font-bold text-xs"
+                    className="py-2.5 px-6 rounded-full bg-[#d6b45c] text-[#07101b] font-bold text-xs"
                   >
                     ورود به حساب ادمین
                   </button>
@@ -786,7 +786,7 @@ export default function App() {
         </main>
       </div>
 
-      {/* Persistent Spotify Bottom Player */}
+      {/* Persistent Season 2 Bottom Player */}
       <PlayerBar
         currentTrack={currentTrack}
         isPlaying={isPlaying}
