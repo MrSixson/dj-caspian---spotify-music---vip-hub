@@ -34,6 +34,7 @@ export function UpdateBreak({ endsAt }: { endsAt: number }) {
       <section className="relative w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/10 bg-[#091321]/90 shadow-[0_30px_120px_rgba(0,0,0,.65)] backdrop-blur-2xl sm:rounded-[2.5rem]">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-l from-transparent via-[#e7bd69] to-transparent" />
         <div className="relative px-5 py-10 text-center sm:px-12 sm:py-14 lg:px-20">
+          <img src="https://irkdzjizhwxbmnnfyqsx.supabase.co/storage/v1/object/public/brand-assets/caspian-official-logo.png" alt="DJ Caspian Official Logo" className="mx-auto mb-7 h-24 w-24 object-contain drop-shadow-[0_0_28px_rgba(214,180,92,.24)]" loading="eager" />
           <div className="mx-auto mb-8 flex w-fit items-center gap-3 rounded-full border border-sky-300/20 bg-sky-300/[0.07] px-5 py-2 text-[10px] font-extrabold tracking-[.28em] text-sky-200 sm:text-xs" dir="ltr">
             <span className="h-2 w-2 animate-pulse rounded-full bg-sky-300 shadow-[0_0_16px_rgba(125,211,252,.9)]" />
             DJ CASPIAN <span className="text-amber-300">/</span> NEXT ERA
