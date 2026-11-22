@@ -51,9 +51,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }}
           className="flex items-center gap-3 cursor-pointer group"
         >
-          {/* Spotify Green Wave Icon */}
-          <div className="w-10 h-10 rounded-full bg-[#d6b45c] flex items-center justify-center text-black shadow-lg shadow-[#d6b45c]/20 group-hover:scale-105 transition-transform">
-            <Disc3 className="w-6 h-6 animate-[spin_8s_linear_infinite]" />
+          {/* Official DJ Caspian branding */}
+          <div className="w-11 h-11 shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <img
+              src="https://irkdzjizhwxbmnnfyqsx.supabase.co/storage/v1/object/public/brand-assets/caspian-official-logo.png"
+              alt="DJ Caspian Official Logo"
+              className="w-full h-full object-contain drop-shadow-[0_0_12px_rgba(214,180,92,0.18)]"
+              loading="eager"
+            />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
