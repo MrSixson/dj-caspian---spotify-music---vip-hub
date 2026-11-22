@@ -114,7 +114,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {/* Brand Header */}
         <div className="text-center space-y-1 mb-6">
           <div className="w-12 h-12 rounded-2xl bg-[#d6b45c] text-black flex items-center justify-center mx-auto shadow-lg shadow-[#d6b45c]/30 mb-2">
-            <Disc3 className="w-7 h-7 animate-[spin_8s_linear_infinite]" />
+            <img src="https://irkdzjizhwxbmnnfyqsx.supabase.co/storage/v1/object/public/brand-assets/caspian-official-logo.png" alt="DJ Caspian Official Logo" className="h-10 w-10 object-contain" loading="eager" />
           </div>
           <h2 className="text-2xl font-black text-white tracking-tight">
             DJ Caspian Records
