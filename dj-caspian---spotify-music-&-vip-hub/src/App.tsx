@@ -25,8 +25,12 @@ import { getCurrentSupabaseUser, signOutSupabaseUser } from './lib/auth';
 import { supabase } from './lib/supabase';
 import { loadCatalog, toggleTrackLike, uploadTrackAssets } from './lib/catalog';
 import confetti from 'canvas-confetti';
+import { UpdateBreak } from './components/UpdateBreak';
 
 export default function App() {
+  const updateBreakEndsAt = new Date('2026-11-25T09:34:00Z').getTime();
+  const [clockNow, setClockNow] = useState(() => Date.now());
+  useEffect(() => { const interval = window.setInterval(() => setClockNow(Date.now()), 1000); return () => window.clearInterval(interval); }, []);
   // 1. Persistent Users & Auth State
   const [users, setUsers] = useState<UserAccount[]>(() => {
     try {
@@ -570,6 +574,8 @@ export default function App() {
       showToast(error instanceof Error ? error.message : 'تازه‌سازی کتابخانه ناموفق بود.', 'error');
     }
   };
+
+  if (clockNow < updateBreakEndsAt) return <UpdateBreak endsAt={updateBreakEndsAt} />;
 
   return (
     <div className="flex h-screen bg-[#0d0d0d] text-white font-sans overflow-hidden select-none" dir="rtl">

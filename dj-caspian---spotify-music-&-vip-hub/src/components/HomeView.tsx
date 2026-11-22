@@ -46,14 +46,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
   return (
     <div className="space-y-8 p-4 sm:p-8 animate-in fade-in duration-300" dir="rtl">
       
-      {/* 1. ARTIST HERO BANNER (Spotify Verified Artist Style) */}
-      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-b from-[#183a27] via-[#122419] to-[#121212] border border-[#234b35]/40 shadow-2xl">
+      {/* 1. ARTIST HERO BANNER (Caspian Premium Artist Style) */}
+      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-b from-[#12345a] via-[#0b1728] to-[#05080e] border border-[#24558a]/40 shadow-2xl">
         {/* Background glow and subtle stage imagery */}
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-overlay filter blur-[1px]"
           style={{ backgroundImage: `url(${DJ_CASPIAN_INFO.bannerUrl})` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-transparent to-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#05080e] via-transparent to-black/30" />
 
         <div className="relative z-10 p-6 sm:p-10 flex flex-col md:flex-row items-start md:items-end justify-between gap-6 min-h-[300px]">
           <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 text-center sm:text-right">
@@ -72,7 +72,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <div className="space-y-2">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-semibold">
                 <CheckCircle2 className="w-3.5 h-3.5 text-[#d6b45c]" />
-                <span>آرتیست رسمی و تایید شده اسپاتیفای</span>
+                <span>آرتیست رسمی DJ Caspian</span>
               </div>
 
               <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight drop-shadow-lg">
