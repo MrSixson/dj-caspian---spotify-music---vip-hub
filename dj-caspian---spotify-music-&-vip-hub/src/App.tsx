@@ -57,6 +57,8 @@ export default function App() {
   const [tracks, setTracks] = useState<Track[]>([]);
 
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [userPlaylists, setUserPlaylists] = useState<Playlist[]>([]);
+  const userPlaylistsReadyRef = useRef<string | null>(null);
 
   // 3. Persistent VIP Tickets
   const [tickets, setTickets] = useState<VipTicket[]>([]);
@@ -113,6 +115,28 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('caspian_users', JSON.stringify(users));
   }, [users]);
+
+  useEffect(() => {
+    if (!currentUser?.id) {
+      userPlaylistsReadyRef.current = null;
+      setUserPlaylists([]);
+      return;
+    }
+    const storageKey = `caspian_user_playlists:${currentUser.id}`;
+    try {
+      const saved = localStorage.getItem(storageKey);
+      const parsed = saved ? JSON.parse(saved) : [];
+      setUserPlaylists(Array.isArray(parsed) ? parsed.filter((item) => item && typeof item.id === 'string' && item.id.startsWith('user-')) : []);
+    } catch {
+      setUserPlaylists([]);
+    }
+    userPlaylistsReadyRef.current = currentUser.id;
+  }, [currentUser?.id]);
+
+  useEffect(() => {
+    if (!currentUser?.id || userPlaylistsReadyRef.current !== currentUser.id) return;
+    localStorage.setItem(`caspian_user_playlists:${currentUser.id}`, JSON.stringify(userPlaylists));
+  }, [currentUser?.id, userPlaylists]);
 
   useEffect(() => {
     if (authLoading || currentUser?.role !== 'admin') { setTickets([]); return; }
@@ -600,6 +624,41 @@ export default function App() {
     showToast('آهنگ و فایل‌های وابسته با موفقیت حذف شدند.', 'success');
   };
 
+  const handleCreateUserPlaylist = (title: string, description: string) => {
+    if (!currentUser) {
+      setIsAuthModalOpen(true);
+      showToast('برای ساخت پلی‌لیست شخصی ابتدا وارد حساب کاربری شو.', 'info');
+      return;
+    }
+    const cleanTitle = title.trim();
+    if (!cleanTitle) return;
+    const newPlaylist: Playlist = {
+      id: `user-${crypto.randomUUID()}`,
+      title: cleanTitle.slice(0, 80),
+      description: description.trim().slice(0, 300),
+      coverUrl: tracks[0]?.coverUrl || 'https://irkdzjizhwxbmnnfyqsx.supabase.co/storage/v1/object/public/brand-assets/caspian-official-logo.png',
+      trackIds: [],
+    };
+    setUserPlaylists((previous) => [newPlaylist, ...previous]);
+    showToast(`پلی‌لیست «${newPlaylist.title}» ساخته شد.`, 'success');
+  };
+
+  const handleDeleteUserPlaylist = (playlistId: string) => {
+    if (!currentUser || !playlistId.startsWith('user-')) return;
+    setUserPlaylists((previous) => previous.filter((playlist) => playlist.id !== playlistId));
+    showToast('پلی‌لیست شخصی حذف شد.', 'success');
+  };
+
+  const handleAddTrackToUserPlaylist = (playlistId: string, trackId: string) => {
+    if (!currentUser || !playlistId.startsWith('user-')) return;
+    setUserPlaylists((previous) => previous.map((playlist) =>
+      playlist.id === playlistId && !playlist.trackIds.includes(trackId)
+        ? { ...playlist, trackIds: [...playlist.trackIds, trackId] }
+        : playlist
+    ));
+    showToast('آهنگ به پلی‌لیست اضافه شد.', 'success');
+  };
+
   const handleAddPlaylist = async (newPlaylist: Playlist) => {
     if (currentUser?.role !== 'admin') throw new Error('دسترسی مدیریت لازم است.');
     const id = crypto.randomUUID();
@@ -712,7 +771,7 @@ export default function App() {
       <Sidebar
         currentView={currentView}
         onNavigate={navigateToView}
-        playlists={playlists}
+        playlists={[...userPlaylists, ...playlists]}
         onSelectPlaylist={(pl) => {
           setCurrentView('home');
           showToast(`پلی‌لیست "${pl.title}" باز شد`, 'info');
@@ -744,7 +803,7 @@ export default function App() {
           {currentView === 'home' && (
             <HomeView
               tracks={tracks}
-              playlists={playlists}
+              playlists={[...userPlaylists, ...playlists]}
               recentlyPlayedIds={recentlyPlayedIds}
               currentTrackId={currentTrack?.id || null}
               isPlaying={isPlaying}
@@ -783,7 +842,7 @@ export default function App() {
           {currentView === 'library' && (
             <LibraryView
               tracks={tracks}
-              playlists={playlists}
+              playlists={[...userPlaylists, ...playlists]}
               likedTrackIds={likedTrackIds}
               currentTrackId={currentTrack?.id || null}
               isPlaying={isPlaying}
@@ -792,6 +851,10 @@ export default function App() {
               onToggleLike={handleToggleLike}
               onDownloadTrack={handleDownloadTrack}
               onAddToQueue={handleAddToQueue}
+              userPlaylists={userPlaylists}
+              onCreateUserPlaylist={handleCreateUserPlaylist}
+              onDeleteUserPlaylist={handleDeleteUserPlaylist}
+              onAddTrackToUserPlaylist={handleAddTrackToUserPlaylist}
               onSelectPlaylist={(pl) => {
                 showToast(`پلی‌لیست "${pl.title}" انتخاب شد`, 'info');
               }}
@@ -801,7 +864,7 @@ export default function App() {
           {currentView === 'liked' && (
             <LibraryView
               tracks={tracks}
-              playlists={playlists}
+              playlists={[...userPlaylists, ...playlists]}
               likedTrackIds={likedTrackIds}
               currentTrackId={currentTrack?.id || null}
               isPlaying={isPlaying}
@@ -810,6 +873,10 @@ export default function App() {
               onToggleLike={handleToggleLike}
               onDownloadTrack={handleDownloadTrack}
               onAddToQueue={handleAddToQueue}
+              userPlaylists={userPlaylists}
+              onCreateUserPlaylist={handleCreateUserPlaylist}
+              onDeleteUserPlaylist={handleDeleteUserPlaylist}
+              onAddTrackToUserPlaylist={handleAddTrackToUserPlaylist}
               onSelectPlaylist={(pl) => {
                 showToast(`پلی‌لیست "${pl.title}" انتخاب شد`, 'info');
               }}
