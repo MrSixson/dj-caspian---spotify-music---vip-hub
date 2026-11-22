@@ -411,3 +411,202 @@ aside > div.caspian-v2-sidebar {
 @media (max-width: 640px) {
   .caspian-v2-library-hero { align-items: flex-start; padding: 18px; border-radius: 22px; gap: 13px; }
 }
+
+
+/* =========================================================
+   SEASON 02 POLISH — cinematic stage, sharper hierarchy,
+   responsive player and lower-cost visual effects
+   ========================================================= */
+.caspian-v2-shell {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 78% 0%, rgba(34,83,132,.24), transparent 38rem),
+    radial-gradient(ellipse at 4% 88%, rgba(13,40,70,.18), transparent 34rem),
+    #040912;
+}
+.caspian-v2-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: .28;
+  background:
+    radial-gradient(circle at 18% 24%, rgba(48,112,170,.15), transparent 26rem),
+    radial-gradient(circle at 82% 72%, rgba(214,180,92,.08), transparent 22rem);
+}
+.caspian-v2-main {
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+header.caspian-v2-topnav {
+  min-height: 68px;
+  border-bottom-color: rgba(214,180,92,.18) !important;
+}
+.caspian-v2-topnav input {
+  min-height: 42px;
+  box-shadow: inset 0 1px rgba(255,255,255,.035), 0 8px 24px rgba(0,0,0,.18);
+}
+.caspian-v2-sidebar {
+  border-right: 1px solid rgba(214,180,92,.14);
+}
+.caspian-v2-sidebar nav button {
+  min-height: 44px;
+  position: relative;
+  overflow: hidden;
+}
+.caspian-v2-sidebar nav button[aria-current="page"],
+.caspian-v2-sidebar nav button:focus-visible {
+  border-color: rgba(214,180,92,.28);
+  background: linear-gradient(100deg, rgba(214,180,92,.12), rgba(25,66,105,.42)) !important;
+}
+.caspian-v2-hero {
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 76% 18%, rgba(49,111,168,.28), transparent 34%),
+    linear-gradient(125deg, #07111e 0%, #0a1c30 56%, #07101b 100%);
+}
+.caspian-v2-hero::before,
+.caspian-v2-hero::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border-radius: 999px;
+  z-index: -1;
+}
+.caspian-v2-hero::before {
+  width: min(46vw, 520px);
+  aspect-ratio: 1;
+  right: -9%;
+  top: -36%;
+  border: 1px solid rgba(214,180,92,.18);
+  box-shadow: 0 0 0 34px rgba(214,180,92,.025), 0 0 0 72px rgba(90,151,205,.025), inset 0 0 70px rgba(214,180,92,.035);
+}
+.caspian-v2-hero::after {
+  width: 240px;
+  height: 240px;
+  right: 22%;
+  bottom: -160px;
+  background: rgba(33,92,146,.18);
+  filter: blur(42px);
+}
+.caspian-v2-track-card,
+.caspian-v2-playlist-card,
+.caspian-v2-collection-card,
+.caspian-v2-shortcut,
+.caspian-v2-recent-row {
+  box-shadow: 0 12px 32px rgba(0,0,0,.2), inset 0 1px rgba(255,255,255,.025);
+  transform: translateZ(0);
+}
+.caspian-v2-track-card:hover,
+.caspian-v2-playlist-card:hover,
+.caspian-v2-collection-card:hover {
+  box-shadow: 0 20px 44px rgba(0,0,0,.34), 0 0 0 1px rgba(214,180,92,.08);
+}
+.caspian-v2-list-row:focus-within {
+  background: rgba(31,67,103,.28);
+}
+.caspian-v2-player {
+  padding-bottom: max(.7rem, env(safe-area-inset-bottom)) !important;
+  border-top: 1px solid transparent !important;
+  background:
+    linear-gradient(rgba(4,10,18,.97), rgba(4,10,18,.97)) padding-box,
+    linear-gradient(90deg, rgba(33,88,139,.5), rgba(214,180,92,.65), rgba(33,88,139,.5)) border-box !important;
+}
+.caspian-v2-player > div {
+  max-width: 1560px;
+}
+.caspian-v2-player input[type="range"] {
+  accent-color: #e2c36e;
+  cursor: pointer;
+}
+.caspian-v2-player button:focus-visible {
+  outline-offset: 2px;
+}
+.caspian-v2-player img {
+  box-shadow: 0 0 0 1px rgba(214,180,92,.22), 0 8px 24px rgba(0,0,0,.42);
+}
+.caspian-v2-player button[title*="Shuffle"],
+.caspian-v2-player button[title*="Repeat"] {
+  border: 1px solid transparent;
+}
+.caspian-v2-player button[title*="Shuffle"]:hover,
+.caspian-v2-player button[title*="Repeat"]:hover {
+  border-color: rgba(214,180,92,.25);
+  background: rgba(214,180,92,.07);
+}
+.caspian-v2-searchbox,
+.caspian-v2-library-hero,
+.caspian-v2-artist-footer {
+  box-shadow: 0 22px 60px rgba(0,0,0,.28), inset 0 1px rgba(255,255,255,.035);
+}
+.caspian-v2-searchbox input:focus {
+  outline: none;
+}
+.caspian-v2-empty {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(27,69,111,.26), transparent 70%),
+    linear-gradient(145deg, rgba(10,24,40,.9), rgba(5,12,21,.95));
+}
+img[loading="lazy"] {
+  content-visibility: auto;
+}
+@media (min-width: 768px) {
+  .caspian-v2-sidebar {
+    width: 17rem;
+  }
+}
+@media (max-width: 767px) {
+  .caspian-v2-main {
+    padding-bottom: 8.5rem;
+  }
+  .caspian-v2-player {
+    padding-inline: .65rem !important;
+  }
+  .caspian-v2-player > div {
+    gap: .4rem;
+  }
+}
+@media (max-width: 480px) {
+  .caspian-v2-player > div > div:first-child {
+    width: 29%;
+    gap: .4rem;
+  }
+  .caspian-v2-player > div > div:first-child img,
+  .caspian-v2-player > div > div:first-child > div:first-child {
+    width: 2.45rem;
+    height: 2.45rem;
+  }
+  .caspian-v2-player > div > div:nth-child(2) {
+    width: 43%;
+  }
+  .caspian-v2-player > div > div:nth-child(2) > div:first-child {
+    gap: .45rem;
+  }
+  .caspian-v2-player > div > div:last-child {
+    width: 28%;
+    gap: .15rem;
+  }
+  .caspian-v2-player > div > div:last-child button {
+    padding: .25rem;
+  }
+  .caspian-v2-player > div > div:last-child button:first-child {
+    max-width: 54px;
+  }
+  .caspian-v2-player > div > div:first-child button {
+    display: none;
+  }
+  .caspian-v2-hero {
+    min-height: 390px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .caspian-v2-logo-orbit { animation: none !important; }
+}
+/* Avoid expensive blanket blur on every content card. Keep blur on the top
+   navigation, player and modal layers where it provides real depth. */
+main .rounded-3xl,
+main .rounded-2xl {
+  backdrop-filter: none;
+}
