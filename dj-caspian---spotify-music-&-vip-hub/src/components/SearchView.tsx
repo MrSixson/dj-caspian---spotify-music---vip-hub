@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Search, Play, Pause, Heart, Download, Crown, Disc3, X, SlidersHorizontal, Music2, UserRound, Album } from 'lucide-react';
+import { Search, Play, Pause, Heart, Download, Crown, Disc3, X, SlidersHorizontal, Music2, UserRound, Album, ListPlus } from 'lucide-react';
 import { Track } from '../types';
 
 interface SearchViewProps {
@@ -13,6 +13,7 @@ interface SearchViewProps {
   onPlayTrack: (track: Track) => void;
   onToggleLike: (trackId: string) => void;
   onDownloadTrack: (track: Track) => void;
+  onAddToQueue: (track: Track) => void;
 }
 
 type SortMode = 'newest' | 'popular' | 'title';
@@ -28,6 +29,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
   onPlayTrack,
   onToggleLike,
   onDownloadTrack,
+  onAddToQueue,
 }) => {
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [selectedCollection, setSelectedCollection] = useState<{ type: 'artist' | 'album'; name: string } | null>(null);
@@ -205,6 +207,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
                     <button type="button" onClick={() => onToggleLike(track.id)} aria-label={isLiked ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'} className={`rounded-full p-2 transition ${isLiked ? 'text-[#e8c875]' : 'text-slate-500 hover:text-white'}`}>
                       <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} />
                     </button>
+                    <button type="button" onClick={() => onAddToQueue(track)} aria-label="افزودن به صف پخش" title="افزودن به صف پخش" className="rounded-full p-2 text-slate-500 transition hover:bg-[#d6b45c]/10 hover:text-[#e8c875]"><ListPlus className="h-4 w-4" /></button>
                   </div>
                   <div className="flex items-center justify-between px-1 pt-2 text-[10px] text-slate-500">
                     <span className="truncate">{track.genre}</span>
