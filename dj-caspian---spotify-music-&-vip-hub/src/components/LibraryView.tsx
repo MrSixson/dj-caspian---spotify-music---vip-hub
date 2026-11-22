@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, Music2, Play, Pause, Download, Crown, Disc3, ListMusic } from 'lucide-react';
+import { Heart, Music2, Play, Pause, Download, Crown, Disc3, ListMusic, ListPlus } from 'lucide-react';
 import { Track, Playlist } from '../types';
 
 interface LibraryViewProps {
@@ -12,6 +12,7 @@ interface LibraryViewProps {
   onPlayTrack: (track: Track) => void;
   onToggleLike: (trackId: string) => void;
   onDownloadTrack: (track: Track) => void;
+  onAddToQueue: (track: Track) => void;
   onSelectPlaylist: (playlist: Playlist) => void;
   filterLikedOnly?: boolean;
 }
@@ -31,6 +32,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
   onPlayTrack,
   onToggleLike,
   onDownloadTrack,
+  onAddToQueue,
   onSelectPlaylist,
   filterLikedOnly = false,
 }) => {
@@ -125,6 +127,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                   <button type="button" onClick={() => onToggleLike(track.id)} aria-label="علاقه‌مندی" className={`rounded-full p-2 ${liked ? 'text-[#e8c875]' : 'text-slate-600 hover:text-white'}`}>
                     <Heart className={`h-4 w-4 ${liked ? 'fill-current' : ''}`} />
                   </button>
+                  <button type="button" onClick={() => onAddToQueue(track)} aria-label="افزودن به صف پخش" title="افزودن به صف پخش" className="rounded-full p-2 text-slate-500 transition hover:bg-[#d6b45c]/10 hover:text-[#e8c875]"><ListPlus className="h-4 w-4" /></button>
                   <button type="button" onClick={() => onDownloadTrack(track)} aria-label={isUserVip ? 'دانلود' : 'دانلود ویژه VIP'} className="rounded-full p-2 text-slate-500 transition hover:bg-white/5 hover:text-[#e8c875]">
                     {isUserVip ? <Download className="h-4 w-4" /> : <Crown className="h-4 w-4" />}
                   </button>
