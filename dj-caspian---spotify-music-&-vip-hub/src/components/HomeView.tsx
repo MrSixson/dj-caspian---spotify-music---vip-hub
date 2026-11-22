@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import {
   Play, Pause, Heart, Download, Crown,
-  Music2, ArrowLeft, Headphones, Disc3, Radio, Waves
+  Music2, ArrowLeft, Headphones, Disc3, Radio, Waves, ListPlus
 } from 'lucide-react';
 import { Track, Playlist } from '../types';
 import { DJ_CASPIAN_INFO } from '../data/initialData';
@@ -17,6 +17,7 @@ interface HomeViewProps {
   onPlayTrack: (track: Track) => void;
   onToggleLike: (trackId: string) => void;
   onDownloadTrack: (track: Track) => void;
+  onAddToQueue: (track: Track) => void;
   onNavigateToSupport: () => void;
   onNavigateToAbout: () => void;
   onNavigateToSearch: () => void;
@@ -41,6 +42,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onPlayTrack,
   onToggleLike,
   onDownloadTrack,
+  onAddToQueue,
   onNavigateToSupport,
   onNavigateToAbout,
   onNavigateToSearch,
@@ -299,6 +301,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     <button type="button" onClick={() => onToggleLike(track.id)} aria-label={liked ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'} className={`rounded-full p-2 transition ${liked ? 'text-[#e8c875]' : 'text-slate-500 hover:text-white'}`}>
                       <Heart className={`h-4 w-4 ${liked ? 'fill-current' : ''}`} />
                     </button>
+                    <button type="button" onClick={() => onAddToQueue(track)} aria-label="افزودن به صف پخش" title="افزودن به صف پخش" className="rounded-full p-2 text-slate-500 transition hover:bg-[#d6b45c]/10 hover:text-[#e8c875]"><ListPlus className="h-4 w-4" /></button>
                   </div>
                   <div className="flex items-center justify-between px-1 pt-2 text-[10px] text-slate-500">
                     <span>{track.genre}</span>
