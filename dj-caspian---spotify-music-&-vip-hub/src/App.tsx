@@ -314,7 +314,14 @@ export default function App() {
         currentTrack.audioUrl,
         currentTrack.bpm,
         currentTrack.synthPreset || 'festival_drop',
-        (secs) => setCurrentTime(secs)
+        (secs) => {
+          setCurrentTime(secs);
+          if (currentTrack.duration > 0 && secs >= currentTrack.duration && handledEndedTrackRef.current !== currentTrack.id) {
+            handledEndedTrackRef.current = currentTrack.id;
+            if (isRepeatRef.current) void handlePlayTrack(currentTrack);
+            else handleNextTrack();
+          }
+        }
       );
       setIsPlaying(true);
     } catch (error) {
