@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, Music2, Play, Pause, Download, Crown, Disc3, ListMusic, ListPlus } from 'lucide-react';
+import { Heart, Music2, Play, Pause, Download, Crown, Disc3, ListMusic, ListPlus, Plus, X, Trash2, Check } from 'lucide-react';
 import { Track, Playlist } from '../types';
 
 interface LibraryViewProps {
@@ -13,6 +13,10 @@ interface LibraryViewProps {
   onToggleLike: (trackId: string) => void;
   onDownloadTrack: (track: Track) => void;
   onAddToQueue: (track: Track) => void;
+  userPlaylists: Playlist[];
+  onCreateUserPlaylist: (title: string, description: string) => void;
+  onDeleteUserPlaylist: (playlistId: string) => void;
+  onAddTrackToUserPlaylist: (playlistId: string, trackId: string) => void;
   onSelectPlaylist: (playlist: Playlist) => void;
   filterLikedOnly?: boolean;
 }
@@ -33,10 +37,18 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
   onToggleLike,
   onDownloadTrack,
   onAddToQueue,
+  userPlaylists,
+  onCreateUserPlaylist,
+  onDeleteUserPlaylist,
+  onAddTrackToUserPlaylist,
   onSelectPlaylist,
   filterLikedOnly = false,
 }) => {
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [playlistTitle, setPlaylistTitle] = useState('');
+  const [playlistDescription, setPlaylistDescription] = useState('');
+  const [trackToAdd, setTrackToAdd] = useState<Track | null>(null);
   const displayedTracks = selectedPlaylist
     ? tracks.filter((track) => selectedPlaylist.trackIds.includes(track.id))
     : filterLikedOnly
@@ -54,7 +66,10 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
           <h1 className="mt-2 text-2xl font-black text-white sm:text-4xl">{selectedPlaylist ? selectedPlaylist.title : filterLikedOnly ? 'آهنگ‌های موردعلاقه' : 'کتابخانه موسیقی'}</h1>
           <p className="mt-2 text-xs leading-6 text-slate-400">{displayedTracks.length} قطعه در این بخش · {selectedPlaylist ? selectedPlaylist.description || 'پلی‌لیست انتخاب‌شده از آرشیو کاسپین' : filterLikedOnly ? 'مجموعه شخصی تو از آهنگ‌های ذخیره‌شده' : 'آثار، پلی‌لیست‌ها و آرشیو DJ Caspian'}</p>
         </div>
-        {selectedPlaylist && <button type="button" onClick={() => setSelectedPlaylist(null)} className="mt-4 rounded-full border border-white/15 bg-white/[0.05] px-4 py-2 text-xs font-bold text-white hover:border-[#d6b45c]/40">بازگشت به همه مجموعه‌ها</button>}
+        {selectedPlaylist && <div className="mt-4 flex flex-wrap gap-2">
+          <button type="button" onClick={() => setSelectedPlaylist(null)} className="rounded-full border border-white/15 bg-white/[0.05] px-4 py-2 text-xs font-bold text-white hover:border-[#d6b45c]/40">بازگشت به همه مجموعه‌ها</button>
+          {selectedPlaylist.id.startsWith('user-') && <button type="button" onClick={() => { onDeleteUserPlaylist(selectedPlaylist.id); setSelectedPlaylist(null); }} className="inline-flex items-center gap-2 rounded-full border border-red-400/25 bg-red-500/10 px-4 py-2 text-xs font-bold text-red-200 hover:bg-red-500/20"><Trash2 className="h-3.5 w-3.5" /> حذف پلی‌لیست</button>}
+        </div>}
       </section>
 
       {!filterLikedOnly && !selectedPlaylist && (
@@ -64,7 +79,10 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
               <div className="caspian-v2-kicker">CURATED COLLECTIONS</div>
               <h2 className="mt-2 text-xl font-black text-white">پلی‌لیست‌ها و مجموعه‌ها</h2>
             </div>
-            <span className="text-xs text-slate-500">{playlists.length} مجموعه</span>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-slate-500">{playlists.length} مجموعه</span>
+              <button type="button" onClick={() => setIsCreateOpen(true)} className="inline-flex items-center gap-2 rounded-full border border-[#d6b45c]/35 bg-[#d6b45c]/10 px-4 py-2 text-xs font-black text-[#f0d88a] transition hover:bg-[#d6b45c] hover:text-[#07101b]"><Plus className="h-4 w-4" /> ساخت پلی‌لیست</button>
+            </div>
           </div>
           {playlists.length === 0 ? (
             <div className="caspian-v2-playlist-empty">
@@ -128,6 +146,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                     <Heart className={`h-4 w-4 ${liked ? 'fill-current' : ''}`} />
                   </button>
                   <button type="button" onClick={() => onAddToQueue(track)} aria-label="افزودن به صف پخش" title="افزودن به صف پخش" className="rounded-full p-2 text-slate-500 transition hover:bg-[#d6b45c]/10 hover:text-[#e8c875]"><ListPlus className="h-4 w-4" /></button>
+                  <button type="button" onClick={() => setTrackToAdd(track)} aria-label="افزودن به پلی‌لیست شخصی" title="افزودن به پلی‌لیست شخصی" className="rounded-full p-2 text-slate-500 transition hover:bg-[#d6b45c]/10 hover:text-[#e8c875]"><Plus className="h-4 w-4" /></button>
                   <button type="button" onClick={() => onDownloadTrack(track)} aria-label={isUserVip ? 'دانلود' : 'دانلود ویژه VIP'} className="rounded-full p-2 text-slate-500 transition hover:bg-white/5 hover:text-[#e8c875]">
                     {isUserVip ? <Download className="h-4 w-4" /> : <Crown className="h-4 w-4" />}
                   </button>
@@ -139,6 +158,46 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
           </div>
         )}
       </section>
+
+      {isCreateOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/75 p-4 backdrop-blur-md" onClick={() => setIsCreateOpen(false)}>
+          <section role="dialog" aria-modal="true" aria-label="ساخت پلی‌لیست" dir="rtl" className="w-full max-w-md space-y-5 rounded-3xl border border-[#d6b45c]/25 bg-[#081524] p-6 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <div><div className="caspian-v2-kicker">YOUR OWN COLLECTION</div><h2 className="mt-2 text-xl font-black text-white">پلی‌لیست جدید</h2></div>
+              <button type="button" onClick={() => setIsCreateOpen(false)} className="rounded-full p-2 text-slate-400 hover:bg-white/10 hover:text-white" aria-label="بستن"><X /></button>
+            </div>
+            <label className="block space-y-2 text-xs font-bold text-slate-300">نام پلی‌لیست
+              <input autoFocus maxLength={80} value={playlistTitle} onChange={(event) => setPlaylistTitle(event.target.value)} placeholder="مثلاً شب‌های کاسپین" className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none focus:border-[#d6b45c]/60" />
+            </label>
+            <label className="block space-y-2 text-xs font-bold text-slate-300">توضیحات (اختیاری)
+              <textarea maxLength={300} value={playlistDescription} onChange={(event) => setPlaylistDescription(event.target.value)} placeholder="حال‌وهوای این مجموعه..." rows={3} className="w-full resize-none rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none focus:border-[#d6b45c]/60" />
+            </label>
+            <button type="button" disabled={!playlistTitle.trim()} onClick={() => { onCreateUserPlaylist(playlistTitle, playlistDescription); setPlaylistTitle(''); setPlaylistDescription(''); setIsCreateOpen(false); }} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-l from-[#f0d88a] to-[#c59c43] px-4 py-3 text-sm font-black text-[#07101b] shadow-lg shadow-[#d6b45c]/15 disabled:cursor-not-allowed disabled:opacity-40"><Check className="h-4 w-4" /> ساخت پلی‌لیست</button>
+            <p className="text-center text-[10px] leading-5 text-slate-500">پلی‌لیست‌ها فعلاً روی همین دستگاه و برای همین حساب نگهداری می‌شوند.</p>
+          </section>
+        </div>
+      )}
+
+      {trackToAdd && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/75 p-4 backdrop-blur-md" onClick={() => setTrackToAdd(null)}>
+          <section role="dialog" aria-modal="true" aria-label="افزودن آهنگ به پلی‌لیست" dir="rtl" className="w-full max-w-md space-y-4 rounded-3xl border border-[#d6b45c]/25 bg-[#081524] p-6 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <div><div className="caspian-v2-kicker">ADD TO YOUR COLLECTION</div><h2 className="mt-2 text-lg font-black text-white">افزودن به پلی‌لیست</h2><p className="mt-1 max-w-[270px] truncate text-xs text-slate-400">{trackToAdd.title}</p></div>
+              <button type="button" onClick={() => setTrackToAdd(null)} className="rounded-full p-2 text-slate-400 hover:bg-white/10 hover:text-white" aria-label="بستن"><X /></button>
+            </div>
+            {userPlaylists.length ? (
+              <div className="max-h-72 space-y-2 overflow-y-auto">
+                {userPlaylists.map((playlist) => {
+                  const alreadyAdded = playlist.trackIds.includes(trackToAdd.id);
+                  return <button key={playlist.id} type="button" disabled={alreadyAdded} onClick={() => { onAddTrackToUserPlaylist(playlist.id, trackToAdd.id); setSelectedPlaylist((current) => current?.id === playlist.id ? { ...current, trackIds: alreadyAdded ? current.trackIds : [...current.trackIds, trackToAdd.id] } : current); setTrackToAdd(null); }} className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-right transition hover:border-[#d6b45c]/40 disabled:opacity-50">
+                    <img src={playlist.coverUrl} alt="" className="h-11 w-11 rounded-xl object-cover" /><span className="min-w-0 flex-1"><span className="block truncate text-sm font-bold text-white">{playlist.title}</span><span className="mt-1 block text-[10px] text-slate-400">{playlist.trackIds.length} آهنگ</span></span>{alreadyAdded ? <Check className="h-4 w-4 text-emerald-400" /> : <Plus className="h-4 w-4 text-[#e8c875]" />}
+                  </button>;
+                })}
+              </div>
+            ) : <div className="caspian-v2-empty min-h-40"><ListMusic className="h-8 w-8 text-[#e8c875]" /><p className="text-sm font-bold text-white">هنوز پلی‌لیست شخصی نداری</p><button type="button" onClick={() => { setTrackToAdd(null); setIsCreateOpen(true); }} className="rounded-full bg-[#d6b45c] px-4 py-2 text-xs font-black text-[#07101b]">ساخت اولین پلی‌لیست</button></div>}
+          </section>
+        </div>
+      )}
     </div>
   );
 };
