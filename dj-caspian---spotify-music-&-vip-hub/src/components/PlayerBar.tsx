@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, 
-  Volume2, VolumeX, Heart, Download, Maximize2, Crown, Sparkles, Disc
+  Volume2, VolumeX, Heart, Download, Maximize2, Crown, Sparkles, Disc, ListMusic, ListPlus
 } from 'lucide-react';
 import { Track } from '../types';
 
@@ -27,6 +27,9 @@ interface PlayerBarProps {
   onToggleLike: (trackId: string) => void;
   onDownloadTrack: (track: Track) => void;
   onOpenVisualizer: () => void;
+  queueCount: number;
+  onOpenQueue: () => void;
+  onAddToQueue: () => void;
 }
 
 export const PlayerBar: React.FC<PlayerBarProps> = ({
@@ -51,6 +54,9 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
   onToggleLike,
   onDownloadTrack,
   onOpenVisualizer,
+  queueCount,
+  onOpenQueue,
+  onAddToQueue,
 }) => {
   if (!currentTrack) {
     return (
@@ -222,6 +228,9 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
               </>
             )}
           </button>
+
+          <button type="button" onClick={onAddToQueue} className="p-1.5 text-neutral-400 hover:text-[#d6b45c] transition-colors cursor-pointer" title="افزودن آهنگ فعلی به صف پخش" aria-label="افزودن به صف پخش"><ListPlus className="w-4 h-4" /></button>
+          <button type="button" onClick={onOpenQueue} className="relative p-1.5 text-neutral-400 hover:text-[#d6b45c] transition-colors cursor-pointer" title={`صف پخش (${queueCount})`} aria-label={`صف پخش، ${queueCount} آهنگ`}><ListMusic className="w-4 h-4" />{queueCount > 0 && <span className="absolute -top-0.5 -left-0.5 min-w-4 h-4 px-1 rounded-full bg-[#d6b45c] text-[#07101b] text-[9px] font-black flex items-center justify-center">{queueCount}</span>}</button>
 
           {/* Visualizer Trigger */}
           <button
