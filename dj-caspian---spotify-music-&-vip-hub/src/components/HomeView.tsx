@@ -50,7 +50,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   const featuredTrack = tracks[0] || null;
   const popularTracks = useMemo(() => [...tracks].sort((a, b) => (b.plays || 0) - (a.plays || 0)).slice(0, 6), [tracks]);
   const latestTracks = useMemo(() => tracks.slice(0, 8), [tracks]);
-  const trackById = useMemo(() => new Map(tracks.map((track) => [track.id, track])), [tracks]);
+  const trackById = useMemo(() => new Map<string, Track>(tracks.map((track) => [track.id, track] as const)), [tracks]);
   const recentTracks = useMemo(
     () => recentlyPlayedIds.map((id) => trackById.get(id)).filter((track): track is Track => Boolean(track)),
     [recentlyPlayedIds, trackById]
