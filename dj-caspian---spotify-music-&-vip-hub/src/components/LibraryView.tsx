@@ -19,6 +19,7 @@ interface LibraryViewProps {
   onDeleteUserPlaylist: (playlistId: string) => void;
   onAddTrackToUserPlaylist: (playlistId: string, trackId: string) => void;
   onSelectPlaylist: (playlist: Playlist) => void;
+  onClearSelectedPlaylist: () => void;
   filterLikedOnly?: boolean;
 }
 
@@ -44,6 +45,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
   onDeleteUserPlaylist,
   onAddTrackToUserPlaylist,
   onSelectPlaylist,
+  onClearSelectedPlaylist,
   filterLikedOnly = false,
 }) => {
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null);
@@ -75,8 +77,8 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
           <p className="mt-2 text-xs leading-6 text-slate-400">{displayedTracks.length} قطعه در این بخش · {selectedPlaylist ? selectedPlaylist.description || 'پلی‌لیست انتخاب‌شده از آرشیو کاسپین' : filterLikedOnly ? 'مجموعه شخصی تو از آهنگ‌های ذخیره‌شده' : 'آثار، پلی‌لیست‌ها و آرشیو DJ Caspian'}</p>
         </div>
         {selectedPlaylist && <div className="mt-4 flex flex-wrap gap-2">
-          <button type="button" onClick={() => setSelectedPlaylist(null)} className="rounded-full border border-white/15 bg-white/[0.05] px-4 py-2 text-xs font-bold text-white hover:border-[#d6b45c]/40">بازگشت به همه مجموعه‌ها</button>
-          {selectedPlaylist.id.startsWith('user-') && <button type="button" onClick={() => { onDeleteUserPlaylist(selectedPlaylist.id); setSelectedPlaylist(null); }} className="inline-flex items-center gap-2 rounded-full border border-red-400/25 bg-red-500/10 px-4 py-2 text-xs font-bold text-red-200 hover:bg-red-500/20"><Trash2 className="h-3.5 w-3.5" /> حذف پلی‌لیست</button>}
+          <button type="button" onClick={() => { setSelectedPlaylist(null); onClearSelectedPlaylist(); }} className="rounded-full border border-white/15 bg-white/[0.05] px-4 py-2 text-xs font-bold text-white hover:border-[#d6b45c]/40">بازگشت به همه مجموعه‌ها</button>
+          {selectedPlaylist.id.startsWith('user-') && <button type="button" onClick={() => { onDeleteUserPlaylist(selectedPlaylist.id); setSelectedPlaylist(null); onClearSelectedPlaylist(); }} className="inline-flex items-center gap-2 rounded-full border border-red-400/25 bg-red-500/10 px-4 py-2 text-xs font-bold text-red-200 hover:bg-red-500/20"><Trash2 className="h-3.5 w-3.5" /> حذف پلی‌لیست</button>}
         </div>}
       </section>
 
