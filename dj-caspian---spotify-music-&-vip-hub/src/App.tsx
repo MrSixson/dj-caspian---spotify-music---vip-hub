@@ -86,7 +86,14 @@ export default function App() {
   const [isMuted, setIsMuted] = useState(false);
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
-  const [playQueue, setPlayQueue] = useState<Track[]>([]);
+  const [playQueue, setPlayQueue] = useState<Track[]>(() => {
+    try {
+      const saved = localStorage.getItem('caspian_play_queue');
+      return saved ? (JSON.parse(saved) as Track[]).filter((track) => track && typeof track.id === 'string') : [];
+    } catch {
+      return [];
+    }
+  });
   const [isQueueOpen, setIsQueueOpen] = useState(false);
   const handledEndedTrackRef = useRef<string | null>(null);
 
@@ -202,6 +209,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('caspian_recently_played', JSON.stringify(recentlyPlayedIds));
   }, [recentlyPlayedIds]);
+
+  useEffect(() => {
+    localStorage.setItem('caspian_play_queue', JSON.stringify(playQueue));
+  }, [playQueue]);
 
   const navigateToView = (view: typeof currentView) => {
     if ((view === 'dashboard' || view === 'liked') && !currentUser) {
