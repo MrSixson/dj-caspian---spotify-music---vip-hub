@@ -53,7 +53,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-overlay filter blur-[1px]"
           style={{ backgroundImage: `url(${DJ_CASPIAN_INFO.bannerUrl})` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-transparent to-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#05080e] via-transparent to-black/30" />
 
         <div className="relative z-10 p-6 sm:p-10 flex flex-col md:flex-row items-start md:items-end justify-between gap-6 min-h-[300px]">
           <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 text-center sm:text-right">
