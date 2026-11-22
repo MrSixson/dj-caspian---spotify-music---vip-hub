@@ -1,6 +1,8 @@
 name: DJ Caspian Build Diagnostics
 
 on:
+  pull_request:
+    branches: ["main"]
   push:
     branches: ["main"]
   workflow_dispatch:
@@ -30,9 +32,17 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
+        id: install
         run: npm install --legacy-peer-deps
 
+      - name: Run TypeScript validation
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run lint 2>&1 | tee lint-output.log
+
       - name: Run production build and capture full output
+        if: ${{ always() && steps.install.outcome == 'success' }}
         shell: bash
         run: |
           set -o pipefail
@@ -43,6 +53,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dj-caspian-build-log
-          path: dj-caspian---spotify-music-&-vip-hub/build-output.log
+          path: |
+            dj-caspian---spotify-music-&-vip-hub/build-output.log
+            dj-caspian---spotify-music-&-vip-hub/lint-output.log
           if-no-files-found: warn
           retention-days: 7

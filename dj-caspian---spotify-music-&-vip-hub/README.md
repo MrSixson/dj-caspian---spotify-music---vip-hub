@@ -1,20 +1,43 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# DJ Caspian
 
-# Run and deploy your AI Studio app
+وب‌سایت موسیقی DJ Caspian؛ یک برنامه وب استاتیک برای نمایش و پخش موسیقی، حساب کاربری، پلی‌لیست‌ها و مدیریت محتوا.
 
-This contains everything you need to run your app locally.
+## فناوری‌های فعلی
 
-View your app in AI Studio: https://ai.studio/apps/d735431a-1f30-4e0d-bc59-4e57e4b96e93
+- React 19
+- TypeScript
+- Vite 8
+- Tailwind CSS 4
+- Supabase (Database, Auth و Storage)
+- GitHub Pages برای انتشار نسخه استاتیک
 
-## Run Locally
+## اجرای محلی
 
-**Prerequisites:**  Node.js
+پیش‌نیاز: Node.js 22 یا جدیدتر.
 
+```bash
+npm install
+npm run dev
+```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+برای ساخت نسخه قابل انتشار: `npm run build`
+
+برای بررسی TypeScript: `npm run lint`
+
+## ساختار مخزن
+
+کد برنامه در پوشه `dj-caspian---spotify-music-&-vip-hub/` نگهداری می‌شود؛ workflow انتشار GitHub Pages نیز فعلاً به همین مسیر وابسته است. به همین دلیل انتقال پروژه به ریشه مخزن تا زمان اصلاح و تست workflow انجام نمی‌شود.
+
+راهنمای معماری و نقشه مهاجرت تدریجی در `docs/architecture/README.md` قرار دارد.
+
+## وضعیت انتشار
+
+صفحه اصلی ممکن است در حالت تعمیرات باشد. فایل `index.html.before-maintenance.bak.txt` نسخه پشتیبان صفحه اصلی قبلی است؛ آن را به‌عنوان فایل HTML اجرایی استفاده نکنید.
+
+## اصول توسعه
+
+- قبل از هر جابه‌جایی، مسیر importها و وابستگی‌ها بررسی شود.
+- Supabase باید منبع اصلی داده‌های پایدار باشد.
+- کلید Service Role هرگز نباید در کد مرورگر یا متغیرهای دارای پیشوند `VITE_` قرار بگیرد.
+- عملیات حذف/آپلود باید نتیجه دیتابیس و Storage را بررسی کنند و قبل از تأیید موفقیت، UI را قطعی تغییر ندهند.
+- تغییرات معماری ابتدا در شاخه مستقل و سپس از طریق Pull Request بررسی شوند.
