@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Play, Pause, Heart, Download, Crown,
   Music2, ArrowLeft, Headphones, Disc3, Radio, Waves
@@ -48,26 +48,32 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onSelectPlaylist,
 }) => {
   const featuredTrack = tracks[0] || null;
-  const popularTracks = [...tracks].sort((a, b) => (b.plays || 0) - (a.plays || 0)).slice(0, 6);
-  const latestTracks = tracks.slice(0, 8);
-  const recentTracks = recentlyPlayedIds.map((id) => tracks.find((track) => track.id === id)).filter((track): track is Track => Boolean(track));
-  const tasteSeeds = tracks.filter((track) => likedTrackIds.includes(track.id) || recentlyPlayedIds.includes(track.id));
-  const genreAffinity = new Map<string, number>();
-  const artistAffinity = new Map<string, number>();
-  tasteSeeds.forEach((track) => {
-    if (track.genre) genreAffinity.set(track.genre, (genreAffinity.get(track.genre) || 0) + 1);
-    if (track.artist) artistAffinity.set(track.artist, (artistAffinity.get(track.artist) || 0) + 1);
-  });
-  const recommendedTracks = tracks
-    .filter((track) => !likedTrackIds.includes(track.id) && !recentlyPlayedIds.includes(track.id))
-    .map((track) => ({
-      track,
-      score: (genreAffinity.get(track.genre) || 0) * 3 + (artistAffinity.get(track.artist) || 0) * 2 + Math.log1p(Math.max(0, track.plays || 0)),
-    }))
-    .filter((item) => item.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 6)
-    .map((item) => item.track);
+  const popularTracks = useMemo(() => [...tracks].sort((a, b) => (b.plays || 0) - (a.plays || 0)).slice(0, 6), [tracks]);
+  const latestTracks = useMemo(() => tracks.slice(0, 8), [tracks]);
+  const trackById = useMemo(() => new Map(tracks.map((track) => [track.id, track])), [tracks]);
+  const recentTracks = useMemo(
+    () => recentlyPlayedIds.map((id) => trackById.get(id)).filter((track): track is Track => Boolean(track)),
+    [recentlyPlayedIds, trackById]
+  );
+  const recommendedTracks = useMemo(() => {
+    const genreAffinity = new Map<string, number>();
+    const artistAffinity = new Map<string, number>();
+    tracks.forEach((track) => {
+      if (!likedTrackIds.includes(track.id) && !recentlyPlayedIds.includes(track.id)) return;
+      if (track.genre) genreAffinity.set(track.genre, (genreAffinity.get(track.genre) || 0) + 1);
+      if (track.artist) artistAffinity.set(track.artist, (artistAffinity.get(track.artist) || 0) + 1);
+    });
+    return tracks
+      .filter((track) => !likedTrackIds.includes(track.id) && !recentlyPlayedIds.includes(track.id))
+      .map((track) => ({
+        track,
+        score: (genreAffinity.get(track.genre) || 0) * 3 + (artistAffinity.get(track.artist) || 0) * 2 + Math.log1p(Math.max(0, track.plays || 0)),
+      }))
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 6)
+      .map((item) => item.track);
+  }, [tracks, likedTrackIds, recentlyPlayedIds]);
 
   return (
     <div className="caspian-v2-home space-y-10 sm:space-y-14 p-4 sm:p-7 lg:p-9" dir="rtl">
