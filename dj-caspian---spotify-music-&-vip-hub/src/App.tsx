@@ -351,8 +351,9 @@ export default function App() {
     }
     if (tracks.length === 0) return;
     if (isShuffle) {
-      const randomIndex = Math.floor(Math.random() * tracks.length);
-      handlePlayTrack(tracks[randomIndex]);
+      const candidates = tracks.length > 1 ? tracks.filter((track) => track.id !== currentTrack?.id) : tracks;
+      const randomIndex = Math.floor(Math.random() * candidates.length);
+      if (candidates[randomIndex]) void handlePlayTrack(candidates[randomIndex]);
       return;
     }
     const currentIndex = tracks.findIndex((t) => t.id === currentTrack?.id);
@@ -742,6 +743,7 @@ export default function App() {
               onPlayTrack={handlePlayTrack}
               onToggleLike={handleToggleLike}
               onDownloadTrack={handleDownloadTrack}
+              onAddToQueue={handleAddToQueue}
               onNavigateToSupport={() => setCurrentView('support')}
               onNavigateToAbout={() => setCurrentView('about')}
               onNavigateToSearch={() => setCurrentView('search')}
