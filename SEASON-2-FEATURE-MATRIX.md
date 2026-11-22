@@ -8,7 +8,11 @@ Production `main` remains isolated until all release gates pass.
 - Local recently played history.
 - Persistent player controls, shuffle and repeat toggle.
 - Interactive playback queue: add current track, inspect upcoming tracks, play queued track, reorder, remove and clear.
-- Queue is currently local to this device and not yet synchronized.
+- Queue persists in localStorage on the current device; track-end auto-advance reads live queue state and repeat-one state.
+- Artist and album collection detail views with real catalog tracks.
+- Playlist detail view with the playlist's actual track membership.
+- Taste-based recommendations using the user's real liked/recent tracks, artist and genre affinity, and catalog play counts.
+- Queue and recommendations are currently local/client-side; history and queue do not sync across devices.
 
 ## Backend foundation drafted, not deployed
 - Additive Supabase schema proposal for user playlists, listening history, artist follows, saved albums, user follows, playback preferences, listening rooms/party queues and direct messages.
