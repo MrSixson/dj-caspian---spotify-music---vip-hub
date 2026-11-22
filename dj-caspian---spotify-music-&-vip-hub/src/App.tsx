@@ -578,7 +578,7 @@ export default function App() {
   if (clockNow < updateBreakEndsAt) return <UpdateBreak endsAt={updateBreakEndsAt} />;
 
   return (
-    <div className="flex h-screen bg-[#0d0d0d] text-white font-sans overflow-hidden select-none" dir="rtl">
+    <div className="caspian-v2-shell flex h-screen text-white font-sans overflow-hidden select-none" dir="rtl">
       {/* Toast Notifications */}
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
 
@@ -600,7 +600,7 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-gradient-to-b from-[#141414] via-[#101010] to-[#0a0a0a]">
+      <div className="caspian-v2-content flex-1 flex flex-col h-full min-w-0 overflow-hidden">
         {/* Top Navbar */}
         <TopNav
           currentView={currentView}
@@ -614,7 +614,7 @@ export default function App() {
         />
 
         {/* Scrollable View Content */}
-        <main className="flex-1 overflow-y-auto pb-28">
+        <main className="caspian-v2-main flex-1 overflow-y-auto pb-28">
           {currentView === 'home' && (
             <HomeView
               tracks={tracks}
@@ -628,6 +628,8 @@ export default function App() {
               onDownloadTrack={handleDownloadTrack}
               onNavigateToSupport={() => setCurrentView('support')}
               onNavigateToAbout={() => setCurrentView('about')}
+              onNavigateToSearch={() => setCurrentView('search')}
+              onNavigateToLibrary={() => setCurrentView('library')}
               onSelectPlaylist={(pl) => {
                 showToast(`پلی‌لیست "${pl.title}" انتخاب شد`, 'info');
               }}
@@ -707,7 +709,7 @@ export default function App() {
                 <p className="text-neutral-400">برای دسترسی به داشبورد، لطفاً ابتدا وارد حساب کاربری خود شوید.</p>
                 <button
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="py-2.5 px-6 rounded-full bg-[#1db954] text-black font-bold text-xs"
+                  className="py-2.5 px-6 rounded-full bg-[#d6b45c] text-black font-bold text-xs"
                 >
                   ورود یا ثبت‌نام
                 </button>
