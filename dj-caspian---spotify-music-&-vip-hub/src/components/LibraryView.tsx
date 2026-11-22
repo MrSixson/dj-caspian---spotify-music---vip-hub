@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, Music, Play, Pause, Download, Crown, Disc3 } from 'lucide-react';
+import { Heart, Music2, Play, Pause, Download, Crown, Disc3, ListMusic } from 'lucide-react';
 import { Track, Playlist } from '../types';
 
 interface LibraryViewProps {
@@ -16,6 +16,11 @@ interface LibraryViewProps {
   filterLikedOnly?: boolean;
 }
 
+const formatDuration = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60);
+  return `${minutes}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
+};
+
 export const LibraryView: React.FC<LibraryViewProps> = ({
   tracks,
   playlists,
@@ -30,138 +35,103 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
   filterLikedOnly = false,
 }) => {
   const displayedTracks = filterLikedOnly
-    ? tracks.filter((t) => likedTrackIds.includes(t.id))
+    ? tracks.filter((track) => likedTrackIds.includes(track.id))
     : tracks;
 
   return (
-    <div className="p-4 sm:p-8 space-y-6 animate-in fade-in duration-300" dir="rtl">
-      {/* Top Banner */}
-      <div className="flex items-center gap-4 p-6 rounded-3xl bg-gradient-to-r from-indigo-900/40 via-purple-900/20 to-[#181818] border border-indigo-700/30">
-        <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-500 flex items-center justify-center text-white shadow-xl shadow-purple-500/20">
-          <Heart className="w-10 h-10 fill-white" />
+    <div className="caspian-v2-library space-y-9 p-4 sm:p-7 lg:p-9" dir="rtl">
+      <section className="caspian-v2-library-hero">
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#d6b45c]/25 bg-[#d6b45c]/[0.09] text-[#e8c875]">
+          {filterLikedOnly ? <Heart className="h-7 w-7 fill-current" /> : <ListMusic className="h-7 w-7" />}
         </div>
-        <div>
-          <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">
-            {filterLikedOnly ? 'پلی‌لیست اختصاصی' : 'کتابخانه شما'}
-          </span>
-          <h1 className="text-2xl sm:text-4xl font-black text-white mt-1">
-            {filterLikedOnly ? 'آهنگ‌های لایک شده' : 'کتابخانه و آرشیو موزیک'}
-          </h1>
-          <p className="text-xs text-neutral-400 mt-1">
-            {displayedTracks.length} قطعه منتخب از دی‌جی کاسپین
-          </p>
+        <div className="min-w-0 flex-1">
+          <div className="caspian-v2-kicker">{filterLikedOnly ? 'YOUR FAVORITES' : 'YOUR MUSIC SPACE'}</div>
+          <h1 className="mt-2 text-2xl font-black text-white sm:text-4xl">{filterLikedOnly ? 'آهنگ‌های موردعلاقه' : 'کتابخانه موسیقی'}</h1>
+          <p className="mt-2 text-xs leading-6 text-slate-400">{displayedTracks.length} قطعه در این بخش · {filterLikedOnly ? 'مجموعه شخصی تو از آهنگ‌های ذخیره‌شده' : 'آثار، پلی‌لیست‌ها و آرشیو DJ Caspian'}</p>
         </div>
-      </div>
+      </section>
 
-      {/* Playlist Grid if not filtering liked only */}
       {!filterLikedOnly && (
-        <div className="space-y-3">
-          <h2 className="text-lg font-bold text-white">پلی‌لیست‌های پیشنهادی</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {playlists.map((pl) => (
-              <div
-                key={pl.id}
-                onClick={() => onSelectPlaylist(pl)}
-                className="group flex items-center gap-3 p-3 bg-[#181818] hover:bg-[#222] border border-neutral-800 rounded-xl cursor-pointer transition-colors"
-              >
-                <img
-                  src={pl.coverUrl}
-                  alt={pl.title}
-                  className="w-14 h-14 rounded-lg object-cover"
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="font-bold text-sm text-white group-hover:text-[#d6b45c] truncate">
-                    {pl.title}
-                  </div>
-                  <div className="text-[11px] text-neutral-400 truncate mt-0.5">
-                    {pl.trackIds.length} قطعه
-                  </div>
-                </div>
-              </div>
-            ))}
+        <section className="space-y-4">
+          <div className="flex items-end justify-between">
+            <div>
+              <div className="caspian-v2-kicker">CURATED COLLECTIONS</div>
+              <h2 className="mt-2 text-xl font-black text-white">پلی‌لیست‌ها و مجموعه‌ها</h2>
+            </div>
+            <span className="text-xs text-slate-500">{playlists.length} مجموعه</span>
           </div>
-        </div>
+          {playlists.length === 0 ? (
+            <div className="caspian-v2-playlist-empty">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#d6b45c]/20 bg-[#d6b45c]/[0.07] text-[#e8c875]"><Disc3 className="h-6 w-6" /></span>
+              <div>
+                <h3 className="text-sm font-extrabold text-white">هنوز مجموعه‌ای منتشر نشده است</h3>
+                <p className="mt-1 text-xs text-slate-400">با انتشار پلی‌لیست‌های رسمی، اینجا نمایش داده می‌شوند.</p>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
+              {playlists.map((playlist) => (
+                <button key={playlist.id} type="button" onClick={() => onSelectPlaylist(playlist)} className="caspian-v2-playlist-card group text-right">
+                  <div className="relative overflow-hidden rounded-2xl">
+                    <img src={playlist.coverUrl} alt={playlist.title} loading="lazy" className="aspect-square w-full object-cover transition duration-700 group-hover:scale-105" />
+                    <span className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent" />
+                    <span className="absolute bottom-3 left-3 rounded-full bg-[#d6b45c] p-3 text-[#07101b] shadow-lg"><Play className="h-4 w-4 fill-current" /></span>
+                  </div>
+                  <span className="mt-3 block truncate text-sm font-extrabold text-white">{playlist.title}</span>
+                  <span className="mt-1 block text-xs text-slate-400">{playlist.trackIds.length} قطعه</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
       )}
 
-      {/* Track List */}
-      <div className="space-y-3">
-        <h2 className="text-lg font-bold text-white">
-          {filterLikedOnly ? 'قطعات پسندیده شده' : 'همه قطعات'}
-        </h2>
+      <section className="space-y-4">
+        <div className="flex items-end justify-between gap-3">
+          <div>
+            <div className="caspian-v2-kicker">{filterLikedOnly ? 'SAVED BY YOU' : 'ALL RELEASES'}</div>
+            <h2 className="mt-2 text-xl font-black text-white">{filterLikedOnly ? 'آهنگ‌های ذخیره‌شده' : 'تمام قطعه‌ها'}</h2>
+          </div>
+          <span className="text-xs text-slate-500">{displayedTracks.length} قطعه</span>
+        </div>
 
         {displayedTracks.length === 0 ? (
-          <div className="bg-[#181818] border border-neutral-800 rounded-2xl p-10 text-center text-neutral-400 space-y-2">
-            <Heart className="w-10 h-10 text-neutral-600 mx-auto" />
-            <h3 className="text-white font-bold text-sm">هنوز آهنگی را لایک نکرده‌اید</h3>
-            <p className="text-xs text-neutral-500">با زدن آیکون قلب، آهنگ‌های مورد علاقه‌تان اینجا ذخیره می‌شوند.</p>
+          <div className="caspian-v2-empty">
+            <div className="caspian-v2-empty-icon">{filterLikedOnly ? <Heart className="h-8 w-8" /> : <Music2 className="h-8 w-8" />}</div>
+            <h3 className="text-lg font-extrabold text-white">{filterLikedOnly ? 'هنوز آهنگی ذخیره نکرده‌ای' : 'آرشیو موسیقی هنوز خالی است'}</h3>
+            <p className="max-w-lg text-sm leading-7 text-slate-400">{filterLikedOnly ? 'با زدن دکمه قلب کنار هر قطعه، آن را به این فهرست اضافه کن.' : 'به‌محض انتشار آثار تازه، قطعه‌ها در این بخش قرار می‌گیرند.'}</p>
           </div>
         ) : (
-          <div className="bg-[#181818] border border-neutral-800 rounded-2xl overflow-hidden divide-y divide-neutral-800">
-            {displayedTracks.map((track, idx) => {
-              const isCurrent = currentTrackId === track.id && isPlaying;
-              const isLiked = likedTrackIds.includes(track.id);
-
+          <div className="caspian-v2-list">
+            {displayedTracks.map((track, index) => {
+              const current = currentTrackId === track.id;
+              const active = current && isPlaying;
+              const liked = likedTrackIds.includes(track.id);
               return (
-                <div
-                  key={track.id}
-                  onClick={() => onPlayTrack(track)}
-                  className="p-3.5 flex items-center justify-between gap-3 hover:bg-[#222] transition-colors cursor-pointer group"
-                >
-                  <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <span className="text-neutral-500 text-xs font-mono w-4 text-center">
-                      {idx + 1}
+                <div key={track.id} className="caspian-v2-list-row group">
+                  <button type="button" onClick={() => onPlayTrack(track)} className="flex min-w-0 flex-1 items-center gap-3 text-right">
+                    <span className="w-5 shrink-0 text-center font-mono text-xs text-slate-500">{active ? '♫' : index + 1}</span>
+                    <img src={track.coverUrl} alt="" loading="lazy" className="h-11 w-11 rounded-xl object-cover" />
+                    <span className="min-w-0 flex-1">
+                      <span className={`block truncate text-sm font-bold ${current ? 'text-[#e8c875]' : 'text-white'}`}>{track.title}</span>
+                      <span className="mt-1 block truncate text-xs text-slate-400">{track.artist} · {track.album}</span>
                     </span>
-                    <img
-                      src={track.coverUrl}
-                      alt={track.title}
-                      className="w-12 h-12 rounded-lg object-cover shrink-0"
-                    />
-                    <div className="min-w-0">
-                      <div className={`font-bold text-sm truncate ${isCurrent ? 'text-[#d6b45c]' : 'text-white'}`}>
-                        {track.title}
-                      </div>
-                      <div className="text-xs text-neutral-400 truncate mt-0.5 flex items-center gap-1.5">
-                        <span>{track.artist}</span>
-                        <span>•</span>
-                        <span className="text-neutral-500">{track.genre}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 shrink-0">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onToggleLike(track.id);
-                      }}
-                      className={`p-1.5 cursor-pointer ${isLiked ? 'text-[#d6b45c]' : 'text-neutral-500 hover:text-white'}`}
-                    >
-                      <Heart className={`w-4 h-4 ${isLiked ? 'fill-[#d6b45c]' : ''}`} />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDownloadTrack(track);
-                      }}
-                      className={`py-1 px-2.5 rounded-full text-xs font-bold flex items-center gap-1 cursor-pointer ${
-                        isUserVip
-                          ? 'bg-[#d6b45c] text-black hover:bg-[#f0d88a]'
-                          : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                      }`}
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">{isUserVip ? 'دانلود' : 'VIP'}</span>
-                    </button>
-                  </div>
+                  </button>
+                  <span className="hidden w-24 text-center text-[10px] text-slate-500 sm:block">{track.genre}</span>
+                  <button type="button" onClick={() => onToggleLike(track.id)} aria-label="علاقه‌مندی" className={`rounded-full p-2 ${liked ? 'text-[#e8c875]' : 'text-slate-600 hover:text-white'}`}>
+                    <Heart className={`h-4 w-4 ${liked ? 'fill-current' : ''}`} />
+                  </button>
+                  <button type="button" onClick={() => onDownloadTrack(track)} aria-label={isUserVip ? 'دانلود' : 'دانلود ویژه VIP'} className="rounded-full p-2 text-slate-500 transition hover:bg-white/5 hover:text-[#e8c875]">
+                    {isUserVip ? <Download className="h-4 w-4" /> : <Crown className="h-4 w-4" />}
+                  </button>
+                  <span className="w-10 text-left font-mono text-xs text-slate-500" dir="ltr">{formatDuration(track.duration)}</span>
+                  <span className="hidden w-8 text-center text-slate-500 sm:block">{active ? <Pause className="inline h-4 w-4 text-[#e8c875]" /> : <Play className="inline h-4 w-4 opacity-0 group-hover:opacity-100" />}</span>
                 </div>
               );
             })}
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 };
