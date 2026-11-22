@@ -82,10 +82,10 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(tracks[0]?.duration || 218);
-  const [volume, setVolume] = useState(0.85);
+  const [volume, setVolume] = useState(() => { try { const saved = Number(localStorage.getItem('caspian_player_volume')); return Number.isFinite(saved) && saved >= 0 && saved <= 1 ? saved : 0.85; } catch { return 0.85; } });
   const [isMuted, setIsMuted] = useState(false);
-  const [isShuffle, setIsShuffle] = useState(false);
-  const [isRepeat, setIsRepeat] = useState(false);
+  const [isShuffle, setIsShuffle] = useState(() => localStorage.getItem('caspian_player_shuffle') === 'true');
+  const [isRepeat, setIsRepeat] = useState(() => localStorage.getItem('caspian_player_repeat') === 'true');
   const [playQueue, setPlayQueue] = useState<Track[]>(() => {
     try {
       const saved = localStorage.getItem('caspian_play_queue');
@@ -220,6 +220,10 @@ export default function App() {
   useEffect(() => {
     isRepeatRef.current = isRepeat;
   }, [isRepeat]);
+
+  useEffect(() => { localStorage.setItem('caspian_player_volume', String(volume)); }, [volume]);
+  useEffect(() => { localStorage.setItem('caspian_player_shuffle', String(isShuffle)); }, [isShuffle]);
+  useEffect(() => { localStorage.setItem('caspian_player_repeat', String(isRepeat)); }, [isRepeat]);
 
   const navigateToView = (view: typeof currentView) => {
     if ((view === 'dashboard' || view === 'liked') && !currentUser) {
@@ -385,6 +389,39 @@ export default function App() {
     audioEngine.seek(seconds);
     setCurrentTime(seconds);
   };
+
+  // Desktop keyboard shortcuts, disabled while the user is typing in a form field.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      const typing = Boolean(target?.closest('input, textarea, select, [contenteditable="true"]'));
+      if (typing || event.altKey) return;
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setCurrentView('search');
+        return;
+      }
+      if (event.key === 'Escape') {
+        setIsQueueOpen(false);
+        setIsMobileMenuOpen(false);
+        setIsVisualizerOpen(false);
+        setIsAuthModalOpen(false);
+        return;
+      }
+      if (event.code === 'Space') {
+        event.preventDefault();
+        void handleTogglePlay();
+      } else if (event.key === 'ArrowRight' && currentTrack) {
+        event.preventDefault();
+        handleSeek(Math.max(0, currentTime - 5));
+      } else if (event.key === 'ArrowLeft' && currentTrack) {
+        event.preventDefault();
+        handleSeek(Math.min(duration || currentTrack.duration, currentTime + 5));
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [handleTogglePlay, currentTrack, currentTime, duration]);
 
   const handleVolumeChange = (vol: number) => {
     setVolume(vol);
@@ -652,7 +689,7 @@ export default function App() {
   if (clockNow < updateBreakEndsAt) return <UpdateBreak endsAt={updateBreakEndsAt} />;
 
   return (
-    <div className="caspian-v2-shell flex h-screen text-white font-sans overflow-hidden select-none" dir="rtl">
+    <div className="caspian-v2-shell flex h-screen text-white font-sans overflow-hidden" dir="rtl">
       {/* Toast Notifications */}
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
 
