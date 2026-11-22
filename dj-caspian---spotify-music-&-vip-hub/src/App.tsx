@@ -439,12 +439,6 @@ export default function App() {
     const onKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
       const typing = Boolean(target?.closest('input, textarea, select, [contenteditable="true"]'));
-      if (typing || event.altKey) return;
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
-        event.preventDefault();
-        setCurrentView('search');
-        return;
-      }
       if (event.key === 'Escape') {
         setIsQueueOpen(false);
         setIsMobileMenuOpen(false);
@@ -452,6 +446,12 @@ export default function App() {
         setIsAuthModalOpen(false);
         return;
       }
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setCurrentView('search');
+        return;
+      }
+      if (typing || event.altKey) return;
       if (event.code === 'Space') {
         event.preventDefault();
         void handleTogglePlay();
