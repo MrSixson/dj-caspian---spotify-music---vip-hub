@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://mrsixson.github.io/dj-caspian---spotify-music---vip-hub/sitemap.xml
