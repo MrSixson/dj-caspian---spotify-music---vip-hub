@@ -79,6 +79,9 @@ export default function App() {
   const [isMuted, setIsMuted] = useState(false);
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
+  const isRepeatRef = useRef(isRepeat);
+  isRepeatRef.current = isRepeat;
+  const handleNextTrackRef = useRef<() => void>(() => {});
   const [queue, setQueue] = useState<Track[]>([]);
   const [recentTrackIds, setRecentTrackIds] = useState<string[]>(() => {
     try {
@@ -236,7 +239,7 @@ export default function App() {
   };
 
   const handleTrackEnded = () => {
-    if (isRepeat) {
+    if (isRepeatRef.current) {
       void audioEngine.restart().then(() => {
         setCurrentTime(0);
         setIsPlaying(true);
@@ -246,7 +249,7 @@ export default function App() {
       });
       return;
     }
-    handleNextTrack();
+    handleNextTrackRef.current();
   };
 
   // Play a specific track
@@ -339,6 +342,7 @@ export default function App() {
     if (next.fromQueue) setQueue(next.remainingQueue);
     if (next.track) void handlePlayTrack(next.track, true);
   };
+  handleNextTrackRef.current = handleNextTrack;
 
   const handleAddToQueue = (track: Track) => {
     setQueue((previous) => addTrackToQueue(previous, track));
