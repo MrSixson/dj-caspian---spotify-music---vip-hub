@@ -21,6 +21,7 @@ import { ToastContainer, ToastMessage } from './components/Toast';
 import { Track, VipTicket, Playlist, UserAccount } from './types';
 import { INITIAL_USERS } from './data/initialData';
 import { audioEngine } from './utils/audioEngine';
+import { addRecentTrack, addTrackToQueue, pickNextTrack } from './utils/playback.mjs';
 import { getCurrentSupabaseUser, signOutSupabaseUser } from './lib/auth';
 import { supabase } from './lib/supabase';
 import { loadCatalog, toggleTrackLike, uploadTrackAssets } from './lib/catalog';
@@ -277,7 +278,7 @@ export default function App() {
       const loadedDuration = audioEngine.getDuration();
       setDuration(loadedDuration > 0 ? loadedDuration : track.duration);
       setIsPlaying(true);
-      setRecentTrackIds((previous) => [track.id, ...previous.filter((id) => id !== track.id)].slice(0, 12));
+      setRecentTrackIds((previous) => addRecentTrack(previous, track.id));
       setTracks((prev) =>
         prev.map((t) => (t.id === track.id ? { ...t, plays: (t.plays || 0) + 1 } : t))
       );
@@ -329,29 +330,18 @@ export default function App() {
   };
 
   const handleNextTrack = () => {
-    if (tracks.length === 0) return;
-
-    if (queue.length > 0) {
-      const [queuedTrack, ...remaining] = queue;
-      setQueue(remaining);
-      void handlePlayTrack(queuedTrack);
-      return;
-    }
-
-    if (isShuffle && tracks.length > 1) {
-      const candidates = tracks.filter((track) => track.id !== currentTrack?.id);
-      const randomIndex = Math.floor(Math.random() * candidates.length);
-      void handlePlayTrack(candidates[randomIndex]);
-      return;
-    }
-
-    const currentIndex = tracks.findIndex((t) => t.id === currentTrack?.id);
-    const nextIndex = (currentIndex + 1) % tracks.length;
-    void handlePlayTrack(tracks[nextIndex]);
+    const next = pickNextTrack({
+      tracks,
+      currentTrackId: currentTrack?.id || null,
+      queue,
+      isShuffle,
+    });
+    if (next.fromQueue) setQueue(next.remainingQueue);
+    if (next.track) void handlePlayTrack(next.track);
   };
 
   const handleAddToQueue = (track: Track) => {
-    setQueue((previous) => [...previous.filter((item) => item.id !== track.id), track]);
+    setQueue((previous) => addTrackToQueue(previous, track));
     showToast(`«${track.title}» به صف پخش اضافه شد.`, 'success');
   };
 
