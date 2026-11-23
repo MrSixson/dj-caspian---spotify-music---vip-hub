@@ -14,6 +14,16 @@ This work is isolated on `season-2/ui-foundation`. Season 1's `main` branch is n
 - [x] Add catalog-driven artist and album discovery sections to the home page.
 - [ ] Complete a real browser pass on desktop and mobile after the maintenance screen is lifted.
 
+## Debugging pass — Phase 2 verification
+- [x] Replace time-threshold track-end detection with a single media `ended` event.
+- [x] Separate manual Next from Repeat-One natural-end behavior.
+- [x] Force restart when Next, Previous, or queue selection targets the current track.
+- [x] Read current Repeat / Shuffle / Queue state when the track ends.
+- [x] Extract deterministic queue, shuffle, and recently-played helpers.
+- [x] Add Node regression tests and run them in pull-request CI.
+- [x] Create a structured bug register and mobile/desktop/manual QA matrix.
+- [ ] Complete real-browser playback and responsive QA after maintenance ends.
+
 ## Phase 3 — Music engine
 - [x] Preserve the existing real-audio engine and persistent bottom player.
 - [x] Correct repeat-one behavior so it restarts the current source instead of pausing it.
