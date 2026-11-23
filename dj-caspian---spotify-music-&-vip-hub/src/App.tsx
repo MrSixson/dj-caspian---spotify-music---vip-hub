@@ -234,6 +234,20 @@ export default function App() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
+  const handleTrackEnded = () => {
+    if (isRepeat) {
+      void audioEngine.restart().then(() => {
+        setCurrentTime(0);
+        setIsPlaying(true);
+      }).catch((error) => {
+        setIsPlaying(false);
+        showToast(error instanceof Error ? error.message : 'تکرار آهنگ ناموفق بود.', 'error');
+      });
+      return;
+    }
+    handleNextTrack();
+  };
+
   // Play a specific track
   const handlePlayTrack = async (track: Track) => {
     if (currentTrack?.id === track.id && isPlaying) {
@@ -257,9 +271,8 @@ export default function App() {
           setCurrentTime(secs);
           const mediaDuration = audioEngine.getDuration();
           if (mediaDuration > 0) setDuration(mediaDuration);
-          const endAt = mediaDuration > 0 ? mediaDuration : track.duration;
-          if (endAt > 0 && secs >= endAt - 0.2) handleNextTrack();
-        }
+        },
+        handleTrackEnded
       );
       const loadedDuration = audioEngine.getDuration();
       setDuration(loadedDuration > 0 ? loadedDuration : track.duration);
@@ -300,9 +313,8 @@ export default function App() {
           setCurrentTime(secs);
           const mediaDuration = audioEngine.getDuration();
           if (mediaDuration > 0) setDuration(mediaDuration);
-          const endAt = mediaDuration > 0 ? mediaDuration : currentTrack.duration;
-          if (endAt > 0 && secs >= endAt - 0.2) handleNextTrack();
-        }
+        },
+        handleTrackEnded
       );
       const loadedDuration = audioEngine.getDuration();
       setDuration(loadedDuration > 0 ? loadedDuration : currentTrack.duration);
@@ -318,14 +330,6 @@ export default function App() {
 
   const handleNextTrack = () => {
     if (tracks.length === 0) return;
-
-    if (isRepeat && currentTrack) {
-      void audioEngine.restart().then(() => setCurrentTime(0)).catch((error) => {
-        setIsPlaying(false);
-        showToast(error instanceof Error ? error.message : 'تکرار آهنگ ناموفق بود.', 'error');
-      });
-      return;
-    }
 
     if (queue.length > 0) {
       const [queuedTrack, ...remaining] = queue;
