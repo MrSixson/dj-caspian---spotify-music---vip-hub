@@ -238,15 +238,19 @@ export default function App() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
+  const restartCurrentTrack = () => {
+    void audioEngine.restart().then(() => {
+      setCurrentTime(0);
+      setIsPlaying(true);
+    }).catch((error) => {
+      setIsPlaying(false);
+      showToast(error instanceof Error ? error.message : 'شروع دوباره آهنگ ناموفق بود.', 'error');
+    });
+  };
+
   const handleTrackEnded = () => {
     if (isRepeatRef.current) {
-      void audioEngine.restart().then(() => {
-        setCurrentTime(0);
-        setIsPlaying(true);
-      }).catch((error) => {
-        setIsPlaying(false);
-        showToast(error instanceof Error ? error.message : 'تکرار آهنگ ناموفق بود.', 'error');
-      });
+      restartCurrentTrack();
       return;
     }
     handleNextTrackRef.current();
@@ -340,7 +344,13 @@ export default function App() {
       isShuffle,
     });
     if (next.fromQueue) setQueue(next.remainingQueue);
-    if (next.track) void handlePlayTrack(next.track, true);
+    if (!next.track) return;
+    if (next.track.id === currentTrack?.id) {
+      if (next.fromQueue) restartCurrentTrack();
+      else setIsPlaying(false);
+      return;
+    }
+    void handlePlayTrack(next.track, true);
   };
   handleNextTrackRef.current = handleNextTrack;
 
@@ -355,6 +365,10 @@ export default function App() {
 
   const handlePlayQueuedTrack = (track: Track) => {
     setQueue((previous) => previous.filter((item) => item.id !== track.id));
+    if (track.id === currentTrack?.id) {
+      restartCurrentTrack();
+      return;
+    }
     void handlePlayTrack(track, true);
   };
 
