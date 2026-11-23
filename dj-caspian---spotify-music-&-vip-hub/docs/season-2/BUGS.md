@@ -13,6 +13,7 @@ Scope: Season 2 only. Do not merge into `main` until release gates pass.
 | BUG-003 | Medium | Queue / one-track catalog | Selecting the currently playing track from the queue, or advancing a one-track catalog, could be interpreted as Pause. | Added an explicit force-restart path for Next, Previous, and queue selection. |
 | BUG-004 | Medium | Playback settings | End-of-track callback could retain stale Repeat / Shuffle / Queue state from the render in which playback began. | The ended handler now reads current settings through refs. |
 | QA-001 | Medium | Regression coverage | Queue, shuffle and recent-history selection had no automated tests. | Added Node built-in tests and wired them into pull-request CI. |
+| BUG-005 | Medium | Single-track catalog | Auto-advance at the end of a one-track catalog could try to replay the ended source; manually pressing Next could be confused with natural end. | Natural end now stops cleanly when no other track exists; manual Next and an explicitly queued current track restart intentionally. |
 
 ## Automated regression cases
 
@@ -20,7 +21,7 @@ Scope: Season 2 only. Do not merge into `main` until release gates pass.
 - Shuffle excludes the currently playing track.
 - Normal Next advances and wraps.
 - Unknown current track safely starts at the first item.
-- Empty catalog returns no next track.
+- Empty catalog returns no next track.\n- One-track catalog selection is deterministic and safe.
 - Queue de-duplicates by track ID.
 - Recently played moves the latest track to the front and respects the history limit.
 
