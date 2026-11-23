@@ -35,6 +35,9 @@ jobs:
         id: install
         run: npm install --legacy-peer-deps
 
+      - name: Run playback regression tests
+        run: npm test
+
       - name: Run TypeScript validation
         shell: bash
         run: |
