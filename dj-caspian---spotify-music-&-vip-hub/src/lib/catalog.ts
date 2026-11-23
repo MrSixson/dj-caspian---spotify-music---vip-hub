@@ -189,26 +189,36 @@ export async function uploadTrackAssets(input: {
   const safeBase = input.audioFile.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 70) || 'track';
   const unique = crypto.randomUUID();
   const audioPath = `${unique}/${safeBase}.mp3`;
-  const audioUpload = await supabase.storage.from('tracks').upload(audioPath, input.audioFile, {
-    contentType: input.audioFile.type || 'audio/mpeg',
-    cacheControl: '31536000',
-    upsert: false,
-  });
-  if (audioUpload.error) throw new Error(`آپلود فایل صوتی ناموفق بود: ${audioUpload.error.message}`);
-
   let coverPath: string | null = null;
   if (input.coverFile) {
     const extension = input.coverFile.name.split('.').pop()?.replace(/[^a-zA-Z0-9]/g, '') || 'jpg';
     coverPath = `${unique}/cover.${extension}`;
-    const coverUpload = await supabase.storage.from('covers').upload(coverPath, input.coverFile, {
-      contentType: input.coverFile.type || 'image/jpeg',
+  }
+
+  // Upload audio and artwork together so the second upload does not wait
+  // for the first one to finish.
+  const [audioUpload, coverUpload] = await Promise.all([
+    supabase.storage.from('tracks').upload(audioPath, input.audioFile, {
+      contentType: input.audioFile.type || 'audio/mpeg',
       cacheControl: '31536000',
       upsert: false,
-    });
-    if (coverUpload.error) {
-      await supabase.storage.from('tracks').remove([audioPath]);
-      throw new Error(`آپلود کاور ناموفق بود: ${coverUpload.error.message}`);
-    }
+    }),
+    input.coverFile && coverPath
+      ? supabase.storage.from('covers').upload(coverPath, input.coverFile, {
+          contentType: input.coverFile.type || 'image/jpeg',
+          cacheControl: '31536000',
+          upsert: false,
+        })
+      : Promise.resolve(null),
+  ]);
+
+  if (audioUpload.error || coverUpload?.error) {
+    const cleanup: Promise<unknown>[] = [];
+    if (!audioUpload.error) cleanup.push(supabase.storage.from('tracks').remove([audioPath]));
+    if (coverUpload && !coverUpload.error && coverPath) cleanup.push(supabase.storage.from('covers').remove([coverPath]));
+    await Promise.all(cleanup);
+    if (audioUpload.error) throw new Error(`آپلود فایل صوتی ناموفق بود: ${audioUpload.error.message}`);
+    throw new Error(`آپلود کاور ناموفق بود: ${coverUpload?.error?.message || 'خطای نامشخص'}`);
   }
 
   const insertRow = {
