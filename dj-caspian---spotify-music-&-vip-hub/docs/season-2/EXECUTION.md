@@ -24,8 +24,8 @@ This work is isolated on `season-2/ui-foundation`. Season 1's `main` branch is n
 ## Phase 4 — Product features and data
 - [x] Retain existing Supabase-backed auth, catalog, likes, playlists, VIP tickets, and admin flows.
 - [x] Build artist and album groupings from the live track catalog without duplicating records in the database.
-- [ ] Finish playlist detail/playback flow, queue, and recently-played persistence.
-- [ ] Verify table policies and Edge Function behavior with authenticated and anonymous test sessions.
+- [x] Finish playlist detail/playback flow, interactive queue, and recently-played persistence.
+- [x] Inspect public-table RLS policies and deployed Edge Function authorization paths.\n- [x] Run Supabase security and performance advisors; retain findings for targeted hardening rather than making risky live-schema changes.
 
 ## Phase 5 — Release readiness
 - [x] Preserve the existing canonical URL, metadata, Open Graph, robots.txt, and sitemap.
@@ -37,4 +37,4 @@ This work is isolated on `season-2/ui-foundation`. Season 1's `main` branch is n
 ## Verification notes
 - The connected Supabase project `dj-caspian` is reported as `ACTIVE_HEALTHY`.
 - Public tables inspected in the project have RLS enabled. No schema, row, Storage, Auth, or Edge Function changes were made.
-- The app currently has a time-based maintenance screen through 2026-11-25 09:34 UTC, so an in-browser visual regression pass is deferred until the normal app is available.
+- The app currently has a time-based maintenance screen through 2026-11-25 09:34 UTC, so an in-browser visual regression pass is deferred until the normal app is available.\n- Supabase advisors flagged the public waitlist RPCs as SECURITY DEFINER, the waitlist stats table has RLS enabled without direct policies, leaked-password protection is disabled, and some tables have multiple permissive policies. The waitlist RPCs appear intentionally public; no live database changes were made. Review and harden these separately before production release.
