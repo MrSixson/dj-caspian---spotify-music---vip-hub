@@ -1,6 +1,6 @@
 import React from 'react';
 import { 
-  Play, Pause, Heart, Download, Crown, Sparkles, 
+  Play, Pause, Heart, Download, Crown, Sparkles, ListPlus, 
   CheckCircle2, Clock, Music, Disc3, ShieldCheck, Flame, ArrowLeft
 } from 'lucide-react';
 import { Track, Playlist } from '../types';
@@ -16,6 +16,7 @@ interface HomeViewProps {
   onPlayTrack: (track: Track) => void;
   onToggleLike: (trackId: string) => void;
   onDownloadTrack: (track: Track) => void;
+  onQueueTrack: (track: Track) => void;
   onNavigateToSupport: () => void;
   onNavigateToAbout: () => void;
   onSelectPlaylist: (playlist: Playlist) => void;
@@ -31,6 +32,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onPlayTrack,
   onToggleLike,
   onDownloadTrack,
+  onQueueTrack,
   onNavigateToSupport,
   onNavigateToAbout,
   onSelectPlaylist,
@@ -322,6 +324,19 @@ export const HomeView: React.FC<HomeViewProps> = ({
                       title="علاقه‌مندی"
                     >
                       <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-[#d6b45c]' : ''}`} />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onQueueTrack(track);
+                      }}
+                      className="p-1.5 rounded-full text-neutral-500 hover:text-[#d6b45c] hover:bg-[#d6b45c]/10 transition-colors cursor-pointer"
+                      title="افزودن به صف پخش"
+                      aria-label={`افزودن ${track.title} به صف پخش`}
+                    >
+                      <ListPlus className="w-4 h-4" />
                     </button>
 
                     {/* Download Button */}
