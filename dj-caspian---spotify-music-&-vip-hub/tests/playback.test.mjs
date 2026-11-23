@@ -39,6 +39,12 @@ test('an unknown current track safely starts from the first catalog item', () =>
   assert.equal(pickNextTrack({ tracks: [a, b], currentTrackId: 'missing', queue: [], isShuffle: false }).track, a);
 });
 
+test('a one-track catalog safely resolves to its only track', () => {
+  const result = pickNextTrack({ tracks: [a], currentTrackId: 'a', queue: [], isShuffle: true });
+  assert.equal(result.track, a);
+  assert.equal(result.fromQueue, false);
+});
+
 test('empty catalog returns no next track', () => {
   assert.equal(pickNextTrack({ tracks: [], currentTrackId: null, queue: [], isShuffle: false }).track, null);
 });
