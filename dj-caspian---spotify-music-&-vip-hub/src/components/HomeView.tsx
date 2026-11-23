@@ -37,6 +37,33 @@ export const HomeView: React.FC<HomeViewProps> = ({
 }) => {
   const featuredTrack = tracks[0] || null;
 
+  const artists = Array.from(
+    tracks.reduce((groups, track) => {
+      const key = track.artist?.trim() || 'DJ Caspian';
+      const group = groups.get(key) || [];
+      group.push(track);
+      groups.set(key, group);
+      return groups;
+    }, new Map<string, Track[]>()).entries()
+  ).map(([name, items]) => ({ name, tracks: items, coverUrl: items[0]?.coverUrl || '' }));
+
+  const albums = Array.from(
+    tracks.reduce((groups, track) => {
+      const title = track.album?.trim() || 'Singles';
+      const key = `${track.artist || 'DJ Caspian'}::${title}`;
+      const group = groups.get(key) || [];
+      group.push(track);
+      groups.set(key, group);
+      return groups;
+    }, new Map<string, Track[]>()).entries()
+  ).map(([key, items]) => ({
+    key,
+    title: items[0]?.album?.trim() || 'Singles',
+    artist: items[0]?.artist || 'DJ Caspian',
+    tracks: items,
+    coverUrl: items[0]?.coverUrl || '',
+  }));
+
   const formatDuration = (secs: number) => {
     const m = Math.floor(secs / 60);
     const s = Math.floor(secs % 60);
@@ -336,7 +363,74 @@ export const HomeView: React.FC<HomeViewProps> = ({
         )}
       </div>
 
-      {/* 4. EXCLUSIVE PLAYLISTS SECTION */}
+      {/* 4. ARTISTS & ALBUMS — derived from the live catalog, no duplicate DB records */}
+      {tracks.length > 0 && (
+        <section className="space-y-5">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <p className="text-[10px] uppercase tracking-[.28em] text-[#d6b45c]/80 font-bold">DISCOVER THE SOUND</p>
+              <h2 className="text-xl font-black text-white mt-1">هنرمندان و آلبوم‌ها</h2>
+            </div>
+            <span className="text-[11px] text-neutral-500">{artists.length} هنرمند · {albums.length} آلبوم</span>
+          </div>
+
+          {artists.length > 0 && (
+            <div className="space-y-3">
+              <h3 className="text-sm font-bold text-neutral-200">هنرمندان</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                {artists.slice(0, 10).map((artist) => (
+                  <button
+                    type="button"
+                    key={artist.name}
+                    onClick={() => onPlayTrack(artist.tracks[0])}
+                    className="group text-right rounded-2xl border border-white/10 bg-white/[.035] hover:bg-white/[.07] p-3 transition-all"
+                    aria-label={`پخش آثار ${artist.name}`}
+                  >
+                    <div className="aspect-square rounded-xl overflow-hidden bg-[#0b1726] mb-3">
+                      {artist.coverUrl ? (
+                        <img src={artist.coverUrl} alt={artist.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center"><Music className="w-8 h-8 text-[#d6b45c]" /></div>
+                      )}
+                    </div>
+                    <div className="text-sm font-bold text-white truncate">{artist.name}</div>
+                    <div className="text-[11px] text-neutral-500 mt-1">{artist.tracks.length} قطعه</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {albums.length > 0 && (
+            <div className="space-y-3">
+              <h3 className="text-sm font-bold text-neutral-200">آلبوم‌ها</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                {albums.slice(0, 10).map((album) => (
+                  <button
+                    type="button"
+                    key={album.key}
+                    onClick={() => onPlayTrack(album.tracks[0])}
+                    className="group text-right rounded-2xl border border-white/10 bg-white/[.035] hover:bg-white/[.07] p-3 transition-all"
+                    aria-label={`پخش آلبوم ${album.title}`}
+                  >
+                    <div className="aspect-square rounded-xl overflow-hidden bg-[#0b1726] mb-3">
+                      {album.coverUrl ? (
+                        <img src={album.coverUrl} alt={album.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center"><Disc3 className="w-8 h-8 text-[#d6b45c]" /></div>
+                      )}
+                    </div>
+                    <div className="text-sm font-bold text-white truncate">{album.title}</div>
+                    <div className="text-[11px] text-neutral-500 mt-1 truncate">{album.artist} · {album.tracks.length} قطعه</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* 5. EXCLUSIVE PLAYLISTS SECTION */}
       <div className="space-y-4">
         <h2 className="text-xl font-bold text-white">پلی‌لیست‌های اختصاصی DJ Caspian</h2>
         {playlists.length === 0 ? (
@@ -382,7 +476,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         )}
       </div>
 
-      {/* 5. ABOUT ARTIST & FOLLOW US FOOTER CARD */}
+      {/* 6. ABOUT ARTIST & FOLLOW US FOOTER CARD */}
       <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-b from-[#181818] to-[#121212] border border-neutral-800 flex flex-col md:flex-row items-center gap-6 shadow-2xl">
         <img
           src={DJ_CASPIAN_INFO.avatarUrl}
