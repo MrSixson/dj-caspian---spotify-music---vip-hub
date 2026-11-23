@@ -250,8 +250,8 @@ export default function App() {
   };
 
   // Play a specific track
-  const handlePlayTrack = async (track: Track) => {
-    if (currentTrack?.id === track.id && isPlaying) {
+  const handlePlayTrack = async (track: Track, forceRestart = false) => {
+    if (!forceRestart && currentTrack?.id === track.id && isPlaying) {
       audioEngine.pause();
       setIsPlaying(false);
       return;
@@ -337,7 +337,7 @@ export default function App() {
       isShuffle,
     });
     if (next.fromQueue) setQueue(next.remainingQueue);
-    if (next.track) void handlePlayTrack(next.track);
+    if (next.track) void handlePlayTrack(next.track, true);
   };
 
   const handleAddToQueue = (track: Track) => {
@@ -351,7 +351,7 @@ export default function App() {
 
   const handlePlayQueuedTrack = (track: Track) => {
     setQueue((previous) => previous.filter((item) => item.id !== track.id));
-    void handlePlayTrack(track);
+    void handlePlayTrack(track, true);
   };
 
   const handlePreviousTrack = () => {
@@ -367,7 +367,7 @@ export default function App() {
 
     const currentIndex = tracks.findIndex((t) => t.id === currentTrack?.id);
     const prevIndex = (currentIndex - 1 + tracks.length) % tracks.length;
-    void handlePlayTrack(tracks[prevIndex]);
+    void handlePlayTrack(tracks[prevIndex], true);
   };
 
   const handleSeek = (seconds: number) => {
