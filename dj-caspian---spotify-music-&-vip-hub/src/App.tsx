@@ -254,11 +254,14 @@ export default function App() {
         track.synthPreset || 'festival_drop',
         (secs) => {
           setCurrentTime(secs);
-          if (track.duration > 0 && secs >= track.duration) {
-            handleNextTrack();
-          }
+          const mediaDuration = audioEngine.getDuration();
+          if (mediaDuration > 0) setDuration(mediaDuration);
+          const endAt = mediaDuration > 0 ? mediaDuration : track.duration;
+          if (endAt > 0 && secs >= endAt - 0.2) handleNextTrack();
         }
       );
+      const loadedDuration = audioEngine.getDuration();
+      setDuration(loadedDuration > 0 ? loadedDuration : track.duration);
       setIsPlaying(true);
       setRecentTrackIds((previous) => [track.id, ...previous.filter((id) => id !== track.id)].slice(0, 12));
       setTracks((prev) =>
@@ -292,8 +295,16 @@ export default function App() {
         currentTrack.audioUrl,
         currentTrack.bpm,
         currentTrack.synthPreset || 'festival_drop',
-        (secs) => setCurrentTime(secs)
+        (secs) => {
+          setCurrentTime(secs);
+          const mediaDuration = audioEngine.getDuration();
+          if (mediaDuration > 0) setDuration(mediaDuration);
+          const endAt = mediaDuration > 0 ? mediaDuration : currentTrack.duration;
+          if (endAt > 0 && secs >= endAt - 0.2) handleNextTrack();
+        }
       );
+      const loadedDuration = audioEngine.getDuration();
+      setDuration(loadedDuration > 0 ? loadedDuration : currentTrack.duration);
       setIsPlaying(true);
     } catch (error) {
       setIsPlaying(false);
