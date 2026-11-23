@@ -14,6 +14,8 @@ interface LibraryViewProps {
   onDownloadTrack: (track: Track) => void;
   onSelectPlaylist: (playlist: Playlist) => void;
   filterLikedOnly?: boolean;
+  selectedPlaylist?: Playlist | null;
+  onBackFromPlaylist?: () => void;
 }
 
 export const LibraryView: React.FC<LibraryViewProps> = ({
@@ -28,10 +30,59 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
   onDownloadTrack,
   onSelectPlaylist,
   filterLikedOnly = false,
+  selectedPlaylist = null,
+  onBackFromPlaylist,
 }) => {
   const displayedTracks = filterLikedOnly
     ? tracks.filter((t) => likedTrackIds.includes(t.id))
     : tracks;
+
+  if (selectedPlaylist && !filterLikedOnly) {
+    const playlistTracks = selectedPlaylist.trackIds
+      .map((id) => tracks.find((track) => track.id === id))
+      .filter((track): track is Track => Boolean(track));
+
+    return (
+      <div className="p-4 sm:p-8 space-y-6 animate-in fade-in duration-300" dir="rtl">
+        <button type="button" onClick={onBackFromPlaylist} className="inline-flex items-center gap-2 text-xs font-bold text-neutral-400 hover:text-[#d6b45c] transition-colors">
+          <span>→</span> بازگشت به کتابخانه
+        </button>
+        <section className="relative overflow-hidden rounded-3xl border border-[#d6b45c]/20 bg-gradient-to-br from-[#15375a] via-[#0b1728] to-[#05080e] p-6 sm:p-9 flex flex-col sm:flex-row items-center gap-6">
+          <div className="w-36 h-36 sm:w-48 sm:h-48 rounded-2xl overflow-hidden shadow-2xl shrink-0">
+            {selectedPlaylist.coverUrl ? <img src={selectedPlaylist.coverUrl} alt={selectedPlaylist.title} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><Disc3 className="w-12 h-12 text-[#d6b45c]" /></div>}
+          </div>
+          <div className="min-w-0 text-center sm:text-right">
+            <span className="text-[10px] uppercase tracking-[.25em] text-[#f0d88a] font-bold">DJ CASPIAN PLAYLIST</span>
+            <h1 className="text-3xl sm:text-5xl font-black text-white mt-2">{selectedPlaylist.title}</h1>
+            <p className="text-sm text-neutral-300 mt-3 max-w-xl">{selectedPlaylist.description}</p>
+            <p className="text-xs text-neutral-400 mt-3">{playlistTracks.length} قطعه در این پلی‌لیست</p>
+          </div>
+        </section>
+        {playlistTracks.length === 0 ? (
+          <div className="rounded-2xl border border-white/10 bg-white/[.03] p-10 text-center text-sm text-neutral-500">این پلی‌لیست هنوز آهنگی ندارد.</div>
+        ) : (
+          <div className="rounded-2xl border border-white/10 bg-white/[.025] overflow-hidden divide-y divide-white/5">
+            {playlistTracks.map((track, index) => (
+              <div key={track.id} className="flex items-center gap-3 p-3 hover:bg-white/[.04]">
+                <span className="w-6 text-center text-xs text-neutral-600">{index + 1}</span>
+                <img src={track.coverUrl} alt="" className="w-12 h-12 rounded-lg object-cover shrink-0" />
+                <button type="button" onClick={() => onPlayTrack(track)} className="min-w-0 flex-1 text-right">
+                  <span className="block text-sm font-bold text-white truncate">{track.title}</span>
+                  <span className="block text-xs text-neutral-500 truncate mt-1">{track.artist} · {track.genre}</span>
+                </button>
+                <button type="button" onClick={() => onPlayTrack(track)} className="p-2 text-[#d6b45c] hover:text-white" aria-label={`پخش ${track.title}`}>
+                  <Play className="w-4 h-4 fill-current" />
+                </button>
+                <button type="button" onClick={() => onDownloadTrack(track)} className="p-2 text-neutral-500 hover:text-[#d6b45c]" aria-label={`دانلود ${track.title}`}>
+                  {isUserVip ? <Download className="w-4 h-4" /> : <Crown className="w-4 h-4" />}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-8 space-y-6 animate-in fade-in duration-300" dir="rtl">
