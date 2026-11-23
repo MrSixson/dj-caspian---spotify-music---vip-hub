@@ -77,6 +77,7 @@ export default function App() {
   const [isMuted, setIsMuted] = useState(false);
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
+  const [queue, setQueue] = useState<Track[]>([]);
 
   // 7. Modals & Notifications
   const [isVipModalOpen, setIsVipModalOpen] = useState(false);
@@ -291,11 +292,16 @@ export default function App() {
   const handleNextTrack = () => {
     if (tracks.length === 0) return;
 
-    // Repeat-one must restart the active source, not call handlePlayTrack:
-    // that handler correctly treats a click on the playing track as Pause.
     if (isRepeat && currentTrack) {
       audioEngine.seek(0);
       setCurrentTime(0);
+      return;
+    }
+
+    if (queue.length > 0) {
+      const [queuedTrack, ...remaining] = queue;
+      setQueue(remaining);
+      void handlePlayTrack(queuedTrack);
       return;
     }
 
@@ -309,6 +315,20 @@ export default function App() {
     const currentIndex = tracks.findIndex((t) => t.id === currentTrack?.id);
     const nextIndex = (currentIndex + 1) % tracks.length;
     void handlePlayTrack(tracks[nextIndex]);
+  };
+
+  const handleAddToQueue = (track: Track) => {
+    setQueue((previous) => [...previous.filter((item) => item.id !== track.id), track]);
+    showToast(`«${track.title}» به صف پخش اضافه شد.`, 'success');
+  };
+
+  const handleRemoveFromQueue = (trackId: string) => {
+    setQueue((previous) => previous.filter((track) => track.id !== trackId));
+  };
+
+  const handlePlayQueuedTrack = (track: Track) => {
+    setQueue((previous) => previous.filter((item) => item.id !== track.id));
+    void handlePlayTrack(track);
   };
 
   const handlePreviousTrack = () => {
@@ -646,6 +666,7 @@ export default function App() {
               onPlayTrack={handlePlayTrack}
               onToggleLike={handleToggleLike}
               onDownloadTrack={handleDownloadTrack}
+              onQueueTrack={handleAddToQueue}
               onNavigateToSupport={() => setCurrentView('support')}
               onNavigateToAbout={() => setCurrentView('about')}
               onSelectPlaylist={(pl) => {
@@ -800,6 +821,9 @@ export default function App() {
         isMuted={isMuted}
         isShuffle={isShuffle}
         isRepeat={isRepeat}
+        queue={queue}
+        onRemoveQueueTrack={handleRemoveFromQueue}
+        onPlayQueuedTrack={handlePlayQueuedTrack}
         isLiked={currentTrack ? likedTrackIds.includes(currentTrack.id) : false}
         isUserVip={isUserVip}
         onTogglePlay={handleTogglePlay}
