@@ -120,3 +120,98 @@ footer img { box-shadow: 0 0 0 1px rgba(214,180,92,.22), 0 8px 25px rgba(0,0,0,.
   main { padding-bottom: 7.5rem; }
   footer { padding-bottom: max(.65rem, env(safe-area-inset-bottom)); }
 }
+
+/* ==========================================================
+   DJ CASPIAN — SEASON 2 VISUAL POLISH
+   Additive presentation layer. Existing player/auth/data flows
+   remain untouched; all selectors are scoped to the current SPA.
+   ========================================================== */
+:root {
+  --dc2-bg: #05080e;
+  --dc2-surface: rgba(10, 19, 32, .78);
+  --dc2-surface-raised: rgba(15, 28, 45, .92);
+  --dc2-blue-deep: #0a1a2d;
+  --dc2-blue: #1b4772;
+  --dc2-blue-glow: rgba(42, 104, 158, .24);
+  --dc2-gold: #d6b45c;
+  --dc2-gold-bright: #f0d88a;
+  --dc2-border: rgba(214, 180, 92, .18);
+  --dc2-text: #f5f3ed;
+  --dc2-muted: #9aa9ba;
+}
+
+body {
+  background-color: var(--dc2-bg);
+  background-image:
+    radial-gradient(ellipse at 8% 4%, rgba(22, 65, 108, .24), transparent 34rem),
+    radial-gradient(ellipse at 94% 10%, rgba(214, 180, 92, .075), transparent 28rem),
+    linear-gradient(180deg, #05080e 0%, #08111d 52%, #05080e 100%);
+}
+
+#root { min-height: 100dvh; }
+#root > div { min-height: 100dvh; }
+
+main {
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #294a6a #05080e;
+}
+
+main h1, main h2, main h3 { text-wrap: balance; }
+main p { text-wrap: pretty; }
+
+main .rounded-3xl {
+  border-color: var(--dc2-border);
+  box-shadow: 0 22px 64px rgba(0, 0, 0, .28), inset 0 1px rgba(255,255,255,.025);
+}
+
+main .rounded-xl, main .rounded-2xl {
+  border-color: rgba(150, 176, 204, .12);
+}
+
+main .group {
+  transition:
+    transform .28s cubic-bezier(.2,.75,.25,1),
+    border-color .28s ease,
+    box-shadow .28s ease,
+    background-color .28s ease;
+}
+
+main .group:hover {
+  transform: translateY(-2px);
+  border-color: rgba(214, 180, 92, .34);
+  box-shadow: 0 18px 42px rgba(0,0,0,.34), 0 0 26px var(--dc2-blue-glow);
+}
+
+main button, header button, aside button {
+  touch-action: manipulation;
+}
+
+main input:not([type="range"]), header input {
+  border-color: rgba(143, 170, 199, .18);
+  background-color: rgba(4, 10, 18, .68);
+}
+
+main input:not([type="range"]):focus, header input:focus {
+  border-color: rgba(214, 180, 92, .58);
+  box-shadow: 0 0 0 3px rgba(214, 180, 92, .09);
+  outline: none;
+}
+
+aside { scrollbar-width: thin; scrollbar-color: #203b58 transparent; }
+footer { padding-bottom: max(.65rem, env(safe-area-inset-bottom)); }
+
+@media (min-width: 1024px) {
+  main > div { max-width: 1600px; margin-inline: auto; }
+}
+
+@media (max-width: 767px) {
+  main { padding-bottom: calc(8.25rem + env(safe-area-inset-bottom)); }
+  main > div { padding-inline: 1rem; }
+  footer { min-height: 5rem; }
+  footer img { border-radius: .75rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main .group:hover { transform: none; }
+}
