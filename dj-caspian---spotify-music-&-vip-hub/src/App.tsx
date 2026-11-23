@@ -81,7 +81,7 @@ export default function App() {
   const [isRepeat, setIsRepeat] = useState(false);
   const isRepeatRef = useRef(isRepeat);
   isRepeatRef.current = isRepeat;
-  const handleNextTrackRef = useRef<() => void>(() => {});
+  const handleNextTrackRef = useRef<(fromEnd?: boolean) => void>(() => {});
   const [queue, setQueue] = useState<Track[]>([]);
   const [recentTrackIds, setRecentTrackIds] = useState<string[]>(() => {
     try {
@@ -253,7 +253,7 @@ export default function App() {
       restartCurrentTrack();
       return;
     }
-    handleNextTrackRef.current();
+    handleNextTrackRef.current(true);
   };
 
   // Play a specific track
@@ -336,7 +336,7 @@ export default function App() {
     }
   };
 
-  const handleNextTrack = () => {
+  const handleNextTrack = (fromEnd = false) => {
     const next = pickNextTrack({
       tracks,
       currentTrackId: currentTrack?.id || null,
@@ -346,7 +346,7 @@ export default function App() {
     if (next.fromQueue) setQueue(next.remainingQueue);
     if (!next.track) return;
     if (next.track.id === currentTrack?.id) {
-      if (next.fromQueue) restartCurrentTrack();
+      if (next.fromQueue || !fromEnd) restartCurrentTrack();
       else setIsPlaying(false);
       return;
     }
