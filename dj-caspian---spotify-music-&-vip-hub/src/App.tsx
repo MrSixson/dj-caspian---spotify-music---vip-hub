@@ -216,6 +216,7 @@ export default function App() {
       setCurrentView('home');
       return;
     }
+    if (view !== 'library') setSelectedPlaylist(null);
     setCurrentView(view);
   };
 
@@ -659,7 +660,7 @@ export default function App() {
         {/* Top Navbar */}
         <TopNav
           currentView={currentView}
-          onNavigate={(view) => setCurrentView(view)}
+          onNavigate={(view) => { if (view !== 'library') setSelectedPlaylist(null); setCurrentView(view); }}
           onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
           currentUser={currentUser}
           onOpenAuthModal={() => setIsAuthModalOpen(true)}
