@@ -52,6 +52,7 @@ export default function App() {
   const [tracks, setTracks] = useState<Track[]>([]);
 
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null);
 
   // 3. Persistent VIP Tickets
   const [tickets, setTickets] = useState<VipTicket[]>([]);
@@ -641,8 +642,9 @@ export default function App() {
         onNavigate={navigateToView}
         playlists={playlists}
         onSelectPlaylist={(pl) => {
-          setCurrentView('home');
-          showToast(`پلی‌لیست "${pl.title}" باز شد`, 'info');
+          setSelectedPlaylist(pl);
+          setCurrentView('library');
+          setIsMobileMenuOpen(false);
         }}
         likedCount={likedTrackIds.length}
         isUserVip={isUserVip}
@@ -684,7 +686,8 @@ export default function App() {
               onNavigateToSupport={() => setCurrentView('support')}
               onNavigateToAbout={() => setCurrentView('about')}
               onSelectPlaylist={(pl) => {
-                showToast(`پلی‌لیست "${pl.title}" انتخاب شد`, 'info');
+                setSelectedPlaylist(pl);
+                setCurrentView('library');
               }}
             />
           )}
@@ -715,9 +718,9 @@ export default function App() {
               onPlayTrack={handlePlayTrack}
               onToggleLike={handleToggleLike}
               onDownloadTrack={handleDownloadTrack}
-              onSelectPlaylist={(pl) => {
-                showToast(`پلی‌لیست "${pl.title}" انتخاب شد`, 'info');
-              }}
+              onSelectPlaylist={(pl) => setSelectedPlaylist(pl)}
+              selectedPlaylist={selectedPlaylist}
+              onBackFromPlaylist={() => setSelectedPlaylist(null)}
             />
           )}
 
