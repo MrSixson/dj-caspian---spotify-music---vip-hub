@@ -175,6 +175,14 @@ class AudioEngine {
     audio.currentTime = Math.max(0, Math.min(seconds, upperBound));
   }
 
+  public async restart(): Promise<void> {
+    const audio = this.audioElement;
+    if (!audio || !audio.currentSrc) return;
+    await this.resumeContext();
+    audio.currentTime = 0;
+    await audio.play();
+  }
+
   public async playTrack(
     trackId: string,
     audioUrl?: string,
