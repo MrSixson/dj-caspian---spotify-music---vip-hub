@@ -82,7 +82,8 @@ export default function App() {
   const [recentTrackIds, setRecentTrackIds] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('caspian_recent_tracks');
-      return saved ? JSON.parse(saved) : [];
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === 'string') : [];
     } catch {
       return [];
     }
