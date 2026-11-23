@@ -12,6 +12,7 @@ interface HomeViewProps {
   currentTrackId: string | null;
   isPlaying: boolean;
   likedTrackIds: string[];
+  recentTrackIds: string[];
   isUserVip: boolean;
   onPlayTrack: (track: Track) => void;
   onToggleLike: (trackId: string) => void;
@@ -28,6 +29,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   currentTrackId,
   isPlaying,
   likedTrackIds,
+  recentTrackIds,
   isUserVip,
   onPlayTrack,
   onToggleLike,
@@ -65,6 +67,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
     tracks: items,
     coverUrl: items[0]?.coverUrl || '',
   }));
+
+  const recentTracks = recentTrackIds
+    .map((id) => tracks.find((track) => track.id === id))
+    .filter((track): track is Track => Boolean(track));
 
   const formatDuration = (secs: number) => {
     const m = Math.floor(secs / 60);
@@ -377,6 +383,33 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
         )}
       </div>
+
+      {/* RECENTLY PLAYED — browser-local history, no additional account data */}
+      {recentTracks.length > 0 && (
+        <section className="space-y-3">
+          <div className="flex items-end justify-between">
+            <div>
+              <p className="text-[10px] uppercase tracking-[.25em] text-[#d6b45c]/80 font-bold">YOUR RECENT ROTATION</p>
+              <h2 className="text-lg font-black text-white mt-1">اخیراً پخش‌شده</h2>
+            </div>
+            <span className="text-[10px] text-neutral-500">روی همین دستگاه</span>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {recentTracks.map((track) => (
+              <div key={track.id} className="group w-36 sm:w-40 shrink-0 rounded-2xl border border-white/10 bg-white/[.035] p-2.5">
+                <button type="button" onClick={() => onPlayTrack(track)} className="w-full text-right">
+                  <div className="aspect-square rounded-xl overflow-hidden bg-[#0b1726] mb-2.5">
+                    <img src={track.coverUrl} alt={track.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  </div>
+                  <div className="text-xs font-bold text-white truncate">{track.title}</div>
+                  <div className="text-[10px] text-neutral-500 truncate mt-1">{track.artist}</div>
+                </button>
+                <button type="button" onClick={() => onQueueTrack(track)} className="mt-2 text-[10px] text-[#d6b45c] hover:text-white transition-colors">+ افزودن به صف</button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 4. ARTISTS & ALBUMS — derived from the live catalog, no duplicate DB records */}
       {tracks.length > 0 && (
