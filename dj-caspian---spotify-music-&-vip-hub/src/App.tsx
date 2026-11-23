@@ -308,8 +308,10 @@ export default function App() {
     if (tracks.length === 0) return;
 
     if (isRepeat && currentTrack) {
-      audioEngine.seek(0);
-      setCurrentTime(0);
+      void audioEngine.restart().then(() => setCurrentTime(0)).catch((error) => {
+        setIsPlaying(false);
+        showToast(error instanceof Error ? error.message : 'تکرار آهنگ ناموفق بود.', 'error');
+      });
       return;
     }
 
