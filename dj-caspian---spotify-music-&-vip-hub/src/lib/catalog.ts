@@ -39,53 +39,7 @@ function coverUrl(path: string | null): string {
   return supabase.storage.from('covers').getPublicUrl(path).data.publicUrl;
 }
 
-// Uploaded MP3s may not have duration metadata in the database. Read the real
-// duration from the stream gateway so the player and track cards show accurate times.
-const audioDurationCache = new Map<string, Promise<number>>();
-
-function readAudioDuration(trackId: string): Promise<number> {
-  const cached = audioDurationCache.get(trackId);
-  if (cached) return cached;
-
-  const request = new Promise<number>((resolve) => {
-    const audio = new Audio();
-    let settled = false;
-    const finish = (duration: number) => {
-      if (settled) return;
-      settled = true;
-      window.clearTimeout(timeout);
-      audio.onloadedmetadata = null;
-      audio.ondurationchange = null;
-      audio.onerror = null;
-      audio.removeAttribute('src');
-      audio.load();
-      const validDuration = Number.isFinite(duration) && duration > 0
-        ? Math.round(duration)
-        : 0;
-      // Do not cache failed metadata reads: a later catalog refresh can retry.
-      if (!validDuration) audioDurationCache.delete(trackId);
-      resolve(validDuration);
-    };
-
-    // The gateway may need extra time to wake up and deliver MP3 metadata.
-    // A short timeout used to cache zero-length results for the whole session.
-    const timeout = window.setTimeout(() => finish(0), 20000);
-    audio.preload = 'auto';
-    audio.crossOrigin = 'anonymous';
-    audio.onloadedmetadata = () => finish(audio.duration);
-    audio.ondurationchange = () => {
-      if (Number.isFinite(audio.duration) && audio.duration > 0) finish(audio.duration);
-    };
-    audio.onerror = () => finish(0);
-    audio.src = audioStreamUrl(trackId);
-    audio.load();
-  });
-
-  audioDurationCache.set(trackId, request);
-  return request;
-}
-
-async function mapTrack(row: TrackRow): Promise<Track> {
+function mapTrack(row: TrackRow): Track {
   const preset = PRESET_VALUES.includes(row.synth_preset as (typeof PRESET_VALUES)[number])
     ? (row.synth_preset as Track['synthPreset'])
     : 'festival_drop';
@@ -94,7 +48,9 @@ async function mapTrack(row: TrackRow): Promise<Track> {
     title: row.title,
     artist: row.artist,
     album: row.album,
-    duration: secondsFromDuration(row.duration) || (row.audio_path ? await readAudioDuration(row.id) : 0),
+    // Duration is stored during upload. Never open a separate audio request
+    // for every catalog row just to discover metadata.
+    duration: secondsFromDuration(row.duration),
     coverUrl: coverUrl(row.cover_path),
     audioUrl: row.audio_path ? audioStreamUrl(row.id) : undefined,
     synthPreset: preset,
@@ -112,7 +68,7 @@ async function mapTrack(row: TrackRow): Promise<Track> {
 
 export async function loadCatalog(userId?: string): Promise<{ tracks: Track[]; playlists: Playlist[]; likedTrackIds: string[] }> {
   const [trackResult, playlistResult, likesResult] = await Promise.all([
-    supabase.from('tracks').select('*').eq('is_deleting', false).order('created_at', { ascending: false }),
+    supabase.from('tracks').select('id,title,artist,album,duration,cover_path,audio_path,synth_preset,genre,bpm,plays,likes,release_date,is_vip_only_download,description,lyrics,file_size').eq('is_deleting', false).order('created_at', { ascending: false }),
     supabase.from('playlists').select('id,title,description,cover_path').order('created_at', { ascending: false }),
     userId
       ? supabase.from('user_likes').select('track_id').eq('user_id', userId)
@@ -235,6 +191,7 @@ export async function uploadTrackAssets(input: {
   const audioPath = `${unique}/${safeBase}.mp3`;
   const audioUpload = await supabase.storage.from('tracks').upload(audioPath, input.audioFile, {
     contentType: input.audioFile.type || 'audio/mpeg',
+    cacheControl: '31536000',
     upsert: false,
   });
   if (audioUpload.error) throw new Error(`آپلود فایل صوتی ناموفق بود: ${audioUpload.error.message}`);
@@ -245,6 +202,7 @@ export async function uploadTrackAssets(input: {
     coverPath = `${unique}/cover.${extension}`;
     const coverUpload = await supabase.storage.from('covers').upload(coverPath, input.coverFile, {
       contentType: input.coverFile.type || 'image/jpeg',
+      cacheControl: '31536000',
       upsert: false,
     });
     if (coverUpload.error) {
