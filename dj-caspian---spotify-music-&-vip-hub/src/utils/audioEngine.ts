@@ -17,6 +17,7 @@ class AudioEngine {
 
   private timeUpdateCallback?: (current: number) => void;
   private errorCallback?: (error: Error) => void;
+  private endedCallback?: () => void;
 
   private initContext(): void {
     if (this.ctx) return;
@@ -94,6 +95,7 @@ class AudioEngine {
 
     this.audioElement.addEventListener("ended", () => {
       console.log("[DJ AUDIO] Track ended");
+      this.endedCallback?.();
     });
 
     this.audioElement.addEventListener("error", () => {
@@ -167,6 +169,7 @@ class AudioEngine {
 
     this.currentTrackId = null;
     this.timeUpdateCallback = undefined;
+    this.endedCallback = undefined;
   }
 
   public pause(): void {
@@ -193,7 +196,8 @@ class AudioEngine {
     audioUrl?: string,
     _bpm: number = 126,
     _synthPreset: string = "festival_drop",
-    onTimeUpdate?: (current: number) => void
+    onTimeUpdate?: (current: number) => void,
+    onEnded?: () => void
   ): Promise<void> {
     try {
       if (
@@ -225,6 +229,7 @@ class AudioEngine {
         this.audioElement.currentSrc
       ) {
         this.timeUpdateCallback = onTimeUpdate;
+        this.endedCallback = onEnded;
         await this.audioElement.play();
         return;
       }
@@ -233,6 +238,7 @@ class AudioEngine {
 
       this.currentTrackId = trackId;
       this.timeUpdateCallback = onTimeUpdate;
+      this.endedCallback = onEnded;
 
       const audio = this.audioElement;
 
