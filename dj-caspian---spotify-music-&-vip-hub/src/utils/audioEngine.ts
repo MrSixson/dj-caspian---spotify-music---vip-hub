@@ -125,6 +125,11 @@ class AudioEngine {
     return this.volume;
   }
 
+  public getDuration(): number {
+    const duration = this.audioElement?.duration ?? 0;
+    return Number.isFinite(duration) ? duration : 0;
+  }
+
   public getAnalyser(): AnalyserNode | null {
     return this.analyser;
   }
