@@ -78,7 +78,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 z-40 relative bg-[#121212]/95 backdrop-blur-lg border-t border-neutral-800 px-3 sm:px-6 py-2.5 sm:py-3 select-none" dir="rtl">
+    <footer className="fixed bottom-0 left-0 right-0 z-40 bg-[#121212]/95 backdrop-blur-lg border-t border-neutral-800 px-3 sm:px-6 py-2.5 sm:py-3 select-none" dir="rtl">
       {isQueueOpen && (
         <div className="absolute bottom-full left-3 sm:left-6 mb-3 w-[min(22rem,calc(100vw-1.5rem))] max-h-80 overflow-hidden rounded-2xl border border-[#d6b45c]/25 bg-[#07111e]/[.98] shadow-2xl shadow-black/60 backdrop-blur-2xl" dir="rtl">
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
