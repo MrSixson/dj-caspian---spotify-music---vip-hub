@@ -290,21 +290,41 @@ export default function App() {
 
   const handleNextTrack = () => {
     if (tracks.length === 0) return;
-    if (isShuffle) {
-      const randomIndex = Math.floor(Math.random() * tracks.length);
-      handlePlayTrack(tracks[randomIndex]);
+
+    // Repeat-one must restart the active source, not call handlePlayTrack:
+    // that handler correctly treats a click on the playing track as Pause.
+    if (isRepeat && currentTrack) {
+      audioEngine.seek(0);
+      setCurrentTime(0);
       return;
     }
+
+    if (isShuffle && tracks.length > 1) {
+      const candidates = tracks.filter((track) => track.id !== currentTrack?.id);
+      const randomIndex = Math.floor(Math.random() * candidates.length);
+      void handlePlayTrack(candidates[randomIndex]);
+      return;
+    }
+
     const currentIndex = tracks.findIndex((t) => t.id === currentTrack?.id);
     const nextIndex = (currentIndex + 1) % tracks.length;
-    handlePlayTrack(tracks[nextIndex]);
+    void handlePlayTrack(tracks[nextIndex]);
   };
 
   const handlePreviousTrack = () => {
     if (tracks.length === 0) return;
+
+    // A short press on Previous restarts the current track, as expected by
+    // common music players; a second press moves to the previous item.
+    if (currentTrack && currentTime > 3) {
+      audioEngine.seek(0);
+      setCurrentTime(0);
+      return;
+    }
+
     const currentIndex = tracks.findIndex((t) => t.id === currentTrack?.id);
     const prevIndex = (currentIndex - 1 + tracks.length) % tracks.length;
-    handlePlayTrack(tracks[prevIndex]);
+    void handlePlayTrack(tracks[prevIndex]);
   };
 
   const handleSeek = (seconds: number) => {
