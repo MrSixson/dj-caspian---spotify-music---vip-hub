@@ -78,6 +78,14 @@ export default function App() {
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
   const [queue, setQueue] = useState<Track[]>([]);
+  const [recentTrackIds, setRecentTrackIds] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('caspian_recent_tracks');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
 
   // 7. Modals & Notifications
   const [isVipModalOpen, setIsVipModalOpen] = useState(false);
@@ -188,6 +196,10 @@ export default function App() {
     localStorage.setItem('caspian_liked_tracks', JSON.stringify(likedTrackIds));
   }, [likedTrackIds]);
 
+  useEffect(() => {
+    localStorage.setItem('caspian_recent_tracks', JSON.stringify(recentTrackIds));
+  }, [recentTrackIds]);
+
   const navigateToView = (view: typeof currentView) => {
     if ((view === 'dashboard' || view === 'liked') && !currentUser) {
       showToast('برای دسترسی به این بخش ابتدا وارد حساب کاربری شوید.', 'info');
@@ -246,6 +258,7 @@ export default function App() {
         }
       );
       setIsPlaying(true);
+      setRecentTrackIds((previous) => [track.id, ...previous.filter((id) => id !== track.id)].slice(0, 12));
       setTracks((prev) =>
         prev.map((t) => (t.id === track.id ? { ...t, plays: (t.plays || 0) + 1 } : t))
       );
@@ -662,6 +675,7 @@ export default function App() {
               currentTrackId={currentTrack?.id || null}
               isPlaying={isPlaying}
               likedTrackIds={likedTrackIds}
+              recentTrackIds={recentTrackIds}
               isUserVip={isUserVip}
               onPlayTrack={handlePlayTrack}
               onToggleLike={handleToggleLike}
