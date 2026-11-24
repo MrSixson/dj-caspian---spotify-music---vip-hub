@@ -1040,10 +1040,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                   <button
                     type="submit"
-                    className="py-3 px-8 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-black text-xs flex items-center gap-2 transition-all cursor-pointer shadow-xl shadow-[#d6b45c]/25 hover:scale-105"
+                    disabled={isPublishingTrack}
+                    className="py-3 px-8 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] disabled:opacity-60 disabled:cursor-wait text-black font-black text-xs flex items-center gap-2 transition-all cursor-pointer shadow-xl shadow-[#d6b45c]/25"
                   >
-                    <Check className="w-4 h-4" />
-                    <span>انتشار نهایی آهنگ روی سایت (پخش زنده برای همه)</span>
+                    {isPublishingTrack ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                    <span>{isPublishingTrack ? 'در حال آپلود و ثبت آهنگ...' : 'ذخیره و انتشار آهنگ در کتابخانه'}</span>
                   </button>
                 </div>
               </form>
@@ -1136,7 +1137,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 </button>
                 <button
                   type="submit"
-                  disabled={isPublishingTrack}
                   className="py-2.5 px-6 rounded-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs cursor-pointer shadow-md"
                 >
                   انتشار پلی‌لیست روی سایت
