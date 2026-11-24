@@ -258,6 +258,12 @@ export default function App() {
 
   // Play a specific track
   const handlePlayTrack = async (track: Track, forceRestart = false) => {
+    if (!currentUser) {
+      showToast('برای پخش موسیقی ابتدا وارد حساب کاربری شوید.', 'info');
+      setIsAuthModalOpen(true);
+      return;
+    }
+
     if (!forceRestart && currentTrack?.id === track.id && isPlaying) {
       audioEngine.pause();
       setIsPlaying(false);
@@ -299,6 +305,12 @@ export default function App() {
   };
 
   const handleTogglePlay = async () => {
+    if (!currentUser) {
+      showToast('برای پخش موسیقی ابتدا وارد حساب کاربری شوید.', 'info');
+      setIsAuthModalOpen(true);
+      return;
+    }
+
     if (!currentTrack) {
       if (tracks.length > 0) await handlePlayTrack(tracks[0]);
       return;
