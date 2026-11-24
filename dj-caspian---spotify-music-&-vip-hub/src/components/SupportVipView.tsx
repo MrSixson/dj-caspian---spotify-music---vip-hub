@@ -182,6 +182,60 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({
         </div>
       </div>
 
+      {/* Donito support links and live overlay previews */}
+      <section className="space-y-5" aria-labelledby="donito-support-title">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+          <div>
+            <div className="inline-flex items-center gap-2 text-[#d6b45c] text-xs font-bold tracking-wide">
+              <Sparkles className="w-4 h-4" /> DONITO • COMMUNITY SUPPORT
+            </div>
+            <h2 id="donito-support-title" className="text-2xl font-black text-white mt-2">ابزارهای حمایت زنده</h2>
+            <p className="text-sm text-neutral-400 mt-1">ابزارهای دونیتو و حمایت مستقیم از DJ CASPIAN، در یک بخش یکپارچه.</p>
+          </div>
+          <a href="https://donito.me/dj_caspian" target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 bg-gradient-to-r from-[#d6b45c] to-[#f0d88a] text-[#111] font-black text-sm shadow-lg shadow-[#d6b45c]/10 hover:brightness-110">
+            <Coins className="w-4 h-4" /> حمایت مالی / Donate <ExternalLink className="w-4 h-4" />
+          </a>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {[
+            { title: 'بیشترین حمایت‌ها در ۲۴ ساعت گذشته', description: 'نمایش برچسب حامیان برتر در بازه ۲۴ ساعته؛ مناسب نمایش رویدادهای اخیر حمایت.', url: 'https://donito.me/overlays/6V8EJKK9XPGAPS6KAP655NZWG7SEWRVGEV6EW9E4YD9KYE5JABVE48NJBZP', tag: 'TOP SUPPORTERS' },
+            { title: 'هدف حمایت مالی', description: 'نمایش میزان پیشرفت هدف مالی و حمایت‌های ثبت‌شده.', url: 'https://donito.me/overlays/R76X5BBJ9K6JEFPRBVPNN6Y76538P9WAKDWRK55HRP68BYZ7JY6EF6RKX9J', tag: 'DONATION GOAL' },
+            { title: 'آخرین حمایت‌ها', description: 'فهرست عمودی آخرین حمایت‌های ثبت‌شده برای نمایش فعالیت‌های تازه.', url: 'https://donito.me/overlays/APYZKBBVAREW74RXYPRGGZ8WZ7FJZXR78BAJ5Z6CBGY55JKVG6BKFW5NJXX', tag: 'LATEST DONATIONS' },
+          ].map((tool) => (
+            <article key={tool.url} className="rounded-2xl border border-[#d6b45c]/20 bg-[#0b1421]/85 overflow-hidden">
+              <div className="p-4 flex items-start justify-between gap-3">
+                <div>
+                  <span className="text-[10px] tracking-widest text-[#d6b45c] font-black">{tool.tag}</span>
+                  <h3 className="text-white font-bold mt-1">{tool.title}</h3>
+                  <p className="text-xs text-neutral-400 mt-1 leading-6">{tool.description}</p>
+                </div>
+                <Sparkles className="w-5 h-5 text-[#d6b45c] shrink-0" />
+              </div>
+              <div className="mx-4 mb-3 rounded-xl overflow-hidden border border-white/10 bg-[#05080e]">
+                <iframe title={tool.title} src={tool.url} loading="lazy" referrerPolicy="strict-origin-when-cross-origin"
+                  className="w-full h-40 border-0" />
+              </div>
+              <div className="px-4 pb-4 flex flex-wrap gap-2">
+                <a href={tool.url} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg bg-[#173657] hover:bg-[#214b75] text-white text-xs font-bold px-3 py-2">
+                  مشاهده ابزار <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+                <button type="button" onClick={() => copyToClipboard(tool.url, tool.tag, 'لینک ابزار')}
+                  className="inline-flex items-center gap-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-200 text-xs font-bold px-3 py-2">
+                  {copiedKey === tool.tag ? <Check className="w-3.5 h-3.5 text-[#d6b45c]" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copiedKey === tool.tag ? 'کپی شد' : 'کپی لینک ابزار'}
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+        <p className="text-[11px] text-neutral-500 leading-6">
+          پیش‌نمایش‌ها از صفحه‌های رسمی Donito بارگذاری می‌شوند. اگر سیاست امنیتی یا تنظیمات خود Donito نمایش داخل سایت را محدود کند، دکمه «مشاهده ابزار» همچنان لینک اصلی را باز می‌کند.
+        </p>
+      </section>
+
       {/* Step 1: Payment Methods Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
