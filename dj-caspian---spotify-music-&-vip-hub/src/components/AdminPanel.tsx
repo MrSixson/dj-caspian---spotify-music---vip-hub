@@ -54,6 +54,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   // NEW TRACK UPLOAD & METADATA MANAGEMENT MODAL
   // -------------------------------------------------------------
   const [isAddTrackOpen, setIsAddTrackOpen] = useState(false);
+  const [isPublishingTrack, setIsPublishingTrack] = useState(false);
   const [uploadStep, setUploadStep] = useState<1 | 2>(1); // Step 1: Audio file, Step 2: Metadata panel
   
   const [newTitle, setNewTitle] = useState('');
@@ -97,40 +98,54 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   // Audio Upload Handler
   const handleAudioFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setNewAudioFileName(file.name);
-      setNewAudioFile(file);
-      setNewAudioUrl('');
-
-      // Auto-populate title if empty from filename
-      if (!newTitle) {
-        const cleanName = file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ');
-        setNewTitle(cleanName);
-      }
-
-      onShowToast(`فایل صوتی ${file.name} بارگذاری شد. به مرحله تنظیمات منتقل می‌شوید...`, 'success');
-      // Automatically advance to Step 2 (Metadata & Profile Management panel!)
-      setUploadStep(2);
+    if (!file) return;
+    if (!/\.mp3$/i.test(file.name) || file.size < 4 || file.size > 50 * 1024 * 1024) {
+      onShowToast('فقط فایل MP3 معتبر با حجم حداکثر ۵۰ مگابایت قابل انتخاب است.', 'error');
+      e.target.value = '';
+      return;
     }
+    setNewAudioFileName(file.name);
+    setNewAudioFile(file);
+    setNewAudioUrl('');
+    if (!newTitle) setNewTitle(file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' '));
+    const metadataAudio = new Audio();
+    const objectUrl = URL.createObjectURL(file);
+    metadataAudio.preload = 'metadata';
+    metadataAudio.onloadedmetadata = () => {
+      if (Number.isFinite(metadataAudio.duration) && metadataAudio.duration > 0) setNewDuration(Math.round(metadataAudio.duration));
+      URL.revokeObjectURL(objectUrl);
+    };
+    metadataAudio.onerror = () => URL.revokeObjectURL(objectUrl);
+    metadataAudio.src = objectUrl;
+    onShowToast(`فایل ${file.name} انتخاب شد؛ مدت آهنگ به‌صورت خودکار خوانده می‌شود.`, 'success');
+    setUploadStep(2);
   };
 
   // Cover Image Upload Handler
   const handleCoverFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setNewCoverFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setNewCoverUrl(reader.result as string);
-        onShowToast('تصویر پروفایل کاور با موفقیت انتخاب شد', 'success');
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+    if (!file.type.startsWith('image/') || file.size > 8 * 1024 * 1024) {
+      onShowToast('کاور باید تصویر معتبر با حجم حداکثر ۸ مگابایت باشد.', 'error');
+      e.target.value = '';
+      return;
     }
+    setNewCoverFile(file);
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setNewCoverUrl(reader.result);
+        onShowToast('کاور آهنگ با موفقیت انتخاب شد.', 'success');
+      }
+    };
+    reader.onerror = () => onShowToast('خواندن تصویر کاور ناموفق بود.', 'error');
+    reader.readAsDataURL(file);
   };
 
   // Final Publish Track Handler
   const handlePublishTrack = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isPublishingTrack) return;
     if (!newTitle.trim()) {
       onShowToast('عنوان قطعه الزامی است', 'error');
       return;
@@ -141,7 +156,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       return;
     }
 
+    if (!Number.isFinite(newDuration) || newDuration <= 0) {
+      onShowToast('مدت آهنگ معتبر نیست؛ فایل صوتی را دوباره انتخاب کنید.', 'error');
+      return;
+    }
     let createdTrack: Track;
+    setIsPublishingTrack(true);
     try {
       createdTrack = await onAddTrack({
         audioFile: newAudioFile,
@@ -160,6 +180,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     } catch (error) {
       onShowToast(error instanceof Error ? error.message : 'انتشار آهنگ ناموفق بود.', 'error');
       return;
+    } finally {
+      setIsPublishingTrack(false);
     }
     
     try {
@@ -172,7 +194,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       // ignore
     }
 
-    onShowToast(`آهنگ "${createdTrack.title}" با موفقیت روی سایت منتشر شد و همه می‌توانند آن را گوش دهند!`, 'success');
+    onShowToast(`آهنگ «${createdTrack.title}» با موفقیت در کتابخانه ثبت شد.`, 'success');
     setIsAddTrackOpen(false);
 
     // Reset upload form
@@ -795,7 +817,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   </div>
 
                   <h4 className="text-base font-bold text-white mb-1">
-                    انتخاب فایل صوتی آهنگ (MP3 / WAV)
+                    انتخاب فایل صوتی آهنگ (MP3، حداکثر ۵۰ مگابایت)
                   </h4>
                   <p className="text-xs text-neutral-400 max-w-md mx-auto mb-4">
                     فایل موزیک خود را از کامپیوتر یا موبایل انتخاب کنید تا مستقیماً به استودیو اضافه شود.
@@ -806,7 +828,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     <span>انتخاب فایل موزیک از دستگاه</span>
                     <input
                       type="file"
-                      accept="audio/*"
+                      accept=".mp3,audio/mpeg"
                       onChange={handleAudioFileUpload}
                       className="hidden"
                     />
@@ -923,6 +945,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     <label className="text-xs text-neutral-300 block mb-1 font-medium">مدت (ثانیه):</label>
                     <input
                       type="number"
+                      min="1"
                       value={newDuration}
                       onChange={(e) => setNewDuration(Number(e.target.value))}
                       className="w-full bg-[#242424] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white font-mono text-center"
@@ -956,7 +979,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         <span>بارگذاری عکس کاور از کامپیوتر</span>
                         <input
                           type="file"
-                          accept="image/*"
+                          accept="image/png,image/jpeg,image/webp,image/avif"
                           onChange={handleCoverFileUpload}
                           className="hidden"
                         />
@@ -1113,6 +1136,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 </button>
                 <button
                   type="submit"
+                  disabled={isPublishingTrack}
                   className="py-2.5 px-6 rounded-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs cursor-pointer shadow-md"
                 >
                   انتشار پلی‌لیست روی سایت
