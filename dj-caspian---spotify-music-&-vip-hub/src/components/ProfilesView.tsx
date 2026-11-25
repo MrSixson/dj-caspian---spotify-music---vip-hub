@@ -16,7 +16,13 @@ export const ProfilesView: React.FC = () => {
     else setProfiles((data || []) as Profile[]);
     setLoading(false);
   };
-  useEffect(() => { void load(); }, []);
+  useEffect(() => {
+    void load();
+    const channel = supabase.channel('dj-caspian-live-community')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => { void load(); })
+      .subscribe();
+    return () => { void supabase.removeChannel(channel); };
+  }, []);
   const filtered = useMemo(() => { const q=query.trim().toLowerCase(); return profiles.filter(p => !q || [p.username,p.display_name].some(v => (v||'').toLowerCase().includes(q))); }, [profiles,query]);
   const avatar = (path: string | null, name: string) => path ? supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl : `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'DJ')}&background=10243a&color=d6b45c&bold=true`;
   return <div className="max-w-7xl mx-auto p-4 sm:p-8 space-y-7" dir="rtl">
