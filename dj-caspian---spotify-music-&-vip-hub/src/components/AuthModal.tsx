@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   X, LogIn, UserPlus, Shield, Crown, User, Lock, 
   Mail, Sparkles, CheckCircle2, AlertCircle, ArrowLeft
@@ -24,6 +24,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   initialMode = 'login',
 }) => {
   const [mode, setMode] = useState<'login' | 'register'>(initialMode);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setMode(initialMode);
+      setLoginError('');
+      setRegError('');
+      setIsSubmitting(false);
+    }
+  }, [isOpen, initialMode]);
   
   // Login Form
   const [loginUsername, setLoginUsername] = useState('');
@@ -43,6 +53,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
     try {
       const email = loginUsername.trim();
@@ -55,12 +67,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       onClose();
     } catch (error) {
       setLoginError(error instanceof Error ? error.message : 'ورود انجام نشد. اطلاعات حساب را بررسی کنید.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setRegError('');
+    if (isSubmitting) return;
 
     if (regPassword !== regConfirmPassword) {
       setRegError('رمز عبور و تکرار آن یکسان نیستند.');
@@ -75,6 +90,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       return;
     }
 
+    setIsSubmitting(true);
     try {
       const result = await signUpWithEmail({
         email: regEmail.trim(),
@@ -93,6 +109,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       onClose();
     } catch (error) {
       setRegError(error instanceof Error ? error.message : 'ثبت‌نام انجام نشد.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -167,8 +185,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <div className="relative">
                 <User className="w-4 h-4 absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400" />
                 <input
-                  type="text"
+                  type="email"
                   required
+                  autoComplete="email"
                   placeholder="email@example.com"
                   value={loginUsername}
                   onChange={(e) => setLoginUsername(e.target.value)}
@@ -185,6 +204,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <input
                   type="password"
                   required
+                  autoComplete="current-password"
                   placeholder="رمز عبور شما"
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
@@ -203,10 +223,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
             <button
               type="submit"
-              className="w-full py-3 px-6 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-[#d6b45c]/20 hover:scale-[1.02] active:scale-[0.98]"
+              disabled={isSubmitting}
+              className="w-full py-3 px-6 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] disabled:opacity-60 disabled:cursor-wait text-black font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-[#d6b45c]/20 hover:scale-[1.02] active:scale-[0.98]"
             >
               <LogIn className="w-4 h-4" />
-              <span>ورود به حساب کاربری</span>
+              <span>{isSubmitting ? "در حال ورود..." : "ورود به حساب کاربری"}</span>
             </button>
           </form>
         )}
@@ -244,6 +265,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <input
                 type="email"
                 required
+                autoComplete="email"
                 placeholder="email@example.com"
                 value={regEmail}
                 onChange={(e) => setRegEmail(e.target.value)}
@@ -258,6 +280,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <input
                   type="password"
                   required
+                  autoComplete="new-password"
+                  minLength={8}
                   placeholder="حداقل ۸ کاراکتر"
                   value={regPassword}
                   onChange={(e) => setRegPassword(e.target.value)}
@@ -271,6 +295,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <input
                   type="password"
                   required
+                  autoComplete="new-password"
+                  minLength={8}
                   placeholder="تکرار رمز"
                   value={regConfirmPassword}
                   onChange={(e) => setRegConfirmPassword(e.target.value)}
@@ -289,10 +315,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
             <button
               type="submit"
-              className="w-full py-3 px-6 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-[#d6b45c]/20 hover:scale-[1.02] active:scale-[0.98] mt-2"
+              disabled={isSubmitting}
+              className="w-full py-3 px-6 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] disabled:opacity-60 disabled:cursor-wait text-black font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-[#d6b45c]/20 hover:scale-[1.02] active:scale-[0.98] mt-2"
             >
               <UserPlus className="w-4 h-4" />
-              <span>ساخت حساب کاربری و ورود</span>
+              <span>{isSubmitting ? "در حال ساخت حساب..." : "ساخت حساب کاربری و ورود"}</span>
             </button>
           </form>
         )}
