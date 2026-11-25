@@ -9,6 +9,7 @@ import { Track, VipTicket, Playlist, UserAccount } from '../types';
 import { DJ_CASPIAN_INFO } from '../data/initialData';
 import confetti from 'canvas-confetti';
 import { AppReleaseManager } from './AppReleaseManager';
+import { supabase } from '../lib/supabase';
 
 interface AdminPanelProps {
   currentUser: UserAccount | null;
@@ -196,6 +197,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     }
 
     onShowToast(`آهنگ «${createdTrack.title}» با موفقیت در کتابخانه ثبت شد.`, 'success');
+    void supabase.functions.invoke('send-push-notification', {
+      body: {
+        title: '🎵 آهنگ جدید منتشر شد',
+        body: `«${createdTrack.title}» را همین حالا در DJ Caspian گوش بده.`,
+        url: '/',
+      },
+    }).then(({ error }) => {
+      if (error) console.warn('[DJ Caspian] New-track push notification was not sent:', error.message);
+    });
     setIsAddTrackOpen(false);
 
     // Reset upload form
