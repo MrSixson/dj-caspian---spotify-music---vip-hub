@@ -37,11 +37,23 @@ jobs:
           distribution: temurin
           java-version: "21"
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Locate Android SDK
+        run: |
+          echo "Android SDK: $ANDROID_HOME"
+          test -d "$ANDROID_HOME"
+          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
+          if [ -d "$ANDROID_HOME/cmdline-tools/latest/bin" ]; then
+            echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          else
+            SDKMANAGER_PATH=$(find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f | head -n 1)
+            test -n "$SDKMANAGER_PATH"
+            echo "$(dirname "$SDKMANAGER_PATH")" >> "$GITHUB_PATH"
+          fi
 
       - name: Install Android SDK packages
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
       - name: Install web and Capacitor dependencies
         run: npm install --legacy-peer-deps
