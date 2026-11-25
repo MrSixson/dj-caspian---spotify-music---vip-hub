@@ -32,8 +32,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [loginError, setLoginError] = useState('');
 
   // Register Form
-  const [regDisplayName, setRegDisplayName] = useState('');
-  const [regUsername, setRegUsername] = useState('');
   const [regEmail, setRegEmail] = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [regConfirmPassword, setRegConfirmPassword] = useState('');
@@ -95,8 +93,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       const result = await signUpWithEmail({
         email: regEmail.trim(),
         password: regPassword,
-        username: regUsername.trim(),
-        displayName: regDisplayName.trim() || regUsername.trim(),
+        username: regEmail.trim().split('@')[0],
+        displayName: regEmail.trim().split('@')[0],
       });
 
       if (result.emailConfirmationRequired || !result.user) {
@@ -235,31 +233,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {/* REGISTER FORM */}
         {mode === 'register' && (
           <form onSubmit={handleRegisterSubmit} className="space-y-3">
-            <div>
-              <label className="text-xs text-neutral-300 block mb-1 font-medium">نام نمایشی (فارسی یا انگلیسی):</label>
-              <input
-                type="text"
-                required
-                placeholder="مثال: آرین تهرانی"
-                value={regDisplayName}
-                onChange={(e) => setRegDisplayName(e.target.value)}
-                className="w-full bg-[#202020] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl py-2 px-3 text-xs sm:text-sm text-white"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs text-neutral-300 block mb-1 font-medium">نام کاربری اختصاصی (Username):</label>
-              <input
-                type="text"
-                required
-                placeholder="مثال: ArianClub"
-                value={regUsername}
-                onChange={(e) => setRegUsername(e.target.value)}
-                className="w-full bg-[#202020] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl py-2 px-3 text-xs sm:text-sm text-white font-mono text-left"
-                dir="ltr"
-              />
-            </div>
-
             <div>
               <label className="text-xs text-neutral-300 block mb-1 font-medium">ایمیل:</label>
               <input
