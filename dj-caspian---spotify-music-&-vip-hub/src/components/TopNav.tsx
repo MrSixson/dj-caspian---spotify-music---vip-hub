@@ -8,7 +8,7 @@ import { UserAccount } from '../types';
 
 interface TopNavProps {
   currentView: string;
-  onNavigate: (view: 'home' | 'search' | 'library' | 'support' | 'tickets' | 'admin' | 'liked' | 'dashboard' | 'about' | 'community') => void;
+  onNavigate: (view: 'home' | 'search' | 'library' | 'support' | 'tickets' | 'admin' | 'liked' | 'dashboard' | 'about' | 'community' | 'experience') => void;
   onOpenMobileMenu: () => void;
   currentUser: UserAccount | null;
   onOpenAuthModal: () => void;
