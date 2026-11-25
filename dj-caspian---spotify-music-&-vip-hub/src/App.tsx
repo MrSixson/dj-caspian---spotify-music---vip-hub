@@ -586,6 +586,24 @@ export default function App() {
   const handleAddTrack = async (input: Parameters<typeof uploadTrackAssets>[0]) => {
     const newTrack = await uploadTrackAssets(input);
     setTracks((prev) => [newTrack, ...prev]);
+
+    // Notify installed Android apps after the track has been safely saved.
+    void supabase.functions.invoke('send-push-notification', {
+      body: {
+        title: '🎵 آهنگ جدید در DJ Caspian',
+        body: `${newTrack.title} از ${newTrack.artist} منتشر شد.`,
+        url: '/',
+      },
+    }).then(({ error, data }) => {
+      if (error) {
+        showToast('آهنگ منتشر شد، اما اعلان ارسال نشد: ' + error.message, 'error');
+      } else if (data?.sent === 0) {
+        showToast('آهنگ منتشر شد؛ هنوز دستگاهی برای دریافت اعلان ثبت نشده است.', 'info');
+      } else {
+        showToast(`اعلان آهنگ به ${data?.sent ?? 0} دستگاه ارسال شد.`, 'success');
+      }
+    });
+
     return newTrack;
   };
 
