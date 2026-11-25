@@ -20,7 +20,7 @@ function corsHeaders(req: Request) {
   return headers;
 }
 
-const json = (body: unknown, status = 200) =>
+const json = (req: Request, body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
     headers: { ...corsHeaders(req), "Content-Type": "application/json", "Cache-Control": "no-store" },
@@ -28,33 +28,33 @@ const json = (body: unknown, status = 200) =>
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders(req) });
-  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
+  if (req.method !== "POST") return json(req, { error: "Method not allowed" }, 405);
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  if (!supabaseUrl || !serviceKey) return json({ error: "Audio service unavailable" }, 503);
+  if (!supabaseUrl || !serviceKey) return json(req, { error: "Audio service unavailable" }, 503);
 
   const authorization = req.headers.get("Authorization") ?? "";
   const token = authorization.replace(/^Bearer\s+/i, "");
-  if (!token) return json({ error: "Sign in required" }, 401);
+  if (!token) return json(req, { error: "Sign in required" }, 401);
 
   const admin = createClient(supabaseUrl, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
   const { data: authData, error: authError } = await admin.auth.getUser(token);
-  if (authError || !authData.user) return json({ error: "Unauthorized" }, 401);
+  if (authError || !authData.user) return json(req, { error: "Unauthorized" }, 401);
 
   let body: { track_id?: unknown };
   try {
     body = await req.json();
   } catch {
-    return json({ error: "Invalid JSON body" }, 400);
+    return json(req, { error: "Invalid JSON body" }, 400);
   }
 
   const trackId = typeof body.track_id === "string" ? body.track_id : "";
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(trackId)) {
-    return json({ error: "Invalid track id" }, 400);
+    return json(req, { error: "Invalid track id" }, 400);
   }
 
   const { data: track, error: trackError } = await admin
@@ -64,12 +64,12 @@ Deno.serve(async (req: Request) => {
     .maybeSingle();
 
   if (trackError || !track || track.is_deleting || !track.audio_path) {
-    return json({ error: "Track not found" }, 404);
+    return json(req, { error: "Track not found" }, 404);
   }
 
   const objectPath = String(track.audio_path).replace(/^\/+/, "");
   if (!objectPath || objectPath.split("/").some((part) => part === "." || part === "..")) {
-    return json({ error: "Invalid audio object" }, 500);
+    return json(req, { error: "Invalid audio object" }, 500);
   }
 
   const { data: signed, error: signError } = await admin.storage
@@ -78,8 +78,8 @@ Deno.serve(async (req: Request) => {
 
   if (signError || !signed?.signedUrl) {
     console.error("audio-ticket signing failed:", signError?.message);
-    return json({ error: "Could not authorize audio stream" }, 502);
+    return json(req, { error: "Could not authorize audio stream" }, 502);
   }
 
-  return json({ signedUrl: signed.signedUrl, expiresIn: 900 });
+  return json(req, { signedUrl: signed.signedUrl, expiresIn: 900 });
 });
