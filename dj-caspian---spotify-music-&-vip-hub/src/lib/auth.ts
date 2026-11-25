@@ -91,7 +91,13 @@ export async function signUpWithEmail(input: {
     },
   });
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    const message = error.message.toLowerCase();
+    if (message.includes('already registered') || message.includes('already exists') || message.includes('duplicate key')) {
+      throw new Error('این ایمیل قبلاً ثبت شده است. وارد حساب شوید یا از گزینه بازیابی رمز عبور استفاده کنید.');
+    }
+    throw new Error(error.message);
+  }
   if (!data.user) throw new Error('ساخت حساب کاربری ناموفق بود.');
 
   if (!data.session) {
