@@ -70,7 +70,13 @@ const toUserAccount = async (userId: string, email?: string): Promise<UserAccoun
 export async function signInWithEmail(email: string, password: string): Promise<UserAccount> {
   const normalizedEmail = email.trim().toLowerCase();
   const { data, error } = await supabase.auth.signInWithPassword({ email: normalizedEmail, password });
-  if (error || !data.user) throw new Error(error?.message || 'ورود انجام نشد.');
+  if (error || !data.user) {
+    const code = (error as { code?: string } | null)?.code;
+    if (code === 'invalid_credentials') throw new Error('ایمیل یا رمز عبور اشتباه است.');
+    if (code === 'email_not_confirmed') throw new Error('ایمیل این حساب هنوز تأیید نشده است. تنظیم تأیید ایمیل Supabase را بررسی کنید.');
+    if (code === 'too_many_requests') throw new Error('تعداد تلاش‌های ورود زیاد بوده است. کمی بعد دوباره امتحان کنید.');
+    throw new Error(error?.message || 'ورود انجام نشد.');
+  }
   return toUserAccount(data.user.id, data.user.email);
 }
 
@@ -94,6 +100,10 @@ export async function signUpWithEmail(input: {
 
   if (error) {
     const message = error.message.toLowerCase();
+    const code = (error as { code?: string }).code;
+    if (code === 'over_email_send_rate_limit' || message.includes('email rate limit')) {
+      throw new Error('سقف ارسال ایمیل Supabase موقتاً پر شده است. برای ثبت‌نام بدون ایمیل تأیید، گزینه Confirm email را در Supabase خاموش کنید.');
+    }
     if (message.includes('already registered') || message.includes('already exists') || message.includes('duplicate key')) {
       throw new Error('این ایمیل قبلاً ثبت شده است. وارد حساب شوید یا از گزینه بازیابی رمز عبور استفاده کنید.');
     }
