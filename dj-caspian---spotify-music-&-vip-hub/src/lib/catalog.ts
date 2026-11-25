@@ -181,6 +181,7 @@ export async function uploadTrackAssets(input: {
   synthPreset?: string;
   isVipOnlyDownload: boolean;
   description?: string;
+  lyrics?: string;
   coverUrl?: string;
 }): Promise<Track> {
   await validateMp3File(input.audioFile);
@@ -236,7 +237,7 @@ export async function uploadTrackAssets(input: {
     release_date: new Date().toISOString().slice(0, 10),
     is_vip_only_download: input.isVipOnlyDownload,
     description: input.description?.trim() || null,
-    lyrics: null,
+    lyrics: input.lyrics?.trim() || null,
     file_size: `${(input.audioFile.size / (1024 * 1024)).toFixed(2)} MB`,
   };
 
