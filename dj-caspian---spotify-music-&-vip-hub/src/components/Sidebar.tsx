@@ -151,11 +151,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <span>حمایت مالی و خرید VIP</span>
             </span>
             <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300">
-              ۱۰ تتر / 3 میلیون
+              DONITO
             </span>
           </div>
           <p className="text-[11px] text-neutral-400 group-hover:text-neutral-300 leading-tight">
-            کارت به کارت و تتر جهت فعال‌سازی دانلود ۳۲۰kbps
+            حمایت امن از هنرمند و فعال‌سازی امکانات VIP فقط از طریق Donito
           </p>
         </button>
 
