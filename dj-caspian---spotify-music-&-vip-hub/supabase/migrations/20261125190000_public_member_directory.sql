@@ -1,7 +1,7 @@
 -- Public member directory exposes only non-sensitive profile fields.
 -- Email addresses, auth metadata and private settings are never exposed.
 create or replace view public.public_member_directory
-with (security_invoker = true)
+with (security_barrier = true)
 as
 select
   p.id,
