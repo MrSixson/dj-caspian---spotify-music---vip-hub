@@ -31,6 +31,7 @@ import { PWAInstallBanner } from './components/PWAInstallBanner';
 import { AppPromoModal } from './components/AppPromoModal';
 import { AppUpdatePrompt } from './components/AppUpdatePrompt';
 import { NotificationPermissionPrompt } from './components/NotificationPermissionPrompt';
+import { ProfilesView } from './components/ProfilesView';
 
 export default function App() {
   const updateBreakEndsAt = new Date('2026-11-25T09:34:00Z').getTime();
@@ -71,7 +72,7 @@ export default function App() {
 
   // 5. Navigation & Views
   const [currentView, setCurrentView] = useState<
-    'home' | 'search' | 'library' | 'support' | 'tickets' | 'admin' | 'liked' | 'dashboard' | 'about'
+    'home' | 'search' | 'library' | 'support' | 'tickets' | 'admin' | 'liked' | 'dashboard' | 'about' | 'community'
   >('home');
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -948,6 +949,8 @@ export default function App() {
               isUserVip={isUserVip}
             />
           )}
+
+          {currentView === 'community' && <ProfilesView />}
 
           {currentView === 'about' && (
             <AboutView
