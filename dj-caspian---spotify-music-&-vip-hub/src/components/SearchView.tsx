@@ -28,6 +28,8 @@ export const SearchView: React.FC<SearchViewProps> = ({
   onDownloadTrack,
 }) => {
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+  const [selectedArtist, setSelectedArtist] = useState<string | null>(null);
+  const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
 
   const genres = [
     { name: 'همه سبک‌ها', color: 'from-emerald-600 to-teal-800' },
@@ -60,6 +62,29 @@ export const SearchView: React.FC<SearchViewProps> = ({
     map.get(key)!.push(track);
     return map;
   }, new Map<string, Track[]>()).entries());
+
+  const detailTracks = selectedArtist
+    ? tracks.filter(track => track.artist === selectedArtist)
+    : selectedAlbum
+      ? tracks.filter(track => `${track.artist}::${track.album || 'Singles'}` === selectedAlbum)
+      : [];
+  if (selectedArtist || selectedAlbum) {
+    const first = detailTracks[0];
+    const heading = selectedArtist || first?.album || 'Singles';
+    return <div className="p-4 sm:p-8 space-y-6 animate-in fade-in duration-300" dir="rtl">
+      <button type="button" onClick={() => { setSelectedArtist(null); setSelectedAlbum(null); }} className="text-xs font-bold text-slate-400 hover:text-[#d6b45c]">→ بازگشت به نتایج جستجو</button>
+      <section className="dc-library-hero rounded-3xl p-6 sm:p-9 flex flex-col sm:flex-row items-center gap-6">
+        {first?.coverUrl ? <img src={first.coverUrl} alt="" className={`w-36 h-36 sm:w-48 sm:h-48 object-cover shadow-2xl ${selectedArtist?'rounded-full':'rounded-2xl'}`}/> : <div className="w-36 h-36 rounded-2xl bg-black/20 flex items-center justify-center"><Disc3 className="w-14 h-14 text-[#d6b45c]"/></div>}
+        <div className="min-w-0 flex-1 text-center sm:text-right"><span className="text-[10px] tracking-[.25em] font-bold text-[#f0d88a]">{selectedArtist?'ARTIST PROFILE':'ALBUM'}</span><h1 className="text-3xl sm:text-5xl font-black text-white mt-2">{heading}</h1><p className="text-sm text-slate-400 mt-2">{selectedArtist?'هنرمند در آرشیو رسمی DJ Caspian':first?.artist}</p><p className="text-xs text-slate-500 mt-3">{detailTracks.length} قطعه</p></div>
+        {first && <button type="button" onClick={()=>onPlayTrack(first)} className="w-14 h-14 rounded-full bg-[#d6b45c] text-black flex items-center justify-center"><Play className="w-6 h-6 fill-current"/></button>}
+      </section>
+      <div className="rounded-2xl border border-white/10 bg-[#091321]/70 overflow-hidden">
+        {detailTracks.map((track,index)=><div key={track.id} className="flex items-center gap-3 p-3 border-b border-white/[.05] last:border-0 hover:bg-white/[.04]">
+          <span className="w-6 text-center text-xs text-slate-600">{index+1}</span><img src={track.coverUrl} alt="" className="w-11 h-11 rounded-lg object-cover"/><button type="button" onClick={()=>onPlayTrack(track)} className="min-w-0 flex-1 text-right"><strong className="block text-sm text-white truncate">{track.title}</strong><small className="block text-xs text-slate-500 mt-1">{track.artist} · {track.genre}</small></button><button type="button" onClick={()=>onToggleLike(track.id)} className="p-2 text-slate-500 hover:text-[#d6b45c]"><Heart className={`w-4 h-4 ${likedTrackIds.includes(track.id)?'fill-current text-[#d6b45c]':''}`}/></button><button type="button" onClick={()=>onDownloadTrack(track)} className="p-2 text-slate-500 hover:text-[#d6b45c]">{track.isVipOnlyDownload&&!isUserVip?<Crown className="w-4 h-4"/>:<Download className="w-4 h-4"/>}</button>
+        </div>)}
+      </div>
+    </div>;
+  }
 
   return (
     <div className="p-4 sm:p-8 space-y-6 animate-in fade-in duration-300" dir="rtl">
@@ -101,7 +126,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
           {resultArtists.length > 0 && <section className="dc-search-discovery">
             <h2 className="text-sm font-black text-white mb-3">هنرمندان مرتبط <span className="text-xs text-slate-500">({resultArtists.length})</span></h2>
             <div className="flex gap-3 overflow-x-auto pb-2">
-              {resultArtists.slice(0,6).map(([artist, track]) => <button key={artist} type="button" onClick={() => onPlayTrack(track)} className="dc-search-person shrink-0 w-24 text-center">
+              {resultArtists.slice(0,6).map(([artist, track]) => <button key={artist} type="button" onClick={() => { setSelectedArtist(artist); setSelectedAlbum(null); }} className="dc-search-person shrink-0 w-24 text-center">
                 <img src={track.coverUrl} alt="" className="w-20 h-20 mx-auto rounded-full object-cover border border-white/10" />
                 <span className="block text-xs text-white truncate mt-2">{artist}</span><small className="text-[10px] text-slate-500">هنرمند</small>
               </button>)}
@@ -110,7 +135,7 @@ export const SearchView: React.FC<SearchViewProps> = ({
           {resultAlbums.length > 0 && <section className="dc-search-discovery">
             <h2 className="text-sm font-black text-white mb-3">آلبوم‌های مرتبط <span className="text-xs text-slate-500">({resultAlbums.length})</span></h2>
             <div className="flex gap-3 overflow-x-auto pb-2">
-              {resultAlbums.slice(0,6).map(([key, albumTracks]) => <button key={key} type="button" onClick={() => onPlayTrack(albumTracks[0])} className="dc-search-person shrink-0 w-28 text-right">
+              {resultAlbums.slice(0,6).map(([key, albumTracks]) => <button key={key} type="button" onClick={() => { setSelectedAlbum(key); setSelectedArtist(null); }} className="dc-search-person shrink-0 w-28 text-right">
                 <img src={albumTracks[0].coverUrl} alt="" className="w-24 h-24 rounded-xl object-cover border border-white/10" />
                 <span className="block text-xs text-white truncate mt-2">{albumTracks[0].album || 'Singles'}</span><small className="text-[10px] text-slate-500 truncate block">{albumTracks[0].artist}</small>
               </button>)}
