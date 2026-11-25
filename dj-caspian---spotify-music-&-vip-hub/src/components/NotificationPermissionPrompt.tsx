@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Bell, BellRing, X } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 import { supabase } from '../lib/supabase';
 
 const SNOOZE_KEY = 'dj-caspian-notification-prompt-snooze-until';
@@ -44,7 +45,7 @@ export function NotificationPermissionPrompt() {
   const [requesting, setRequesting] = useState(false);
 
   useEffect(() => {
-    if (permission !== 'default' || !window.isSecureContext) return;
+    if (Capacitor.isNativePlatform() || permission !== 'default' || !window.isSecureContext) return;
     const snoozedUntil = Number(localStorage.getItem(SNOOZE_KEY) || 0);
     if (Date.now() >= snoozedUntil) setVisible(true);
   }, [permission]);
@@ -95,7 +96,7 @@ export function NotificationPermissionPrompt() {
     setVisible(false);
   };
 
-  if (!visible || permission !== 'default' || !window.isSecureContext) return null;
+  if (Capacitor.isNativePlatform() || !visible || permission !== 'default' || !window.isSecureContext) return null;
 
   return (
     <div className="fixed z-[90] top-4 left-4 right-4 sm:left-auto sm:right-6 sm:w-[min(420px,calc(100vw-2rem))]" dir="rtl">
