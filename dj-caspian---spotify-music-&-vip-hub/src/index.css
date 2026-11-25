@@ -283,3 +283,11 @@ footer input[type="range"] { accent-color: #d6b45c; }
   .dc-search-discovery { padding: .8rem; }
   main { overflow-x: clip; }
 }
+
+
+.dc-library-hero {
+  border: 1px solid rgba(214,180,92,.2);
+  background: radial-gradient(ellipse at 12% 50%, rgba(28,76,120,.3), transparent 52%), linear-gradient(125deg, rgba(15,31,49,.96), rgba(5,10,17,.98));
+  box-shadow: 0 24px 65px rgba(0,0,0,.28);
+}
+.dc-library-hero input:focus { outline: 2px solid rgba(214,180,92,.4); outline-offset: 1px; }
