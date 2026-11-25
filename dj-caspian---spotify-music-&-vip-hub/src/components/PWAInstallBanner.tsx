@@ -54,7 +54,7 @@ export function PWAInstallBanner() {
 
   return (
     <>
-      <section className="relative mx-4 mt-4 overflow-hidden rounded-2xl border border-[#b9954b]/35 bg-gradient-to-l from-[#17263a] via-[#0d1828] to-[#090e17] p-4 shadow-[0_16px_50px_rgba(0,0,0,0.28)] sm:mx-6 sm:mt-6 sm:p-5" dir="rtl" aria-label="دانلود اپلیکیشن DJ Caspian">
+      <section id="pwa-install-banner" className="relative mx-4 mt-4 overflow-hidden rounded-2xl border border-[#b9954b]/35 bg-gradient-to-l from-[#17263a] via-[#0d1828] to-[#090e17] p-4 shadow-[0_16px_50px_rgba(0,0,0,0.28)] sm:mx-6 sm:mt-6 sm:p-5" dir="rtl" aria-label="دانلود اپلیکیشن DJ Caspian">
         <button type="button" onClick={dismiss} aria-label="بستن معرفی اپلیکیشن" className="absolute left-3 top-3 rounded-full p-2 text-slate-400 transition hover:bg-white/10 hover:text-white">
           <X size={17} />
         </button>
