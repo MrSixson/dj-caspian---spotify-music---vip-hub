@@ -1,17 +1,19 @@
--- Public member directory exposes only non-sensitive profile fields.
--- Email addresses, auth metadata and private settings are never exposed.
-create or replace view public.public_member_directory
-with (security_barrier = true)
+-- Publish only the non-sensitive profile fields needed by the community directory.
+-- RLS remains enabled and the view executes with the caller's privileges.
+drop view if exists public.public_member_directory;
+create view public.public_member_directory
+with (security_invoker = true)
 as
-select
-  p.id,
-  p.username,
-  p.display_name,
-  p.avatar_path,
-  coalesce(v.is_active, false) as is_vip,
-  coalesce(r.role, 'user') as role
-from public.profiles p
-left join public.vip_entitlements v on v.user_id = p.id
-left join public.user_roles r on r.user_id = p.id;
+select p.id, p.username, p.display_name, p.avatar_path
+from public.profiles p;
 
+grant select (id, username, display_name, avatar_path)
+  on public.profiles to anon, authenticated;
 grant select on public.public_member_directory to anon, authenticated;
+
+drop policy if exists "Public profiles are visible in community directory" on public.profiles;
+create policy "Public profiles are visible in community directory"
+  on public.profiles
+  for select
+  to anon, authenticated
+  using (true);
