@@ -63,13 +63,15 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
   const [isLyricsOpen, setIsLyricsOpen] = React.useState(false);
   const [isSleepMenuOpen, setIsSleepMenuOpen] = React.useState(false);
   const [sleepSeconds, setSleepSeconds] = React.useState<number | null>(null);
+  const sleepToggleRef = React.useRef(onTogglePlay);
+  sleepToggleRef.current = onTogglePlay;
 
   React.useEffect(() => {
     if (sleepSeconds === null) return;
-    if (sleepSeconds <= 0) { setSleepSeconds(null); if (isPlaying) onTogglePlay(); return; }
+    if (sleepSeconds <= 0) { setSleepSeconds(null); if (isPlaying) sleepToggleRef.current(); return; }
     const timer = window.setInterval(() => setSleepSeconds(value => value === null ? null : Math.max(0, value - 1)), 1000);
     return () => window.clearInterval(timer);
-  }, [sleepSeconds, isPlaying, onTogglePlay]);
+  }, [sleepSeconds, isPlaying]);
 
   if (!currentTrack) {
     return (
