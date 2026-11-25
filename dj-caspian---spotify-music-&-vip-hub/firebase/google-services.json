@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "85783898151",
+    "project_id": "dj-caspian",
+    "storage_bucket": "dj-caspian.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:85783898151:android:d323d13939820b56cdc602",
+        "android_client_info": {
+          "package_name": "com.caspian.dj"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbjWmMlswaENYzPTntI-P7ivhBM3Xekeo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
