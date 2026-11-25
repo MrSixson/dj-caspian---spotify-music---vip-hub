@@ -80,7 +80,7 @@ export const ListeningHub: React.FC<Props> = ({ tracks, recentTrackIds, likedTra
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'listening_rooms', filter: 'id=eq.' + room.id }, payload => {
         const updated = payload.new as Room;
         setRoom(updated);
-        if (updated.host_user_id !== user?.id && updated.track_id) onSyncPlayback(updated.track_id, Number(updated.position_seconds || 0), Boolean(updated.is_playing));
+        if (updated.host_user_id !== user?.id && updated.track_id) livePlayback.current.onSyncPlayback(updated.track_id, Number(updated.position_seconds || 0), Boolean(updated.is_playing));
       })
       .subscribe();
     return () => { active = false; void supabase.removeChannel(channel); };
