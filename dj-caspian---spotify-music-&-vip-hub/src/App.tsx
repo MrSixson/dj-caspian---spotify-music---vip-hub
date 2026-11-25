@@ -29,6 +29,7 @@ import confetti from 'canvas-confetti';
 import { UpdateBreak } from './components/UpdateBreak';
 import { PWAInstallBanner } from './components/PWAInstallBanner';
 import { AppPromoModal } from './components/AppPromoModal';
+import { AppUpdatePrompt } from './components/AppUpdatePrompt';
 
 export default function App() {
   const updateBreakEndsAt = new Date('2026-11-25T09:34:00Z').getTime();
@@ -160,6 +161,42 @@ export default function App() {
         if (active) showToast(error instanceof Error ? error.message : 'دریافت کتابخانه از سرور ناموفق بود.', 'error');
       });
     return () => { active = false; };
+  }, [currentUser?.id, authLoading]);
+
+  // Live catalog sync: changes made in the admin panel reach open clients without an APK update.
+  useEffect(() => {
+    if (authLoading) return;
+    let active = true;
+    let refreshTimer: number | undefined;
+    const refresh = () => {
+      window.clearTimeout(refreshTimer);
+      refreshTimer = window.setTimeout(async () => {
+        try {
+          const catalog = await loadCatalog(currentUser?.id);
+          if (!active) return;
+          setTracks(catalog.tracks);
+          setPlaylists(catalog.playlists);
+          if (currentUser) setLikedTrackIds(catalog.likedTrackIds);
+          setCurrentTrack((previous) => previous
+            ? (catalog.tracks.find((track) => track.id === previous.id) || catalog.tracks[0] || null)
+            : (catalog.tracks[0] || null));
+        } catch (error) {
+          console.error('Live catalog refresh failed:', error);
+        }
+      }, 250);
+    };
+    const channel = supabase.channel('dj-caspian-live-catalog')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'tracks' }, refresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'playlists' }, refresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'playlist_tracks' }, refresh)
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') refresh();
+      });
+    return () => {
+      active = false;
+      window.clearTimeout(refreshTimer);
+      void supabase.removeChannel(channel);
+    };
   }, [currentUser?.id, authLoading]);
 
   useEffect(() => {
@@ -1001,6 +1038,7 @@ export default function App() {
           setCurrentView('support');
         }}
       />
+      <AppUpdatePrompt />
     </div>
   );
 }
