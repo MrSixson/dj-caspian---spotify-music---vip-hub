@@ -68,7 +68,8 @@ const toUserAccount = async (userId: string, email?: string): Promise<UserAccoun
 };
 
 export async function signInWithEmail(email: string, password: string): Promise<UserAccount> {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const normalizedEmail = email.trim().toLowerCase();
+  const { data, error } = await supabase.auth.signInWithPassword({ email: normalizedEmail, password });
   if (error || !data.user) throw new Error(error?.message || 'ورود انجام نشد.');
   return toUserAccount(data.user.id, data.user.email);
 }
@@ -80,7 +81,7 @@ export async function signUpWithEmail(input: {
   displayName: string;
 }): Promise<{ user: UserAccount | null; emailConfirmationRequired: boolean }> {
   const { data, error } = await supabase.auth.signUp({
-    email: input.email,
+    email: input.email.trim().toLowerCase(),
     password: input.password,
     options: {
       emailRedirectTo: 'https://mrsixson.github.io/dj-caspian---spotify-music---vip-hub/',
