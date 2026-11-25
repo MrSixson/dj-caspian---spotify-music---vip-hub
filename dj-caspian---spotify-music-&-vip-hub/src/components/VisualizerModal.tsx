@@ -61,7 +61,7 @@ export const VisualizerModal: React.FC<VisualizerModalProps> = ({
         const dataArray = new Uint8Array(bufferLength);
         analyser.getByteFrequencyData(dataArray);
 
-        const barWidth = (width / bufferLength) * 2;
+        const barWidth = width / bufferLength;
         let x = 0;
 
         for (let i = 0; i < bufferLength; i++) {
