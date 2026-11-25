@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { Download, Smartphone, X, Share, PlusSquare } from 'lucide-react';
 
-const APK_URL = 'https://github.com/MrSixson/dj-caspian---spotify-music---vip-hub/releases/download/android-v1.0.0-beta.1/app-debug.apk';
+const APK_URL = 'https://github.com/MrSixson/dj-caspian---spotify-music---vip-hub/releases/download/android-v1.0.0-beta.1/DJ-Caspian.apk';
 const DISMISS_KEY = 'dj-caspian-pwa-promo-dismissed';
 
 export function PWAInstallBanner() {
