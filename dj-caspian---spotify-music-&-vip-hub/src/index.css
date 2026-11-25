@@ -215,3 +215,40 @@ footer { padding-bottom: max(.65rem, env(safe-area-inset-bottom)); }
 @media (prefers-reduced-motion: reduce) {
   main .group:hover { transform: none; }
 }
+
+
+/* Season 2 discovery surfaces */
+.dc-home { color: var(--dc2-text); }
+.dc-hero {
+  isolation: isolate;
+  border: 1px solid rgba(214,180,92,.22);
+  background: linear-gradient(120deg, #102d4a 0%, #081321 52%, #05080e 100%);
+  box-shadow: 0 28px 90px rgba(0,0,0,.42), inset 0 1px rgba(255,255,255,.05);
+}
+.dc-track-card, .dc-quick-card, .dc-media-tile {
+  background: linear-gradient(145deg, rgba(17,31,48,.82), rgba(7,13,22,.88));
+  border: 1px solid rgba(156,180,205,.12);
+  transition: transform .25s ease, border-color .25s ease, background .25s ease, box-shadow .25s ease;
+}
+.dc-track-card:hover, .dc-quick-card:hover, .dc-media-tile:hover {
+  border-color: rgba(214,180,92,.42);
+  background: linear-gradient(145deg, rgba(25,48,72,.94), rgba(8,16,27,.96));
+  box-shadow: 0 18px 45px rgba(0,0,0,.34), 0 0 24px rgba(30,83,130,.14);
+  transform: translateY(-3px);
+}
+.dc-quick-card { padding: .5rem .75rem; }
+.dc-media-tile { padding: .75rem; border-radius: 1.25rem; }
+.dc-horizontal { scrollbar-width: thin; scrollbar-color: #294a6a transparent; }
+.dc-horizontal::-webkit-scrollbar { height: 5px; }
+.dc-horizontal::-webkit-scrollbar-track { background: transparent; }
+.dc-horizontal::-webkit-scrollbar-thumb { background: #294a6a; border-radius: 99px; }
+.dc-support-strip {
+  border: 1px solid rgba(214,180,92,.24);
+  background: radial-gradient(ellipse at 5% 50%, rgba(30,83,130,.24), transparent 55%), linear-gradient(110deg, rgba(19,38,59,.94), rgba(7,13,22,.96));
+}
+.dc-empty { border: 1px dashed rgba(214,180,92,.25); background: rgba(9,19,31,.7); }
+@media (max-width: 640px) {
+  .dc-hero { border-radius: 1.4rem; }
+  .dc-track-card { padding: .65rem; }
+  .dc-quick-card { min-height: 68px; }
+}
