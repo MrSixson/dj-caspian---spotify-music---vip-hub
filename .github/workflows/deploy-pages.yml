@@ -31,6 +31,8 @@ jobs:
         run: npm install --legacy-peer-deps
       - name: Build site
         run: npm run build
+      - name: Publish live-update version marker
+        run: printf '{\"buildId\":\"%s\"}\\n' \"$GITHUB_SHA\" > dist/version.json
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
