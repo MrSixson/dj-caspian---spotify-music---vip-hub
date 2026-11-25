@@ -53,6 +53,14 @@ export const SearchView: React.FC<SearchViewProps> = ({
     return matchQuery && matchGenre;
   });
 
+  const resultArtists = Array.from(new Map(filtered.map(track => [track.artist, track])).entries());
+  const resultAlbums = Array.from(filtered.reduce((map, track) => {
+    const key = `${track.artist}::${track.album || 'Singles'}`;
+    if (!map.has(key)) map.set(key, [] as Track[]);
+    map.get(key)!.push(track);
+    return map;
+  }, new Map<string, Track[]>()).entries());
+
   return (
     <div className="p-4 sm:p-8 space-y-6 animate-in fade-in duration-300" dir="rtl">
       <div>
@@ -87,6 +95,29 @@ export const SearchView: React.FC<SearchViewProps> = ({
           </button>
         ))}
       </div>
+
+      {(searchQuery.trim() || selectedGenre) && (resultArtists.length > 0 || resultAlbums.length > 0) && (
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+          {resultArtists.length > 0 && <section className="dc-search-discovery">
+            <h2 className="text-sm font-black text-white mb-3">هنرمندان مرتبط <span className="text-xs text-slate-500">({resultArtists.length})</span></h2>
+            <div className="flex gap-3 overflow-x-auto pb-2">
+              {resultArtists.slice(0,6).map(([artist, track]) => <button key={artist} type="button" onClick={() => onPlayTrack(track)} className="dc-search-person shrink-0 w-24 text-center">
+                <img src={track.coverUrl} alt="" className="w-20 h-20 mx-auto rounded-full object-cover border border-white/10" />
+                <span className="block text-xs text-white truncate mt-2">{artist}</span><small className="text-[10px] text-slate-500">هنرمند</small>
+              </button>)}
+            </div>
+          </section>}
+          {resultAlbums.length > 0 && <section className="dc-search-discovery">
+            <h2 className="text-sm font-black text-white mb-3">آلبوم‌های مرتبط <span className="text-xs text-slate-500">({resultAlbums.length})</span></h2>
+            <div className="flex gap-3 overflow-x-auto pb-2">
+              {resultAlbums.slice(0,6).map(([key, albumTracks]) => <button key={key} type="button" onClick={() => onPlayTrack(albumTracks[0])} className="dc-search-person shrink-0 w-28 text-right">
+                <img src={albumTracks[0].coverUrl} alt="" className="w-24 h-24 rounded-xl object-cover border border-white/10" />
+                <span className="block text-xs text-white truncate mt-2">{albumTracks[0].album || 'Singles'}</span><small className="text-[10px] text-slate-500 truncate block">{albumTracks[0].artist}</small>
+              </button>)}
+            </div>
+          </section>}
+        </div>
+      )}
 
       {/* Results Count */}
       <div className="flex items-center justify-between text-xs text-neutral-400 border-b border-neutral-800 pb-2">
