@@ -67,7 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 SPOTIFY
               </span>
             </div>
-            <div className="text-[10px] text-neutral-400 font-medium">DJ Caspian Official Hub</div>
+            <div className="text-[10px] text-neutral-400 font-medium">THE MUSIC UNIVERSE</div>
           </div>
         </div>
 
