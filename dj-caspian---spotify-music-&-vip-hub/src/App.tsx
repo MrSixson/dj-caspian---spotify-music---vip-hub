@@ -73,7 +73,7 @@ export default function App() {
 
   // 5. Navigation & Views
   const [currentView, setCurrentView] = useState<
-    'home' | 'search' | 'library' | 'support' | 'tickets' | 'admin' | 'liked' | 'dashboard' | 'about' | 'community'
+    'home' | 'search' | 'library' | 'support' | 'tickets' | 'admin' | 'liked' | 'dashboard' | 'about' | 'community' | 'experience'
   >('home');
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -413,7 +413,7 @@ export default function App() {
     const track = tracks.find((item) => item.id === trackId);
     if (!track || !currentUser) return;
     try {
-      if (currentTrack?.id !== track.id || !audioEngine.getDebugInfo().source) {
+      if (currentTrack?.id !== track.id || !audioEngine.getDebugInfo().source || (playing && audioEngine.getDebugInfo().paused)) {
         await audioEngine.playTrack(track.id, track.audioUrl, track.bpm, track.synthPreset || 'festival_drop',
           (secs) => { setCurrentTime(secs); const mediaDuration = audioEngine.getDuration(); if (mediaDuration > 0) setDuration(mediaDuration); },
           handleTrackEnded);
