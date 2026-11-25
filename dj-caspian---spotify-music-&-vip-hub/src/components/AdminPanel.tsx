@@ -49,7 +49,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const isOwnerAdmin = currentUser?.role === 'admin';
 
   // Active sub-tab in Admin
-  const [activeTab, setActiveTab] = useState<'tracks' | 'playlists' | 'tickets' | 'updates'>('tracks');
+  const [activeTab, setActiveTab] = useState<'tracks' | 'playlists' | 'tickets' | 'updates' | 'lyrics'>('tracks');
   const [ticketFilter, setTicketFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
 
   // -------------------------------------------------------------
@@ -74,6 +74,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [newIsVipOnly, setNewIsVipOnly] = useState(true);
   const [newDescription, setNewDescription] = useState('');
   const [newLyrics, setNewLyrics] = useState('');
+  const [lyricsTrackId, setLyricsTrackId] = useState('');
+  const [lyricsDraft, setLyricsDraft] = useState('');
+  const [isSavingLyrics, setIsSavingLyrics] = useState(false);
 
   // -------------------------------------------------------------
   // NEW PLAYLIST MODAL
@@ -397,6 +400,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </button>
 
           <button
+            onClick={() => { setActiveTab('lyrics'); const first = tracks[0]; setLyricsTrackId(first?.id || ''); setLyricsDraft(first?.lyrics || ''); }}
+            className={`py-2 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center gap-2 ${activeTab === 'lyrics' ? 'bg-[#d6b45c] text-black' : 'text-neutral-400 hover:text-white bg-[#181818]'}`}
+          >
+            <Volume2 className="w-4 h-4" />
+            <span>مدیریت متن آهنگ‌ها</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('playlists')}
             className={`py-2 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center gap-2 ${
               activeTab === 'playlists'
@@ -565,6 +576,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       {/* ------------------------------------------------------------- */}
       {/* TAB 2: PLAYLISTS MANAGEMENT */}
       {/* ------------------------------------------------------------- */}
+      {activeTab === 'lyrics' && (
+        <section className="rounded-3xl border border-[#d6b45c]/20 bg-gradient-to-br from-[#10243a]/80 to-[#050a11] p-5 sm:p-8 space-y-5">
+          <div><div className="text-[10px] tracking-[.3em] font-black text-[#d6b45c]">LYRICS CONTROL ROOM</div><h3 className="text-2xl font-black text-white mt-2">استودیوی متن همگام</h3><p className="text-xs text-slate-400 mt-2">برای هر خط زمان شروع بنویس تا هنگام پخش، همان خط روشن شود. متن‌های ساده هم قابل نمایش‌اند.</p></div>
+          <div><label className="block text-xs text-slate-300 mb-2">انتخاب آهنگ</label><select value={lyricsTrackId} onChange={e=>{const id=e.target.value;setLyricsTrackId(id);setLyricsDraft(tracks.find(t=>t.id===id)?.lyrics||'');}} className="w-full rounded-xl border border-white/10 bg-[#07111e] p-3 text-sm text-white"><option value="">انتخاب قطعه...</option>{tracks.map(track=><option key={track.id} value={track.id}>{track.title} · {track.artist}</option>)}</select></div>
+          {lyricsTrackId ? <><textarea rows={12} value={lyricsDraft} onChange={e=>setLyricsDraft(e.target.value)} placeholder={'[00:12.00] خط اول متن\n[00:16.50] خط دوم متن\n[00:20.00] ادامه آهنگ'} className="w-full rounded-2xl border border-[#d6b45c]/20 bg-black/30 p-4 text-sm leading-8 text-white outline-none focus:border-[#d6b45c] resize-y"/><div className="flex flex-wrap items-center justify-between gap-3"><span className="text-[11px] text-slate-500">فرمت تایم‌کد: [دقیقه:ثانیه.صدم] متن هر خط</span><button disabled={isSavingLyrics} onClick={async()=>{setIsSavingLyrics(true);const {error}=await supabase.from('tracks').update({lyrics:lyricsDraft.trim()||null}).eq('id',lyricsTrackId);setIsSavingLyrics(false);if(error){onShowToast('ذخیره متن آهنگ ناموفق بود: '+error.message,'error');return;}onShowToast('متن آهنگ ذخیره شد و برای پخش همگام آماده است.','success');}} className="rounded-xl bg-[#d6b45c] px-5 py-3 text-sm font-black text-black disabled:opacity-50">{isSavingLyrics?'در حال ذخیره…':'ذخیره متن آهنگ'}</button></div></> : <div className="rounded-2xl border border-dashed border-white/10 p-10 text-center text-slate-500">ابتدا یک آهنگ انتخاب کن. اگر آرشیو خالی است، اول قطعه‌ای منتشر کن.</div>}
+        </section>
+      )}
+
       {activeTab === 'playlists' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
