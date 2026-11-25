@@ -428,7 +428,9 @@ export default function App() {
 
   const lastHistoryBucket = useRef('');
   useEffect(() => {
-    if (!currentUser?.id || !currentTrack?.id || !isPlaying || currentTime < 30) return;
+    if (!currentUser?.id || !currentTrack?.id) return;
+    if (currentTime < 30) { lastHistoryBucket.current = ''; return; }
+    if (!isPlaying) return;
     const bucket = currentUser.id + ':' + currentTrack.id + ':' + Math.floor(currentTime / 30);
     if (lastHistoryBucket.current === bucket) return;
     lastHistoryBucket.current = bucket;
