@@ -53,7 +53,7 @@ export const VipModal: React.FC<VipModalProps> = ({ isOpen, onClose, onGoToSuppo
           )}
 
           <p className="text-neutral-300 text-sm leading-relaxed mb-6">
-            گوش دادن آنلاین به تمام قطعات و ریمیکس‌های دی‌جی کاسپین کاملاً رایگان است. اما برای <span className="text-[#d6b45c] font-bold">دانلود فایل‌های اصلی و باکیفیت استودیویی (۳۲۰kbps و FLAC)</span> نیاز به فعال‌سازی اشتراک VIP دارید.
+            دسترسی به قابلیت دانلود قطعات منتخب به وضعیت عضویت حساب کاربری وابسته است. جزئیات هر قطعه و محدودیت‌های آن داخل کتابخانه نمایش داده می‌شود.
           </p>
         </div>
 
