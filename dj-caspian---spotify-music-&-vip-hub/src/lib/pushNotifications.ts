@@ -54,6 +54,15 @@ export async function registerNativePushNotifications(): Promise<void> {
       return;
     }
 
+    await PushNotifications.createChannel({
+      id: 'caspian_updates',
+      name: 'DJ Caspian updates',
+      description: 'اعلان آهنگ‌های جدید و به‌روزرسانی‌های DJ Caspian',
+      importance: 5,
+      visibility: 1,
+      sound: 'default',
+      vibration: true,
+    });
     await PushNotifications.register();
   } catch (error) {
     console.warn('[DJ Caspian] Native push notifications are unavailable:', error);
