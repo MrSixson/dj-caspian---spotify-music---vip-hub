@@ -574,10 +574,15 @@ export default function App() {
     }
   };
 
-  const handleUpdateUser = (updatedUser: UserAccount) => {
+  const handleUpdateUser = async (updatedUser: UserAccount) => {
+    const { error } = await supabase.from('profiles').update({ display_name: updatedUser.displayName.trim() }).eq('id', updatedUser.id);
+    if (error) {
+      showToast('ذخیره پروفایل در سرور ناموفق بود: ' + error.message, 'error');
+      return;
+    }
     setCurrentUser(updatedUser);
     setUsers((prev) => prev.map((u) => (u.id === updatedUser.id ? updatedUser : u)));
-    showToast('اطلاعات حساب شما ذخیره شد.', 'success');
+    showToast('پروفایل شما در دیتابیس ذخیره شد.', 'success');
   };
 
   // -------------------------------------------------------------
