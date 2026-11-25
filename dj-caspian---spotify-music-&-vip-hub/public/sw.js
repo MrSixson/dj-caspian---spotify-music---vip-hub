@@ -7,11 +7,14 @@ self.addEventListener("install", (event) => {
     const cache = await caches.open(APP_CACHE);
     const scopeUrl = new URL(self.registration.scope);
     const appShell = new URL("./", scopeUrl).toString();
-    try {
-      await cache.add(new Request(appShell, { cache: "reload" }));
-    } catch {
-      // Installation must remain available even if the first shell request is interrupted.
-    }
+    const offlinePage = new URL("offline.html", scopeUrl).toString();
+    await Promise.all([appShell, offlinePage].map(async (url) => {
+      try {
+        await cache.add(new Request(url, { cache: "reload" }));
+      } catch {
+        // Installation must remain available even if an optional shell request is interrupted.
+      }
+    }));
     await self.skipWaiting();
   })());
 });
@@ -42,16 +45,16 @@ self.addEventListener("fetch", (event) => {
   if (request.mode === "navigate") {
     event.respondWith((async () => {
       const cache = await caches.open(APP_CACHE);
+      const appShell = new URL("./", scopeUrl).toString();
+      const offlinePage = new URL("offline.html", scopeUrl).toString();
       try {
         const response = await fetch(request);
-        if (response.ok) {
-          const shellUrl = new URL("./", scopeUrl).toString();
-          await cache.put(shellUrl, response.clone());
-        }
+        if (response.ok) await cache.put(appShell, response.clone());
         return response;
       } catch {
         return (await cache.match(request)) ||
-          (await cache.match(new URL("./", scopeUrl).toString())) ||
+          (await cache.match(appShell)) ||
+          (await cache.match(offlinePage)) ||
           new Response("DJ Caspian is offline. Please reconnect and try again.", {
             status: 503,
             headers: { "Content-Type": "text/plain; charset=utf-8" }
@@ -61,8 +64,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Cache only versioned/static app assets. Audio, media streams and API data
-  // remain network-only to avoid stale or unexpectedly large cached content.
+  // Cache only static app assets. Audio streams and API data stay network-only.
   const isStaticAsset = /\.(?:js|css|woff2?|ttf|otf|svg|png|webp|ico)$/i.test(requestUrl.pathname);
   if (!isStaticAsset) return;
 
