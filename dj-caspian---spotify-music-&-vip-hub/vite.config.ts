@@ -5,7 +5,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    base: '/dj-caspian---spotify-music---vip-hub/',
+    base: process.env.CAPACITOR_BUILD === 'true' ? './' : '/dj-caspian---spotify-music---vip-hub/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
