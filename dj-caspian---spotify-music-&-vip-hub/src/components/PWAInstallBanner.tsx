@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { Download, Smartphone, X, Share, PlusSquare } from 'lucide-react';
 
 type InstallPromptEvent = Event & {
@@ -50,7 +51,7 @@ export function PWAInstallBanner() {
     window.localStorage.setItem(DISMISS_KEY, '1');
   };
 
-  if (isStandalone || isDismissed) return null;
+  if (Capacitor.isNativePlatform() || isStandalone || isDismissed) return null;
 
   return (
     <>
