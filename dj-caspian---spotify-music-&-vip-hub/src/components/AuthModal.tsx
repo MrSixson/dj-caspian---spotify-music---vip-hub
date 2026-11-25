@@ -25,15 +25,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 }) => {
   const [mode, setMode] = useState<'login' | 'register'>(initialMode);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      setMode(initialMode);
-      setLoginError('');
-      setRegError('');
-      setIsSubmitting(false);
-    }
-  }, [isOpen, initialMode]);
   
   // Login Form
   const [loginUsername, setLoginUsername] = useState('');
@@ -47,6 +38,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [regPassword, setRegPassword] = useState('');
   const [regConfirmPassword, setRegConfirmPassword] = useState('');
   const [regError, setRegError] = useState('');
+
+  useEffect(() => {
+    if (isOpen) {
+      setMode(initialMode);
+      setLoginError('');
+      setRegError('');
+      setIsSubmitting(false);
+    }
+  }, [isOpen, initialMode]);
 
   if (!isOpen) return null;
 
@@ -100,7 +100,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       });
 
       if (result.emailConfirmationRequired || !result.user) {
-        setRegError('حساب ساخته شد، اما تأیید ایمیل هنوز در تنظیمات Supabase فعال است. مدیر سایت باید گزینه Confirm email را خاموش کند؛ سپس می‌توانید مستقیم وارد شوید.');
+        setRegError('حساب ساخته شد. برای ورود مستقیم، تأیید ایمیل باید در تنظیمات Supabase خاموش باشد. فعلاً امکان ورود مستقیم برای این حساب فعال نشده است.');
         return;
       }
 
