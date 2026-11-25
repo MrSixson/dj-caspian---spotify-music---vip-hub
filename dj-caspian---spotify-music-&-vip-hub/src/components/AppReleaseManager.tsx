@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Download, Send, Smartphone, RefreshCw } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
+type GitHubReleaseAsset = { name: string; browser_download_url: string };
+type GitHubRelease = { tag_name: string; draft: boolean; assets: GitHubReleaseAsset[] };
+
 type Release = {
   id: string;
   version_name: string;
@@ -17,8 +20,8 @@ export const AppReleaseManager: React.FC<{ userId: string; onShowToast: (text: s
   const [releases, setReleases] = useState<Release[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [versionName, setVersionName] = useState('1.0.1');
-  const [versionCode, setVersionCode] = useState(2);
+  const [versionName, setVersionName] = useState('');
+  const [versionCode, setVersionCode] = useState(0);
   const [apkUrl, setApkUrl] = useState('');
   const [notes, setNotes] = useState('');
   const [mandatory, setMandatory] = useState(false);
@@ -33,6 +36,34 @@ export const AppReleaseManager: React.FC<{ userId: string; onShowToast: (text: s
   };
 
   useEffect(() => { void load(); }, []);
+
+  // Pre-fill the exact APK/version produced by the latest successful Android workflow.
+  useEffect(() => {
+    let active = true;
+    const loadLatestBuild = async () => {
+      try {
+        const response = await fetch('https://api.github.com/repos/MrSixson/dj-caspian---spotify-music---vip-hub/releases?per_page=10', {
+          headers: { Accept: 'application/vnd.github+json' },
+        });
+        if (!response.ok) throw new Error(`GitHub release lookup failed: ${response.status}`);
+        const releases = await response.json() as GitHubRelease[];
+        const latest = releases.find((item) => !item.draft && /^android-v\\d+\\.\\d+\\.\\d+$/.test(item.tag_name)
+          && item.assets.some((asset) => asset.name === 'DJ-Caspian.apk'));
+        if (!active || !latest) return;
+        const version = latest.tag_name.replace(/^android-v/, '');
+        const code = Number(version.split('.').at(-1));
+        const apk = latest.assets.find((asset) => asset.name === 'DJ-Caspian.apk');
+        if (!apk || !Number.isSafeInteger(code) || code < 1) return;
+        setVersionName(version);
+        setVersionCode(code);
+        setApkUrl(apk.browser_download_url);
+      } catch (error) {
+        console.warn('[DJ Caspian] Could not prefill latest Android build:', error);
+      }
+    };
+    void loadLatestBuild();
+    return () => { active = false; };
+  }, []);
 
   const publish = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -61,11 +92,17 @@ export const AppReleaseManager: React.FC<{ userId: string; onShowToast: (text: s
           body: `نسخه ${versionName.trim()} منتشر شد. برای دریافت نسخه جدید وارد برنامه شو.`,
           url: '/',
         },
-      }).then(({ error }) => {
-        if (error) console.warn('[DJ Caspian] App-update push notification was not sent:', error.message);
+      }).then(({ error, data }) => {
+        if (error) {
+          onShowToast('نسخه منتشر شد، اما اعلان ارسال نشد: ' + error.message, 'error');
+        } else if (data?.sent === 0) {
+          onShowToast('نسخه منتشر شد، اما هنوز هیچ دستگاهی برای دریافت اعلان ثبت نشده است.', 'info');
+        } else {
+          onShowToast(`اعلان به ${data?.sent ?? 0} دستگاه ارسال شد.`, 'success');
+        }
       });
     }
-    setVersionName(''); setVersionCode((value) => value + 1); setApkUrl(''); setNotes(''); setMandatory(false);
+    setVersionName(''); setVersionCode(0); setApkUrl(''); setNotes(''); setMandatory(false);
     await load();
   };
 
@@ -79,12 +116,12 @@ export const AppReleaseManager: React.FC<{ userId: string; onShowToast: (text: s
   return <section className="space-y-5">
     <div className="rounded-2xl border border-[#d6b45c]/30 bg-[#181818] p-5 space-y-2">
       <div className="flex items-center gap-2 text-white font-bold"><Smartphone className="w-5 h-5 text-[#d6b45c]" /> مدیریت انتشار نسخه اندروید</div>
-      <p className="text-xs text-neutral-400 leading-6">از اینجا نسخه، توضیحات تغییرات و لینک APK را ثبت کن. نسخه منتشرشده در برنامه‌های آنلاین نمایش داده می‌شود. ارسال اعلان سیستمی پس‌زمینه پس از اتصال Firebase Cloud Messaging فعال می‌شود.</p>
+      <p className="text-xs text-neutral-400 leading-6">آخرین APK ساخته‌شده به‌همراه نام نسخه، کد نسخه و لینک دانلود به‌صورت خودکار از GitHub دریافت می‌شود. توضیحات را وارد کن و اگر می‌خواهی کاربران تا نصب نسخه جدید نتوانند از برنامه استفاده کنند، «آپدیت ضروری» را فعال کن. اعلان پوش برای دستگاه‌هایی ارسال می‌شود که توکن ثبت کرده‌اند و اتصال Firebase سمت سرور کامل باشد.</p>
     </div>
     <form onSubmit={publish} className="rounded-2xl border border-neutral-800 bg-[#181818] p-5 space-y-3">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <label className="text-xs text-neutral-300 space-y-1">نام نسخه<input value={versionName} onChange={e=>setVersionName(e.target.value)} required placeholder="1.0.1" className="w-full rounded-xl bg-[#242424] border border-neutral-700 p-3 text-white" /></label>
-        <label className="text-xs text-neutral-300 space-y-1">کد نسخه (عدد افزایشی)<input type="number" min="1" value={versionCode} onChange={e=>setVersionCode(Number(e.target.value))} required className="w-full rounded-xl bg-[#242424] border border-neutral-700 p-3 text-white" /></label>
+        <label className="text-xs text-neutral-300 space-y-1">نام نسخه<input value={versionName} onChange={e=>setVersionName(e.target.value)} required placeholder="از آخرین APK دریافت می‌شود" className="w-full rounded-xl bg-[#242424] border border-neutral-700 p-3 text-white" /></label>
+        <label className="text-xs text-neutral-300 space-y-1">کد نسخه (باید با APK یکسان باشد)<input type="number" min="1" value={versionCode} onChange={e=>setVersionCode(Number(e.target.value))} required className="w-full rounded-xl bg-[#242424] border border-neutral-700 p-3 text-white" /></label>
       </div>
       <label className="block text-xs text-neutral-300 space-y-1">لینک مستقیم APK<input type="url" value={apkUrl} onChange={e=>setApkUrl(e.target.value)} required placeholder="https://github.com/.../DJ-Caspian.apk" className="w-full rounded-xl bg-[#242424] border border-neutral-700 p-3 text-white text-left" dir="ltr" /></label>
       <label className="block text-xs text-neutral-300 space-y-1">توضیحات تغییرات<textarea value={notes} onChange={e=>setNotes(e.target.value)} rows={3} placeholder="قابلیت‌های جدید و رفع اشکال‌ها..." className="w-full rounded-xl bg-[#242424] border border-neutral-700 p-3 text-white" /></label>
