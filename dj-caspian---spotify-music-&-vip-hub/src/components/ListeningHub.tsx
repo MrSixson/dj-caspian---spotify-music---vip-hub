@@ -27,6 +27,8 @@ export const ListeningHub: React.FC<Props> = ({ tracks, recentTrackIds, likedTra
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
+  const livePlayback = React.useRef({ currentTrack, currentTime, isPlaying, onSyncPlayback });
+  livePlayback.current = { currentTrack, currentTime, isPlaying, onSyncPlayback };
 
   const recommendations = useMemo(() => {
     const preferred = new Set([...likedTrackIds, ...recentTrackIds].slice(0, 12));
@@ -84,15 +86,17 @@ export const ListeningHub: React.FC<Props> = ({ tracks, recentTrackIds, likedTra
   useEffect(() => {
     if (!room || room.host_user_id !== user?.id || !currentTrack) return;
     const timer = window.setInterval(() => {
+      const live = livePlayback.current;
+      if (!live.currentTrack) return;
       void supabase.from('listening_rooms').update({
-        track_id: currentTrack.id,
-        position_seconds: Math.floor(currentTime),
-        is_playing: isPlaying,
+        track_id: live.currentTrack.id,
+        position_seconds: Math.floor(live.currentTime),
+        is_playing: live.isPlaying,
         updated_at: new Date().toISOString(),
       }).eq('id', room.id).eq('host_user_id', user.id);
     }, 6000);
     return () => window.clearInterval(timer);
-  }, [room?.id, room?.host_user_id, user?.id, currentTrack?.id, isPlaying, currentTime]);
+  }, [room?.id, room?.host_user_id, user?.id]);
 
   const createRoom = async () => {
     if (!user) { setNotice('برای ساخت اتاق ابتدا وارد حساب کاربری شوید.'); return; }
