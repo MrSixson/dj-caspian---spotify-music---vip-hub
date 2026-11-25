@@ -53,6 +53,7 @@ export default function App() {
   const [tracks, setTracks] = useState<Track[]>([]);
 
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [personalPlaylists, setPersonalPlaylists] = useState<Playlist[]>([]);
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null);
 
   // 3. Persistent VIP Tickets
@@ -60,6 +61,7 @@ export default function App() {
 
   // 4. Derived & Persistent User Permissions
   const isUserVip = Boolean(currentUser?.isVip);
+  const allPlaylists = [...playlists, ...personalPlaylists];
 
   const [likedTrackIds, setLikedTrackIds] = useState<string[]>([]);
 
@@ -98,6 +100,18 @@ export default function App() {
   const [vipModalTrackTitle, setVipModalTrackTitle] = useState('');
   const [isVisualizerOpen, setIsVisualizerOpen] = useState(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+
+  // Personal playlists are private to the signed-in browser profile until account sync is implemented.
+  useEffect(() => {
+    if (!currentUser?.id) { setPersonalPlaylists([]); return; }
+    try {
+      const saved = localStorage.getItem(`caspian_personal_playlists_${currentUser.id}`);
+      const parsed = saved ? JSON.parse(saved) : [];
+      setPersonalPlaylists(Array.isArray(parsed) ? parsed.filter((item) => item && typeof item.id === 'string' && item.id.startsWith('personal:')) : []);
+    } catch {
+      setPersonalPlaylists([]);
+    }
+  }, [currentUser?.id]);
 
   // LocalStorage Synchronization
   useEffect(() => {
@@ -596,6 +610,56 @@ export default function App() {
     showToast('پلی‌لیست از دیتابیس حذف شد.', 'success');
   };
 
+  const handleCreatePersonalPlaylist = (title: string, description: string) => {
+    if (!currentUser) {
+      showToast('برای ساخت پلی‌لیست شخصی ابتدا وارد حساب کاربری شو.', 'info');
+      setIsAuthModalOpen(true);
+      return;
+    }
+    const created: Playlist = {
+      id: `personal:${crypto.randomUUID()}`,
+      title,
+      description,
+      coverUrl: tracks[0]?.coverUrl || '',
+      trackIds: [],
+    };
+    const next = [created, ...personalPlaylists];
+    setPersonalPlaylists(next);
+    localStorage.setItem(`caspian_personal_playlists_${currentUser.id}`, JSON.stringify(next));
+    setSelectedPlaylist(created);
+    showToast('پلی‌لیست شخصی ساخته شد.', 'success');
+  };
+
+  const handleDeletePersonalPlaylist = (playlistId: string) => {
+    if (!currentUser || !playlistId.startsWith('personal:')) return;
+    const next = personalPlaylists.filter(item => item.id !== playlistId);
+    setPersonalPlaylists(next);
+    localStorage.setItem(`caspian_personal_playlists_${currentUser.id}`, JSON.stringify(next));
+    if (selectedPlaylist?.id === playlistId) setSelectedPlaylist(null);
+    showToast('پلی‌لیست شخصی حذف شد.', 'success');
+  };
+
+  const handleAddTrackToPersonalPlaylist = (playlistId: string, trackId: string) => {
+    if (!currentUser || !playlistId.startsWith('personal:')) return;
+    const next = personalPlaylists.map(item => item.id === playlistId && !item.trackIds.includes(trackId)
+      ? { ...item, trackIds: [...item.trackIds, trackId], coverUrl: item.coverUrl || tracks.find(t => t.id === trackId)?.coverUrl || '' }
+      : item);
+    setPersonalPlaylists(next);
+    localStorage.setItem(`caspian_personal_playlists_${currentUser.id}`, JSON.stringify(next));
+    setSelectedPlaylist(next.find(item => item.id === playlistId) || null);
+    showToast('آهنگ به پلی‌لیست اضافه شد.', 'success');
+  };
+
+  const handleRemoveTrackFromPersonalPlaylist = (playlistId: string, trackId: string) => {
+    if (!currentUser || !playlistId.startsWith('personal:')) return;
+    const next = personalPlaylists.map(item => item.id === playlistId
+      ? { ...item, trackIds: item.trackIds.filter(id => id !== trackId) }
+      : item);
+    setPersonalPlaylists(next);
+    localStorage.setItem(`caspian_personal_playlists_${currentUser.id}`, JSON.stringify(next));
+    setSelectedPlaylist(next.find(item => item.id === playlistId) || null);
+  };
+
   const handleUpdateTicketStatus = async (ticketId: string, status: 'approved' | 'rejected', adminNote?: string) => {
     const target = tickets.find((ticket) => ticket.id === ticketId);
     if (!target || currentUser?.role !== 'admin' || !target.userId) {
@@ -679,7 +743,7 @@ export default function App() {
       <Sidebar
         currentView={currentView}
         onNavigate={navigateToView}
-        playlists={playlists}
+        playlists={allPlaylists}
         onSelectPlaylist={(pl) => {
           setSelectedPlaylist(pl);
           setCurrentView('library');
@@ -712,7 +776,7 @@ export default function App() {
           {currentView === 'home' && (
             <HomeView
               tracks={tracks}
-              playlists={playlists}
+              playlists={allPlaylists}
               currentTrackId={currentTrack?.id || null}
               isPlaying={isPlaying}
               likedTrackIds={likedTrackIds}
@@ -749,7 +813,7 @@ export default function App() {
           {currentView === 'library' && (
             <LibraryView
               tracks={tracks}
-              playlists={playlists}
+              playlists={allPlaylists}
               likedTrackIds={likedTrackIds}
               currentTrackId={currentTrack?.id || null}
               isPlaying={isPlaying}
@@ -760,13 +824,17 @@ export default function App() {
               onSelectPlaylist={(pl) => setSelectedPlaylist(pl)}
               selectedPlaylist={selectedPlaylist}
               onBackFromPlaylist={() => setSelectedPlaylist(null)}
+              onCreatePlaylist={handleCreatePersonalPlaylist}
+              onDeletePersonalPlaylist={handleDeletePersonalPlaylist}
+              onAddTrackToPlaylist={handleAddTrackToPersonalPlaylist}
+              onRemoveTrackFromPlaylist={handleRemoveTrackFromPersonalPlaylist}
             />
           )}
 
           {currentView === 'liked' && (
             <LibraryView
               tracks={tracks}
-              playlists={playlists}
+              playlists={allPlaylists}
               likedTrackIds={likedTrackIds}
               currentTrackId={currentTrack?.id || null}
               isPlaying={isPlaying}
