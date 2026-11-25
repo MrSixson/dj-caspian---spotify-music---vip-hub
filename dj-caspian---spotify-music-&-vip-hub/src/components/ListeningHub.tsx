@@ -37,7 +37,7 @@ export const ListeningHub: React.FC<Props> = ({ tracks, recentTrackIds, likedTra
     const artists = new Map<string, number>();
     seed.forEach(t => { genres.set(t.genre, (genres.get(t.genre) || 0) + 2); artists.set(t.artist, (artists.get(t.artist) || 0) + 1); });
     return [...tracks].sort((a,b) => {
-      const score = (t: Track) => (preferred.has(t.id) ? -100 : 0) - (genres.get(t.genre) || 0) * 4 - (artists.get(t.artist) || 0) * 2 - Math.min(t.plays || 0, 100) / 100;
+      const score = (t: Track) => (preferred.has(t.id) ? 100 : 0) - (genres.get(t.genre) || 0) * 4 - (artists.get(t.artist) || 0) * 2 - Math.min(t.plays || 0, 100) / 100;
       return score(a) - score(b);
     }).slice(0, 6);
   }, [tracks, recentTrackIds, likedTrackIds]);
