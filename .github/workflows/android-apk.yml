@@ -72,6 +72,30 @@ jobs:
       - name: Create Android native project
         run: npx cap add android
 
+      - name: Configure Firebase for Android
+        run: |
+          mkdir -p android/app
+          cp firebase/google-services.json android/app/google-services.json
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path("android/build.gradle")
+          app = Path("android/app/build.gradle")
+          text = root.read_text()
+          dependency_line = "classpath 'com.google.gms:google-services:4.4.2'"
+          if dependency_line not in text:
+              anchor = "dependencies {"
+              if anchor not in text:
+                  raise SystemExit("Could not find Android buildscript dependencies block")
+              text = text.replace(anchor, anchor + "\\n        " + dependency_line, 1)
+              root.write_text(text)
+          app_text = app.read_text()
+          plugin = "apply plugin: 'com.google.gms.google-services'"
+          if plugin not in app_text:
+              app.write_text(app_text.rstrip() + "\\n\\n" + plugin + "\\n")
+          PY
+          test -s android/app/google-services.json
+          grep -q "com.google.gms.google-services" android/app/build.gradle
+
       - name: Generate native Android icon assets from official Caspian logo
         run: |
           test -s resources/icon.png
