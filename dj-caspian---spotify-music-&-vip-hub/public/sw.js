@@ -80,3 +80,23 @@ self.addEventListener("fetch", (event) => {
     return cached || network;
   })());
 });
+
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const targetPath = typeof event.notification.data?.url === "string"
+    && event.notification.data.url.startsWith("/")
+    ? event.notification.data.url
+    : "./";
+  const target = new URL(targetPath.replace(/^\//, ""), self.registration.scope).toString();
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+    for (const client of windows) {
+      if (new URL(client.url).origin === new URL(self.registration.scope).origin) {
+        await client.navigate(target);
+        return client.focus();
+      }
+    }
+    return self.clients.openWindow(target);
+  })());
+});
