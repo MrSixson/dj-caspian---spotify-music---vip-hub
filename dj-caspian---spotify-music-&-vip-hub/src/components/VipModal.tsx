@@ -1,6 +1,5 @@
 import React from 'react';
 import { Crown, Sparkles, Download, ArrowLeft, ShieldCheck, X } from 'lucide-react';
-import { DJ_CASPIAN_INFO } from '../data/initialData';
 
 interface VipModalProps {
   isOpen: boolean;
