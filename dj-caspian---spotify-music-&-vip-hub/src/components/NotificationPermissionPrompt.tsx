@@ -16,19 +16,20 @@ function readPermission(): NotificationPermissionState {
 async function showSiteNotification(title: string, body: string, url = '/') {
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
   const target = new URL(url, window.location.origin);
+  const iconUrl = new URL(import.meta.env.BASE_URL + 'favicon.ico', window.location.origin).toString();
   if (target.origin !== window.location.origin) target.pathname = '/';
   try {
     const registration = await navigator.serviceWorker?.ready;
     if (registration?.showNotification) {
       await registration.showNotification(title, {
         body,
-        icon: new URL('favicon.ico', import.meta.env.BASE_URL).toString(),
-        badge: new URL('favicon.ico', import.meta.env.BASE_URL).toString(),
+        icon: iconUrl,
+        badge: iconUrl,
         tag: 'dj-caspian-' + title.slice(0, 40),
         data: { url: target.pathname + target.search },
       });
     } else {
-      const notification = new Notification(title, { body, icon: new URL('favicon.ico', import.meta.env.BASE_URL).toString() });
+      const notification = new Notification(title, { body, icon: iconUrl });
       notification.onclick = () => {
         window.focus();
         window.location.assign(target.toString());
