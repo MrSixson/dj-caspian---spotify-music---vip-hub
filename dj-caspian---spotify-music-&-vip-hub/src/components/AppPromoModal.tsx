@@ -4,7 +4,7 @@ import { Download, X } from 'lucide-react';
 
 const DISMISS_KEY = 'dj-caspian-app-promo-dismissed-v2';
 const POSTER_URL = 'https://d2ol7oe51mr4n9.cloudfront.net/user_3LbkVgD4rFgZqph5aiV2BP334Pg/fb790385-60c4-4d98-8e19-36b55dc1febd.jpg';
-const APK_URL = 'https://github.com/MrSixson/dj-caspian---spotify-music---vip-hub/releases/download/android-v1.0.0-beta.1/app-debug.apk';
+const APK_URL = 'https://github.com/MrSixson/dj-caspian---spotify-music---vip-hub/releases/download/android-v1.0.0-beta.1/DJ-Caspian.apk';
 
 export function AppPromoModal() {
   const [isOpen, setIsOpen] = useState(false);
