@@ -47,7 +47,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     try {
       const email = loginUsername.trim();
       if (!email.includes('@')) {
-        setLoginError('ورود با نام کاربری در حال آماده‌سازی است؛ فعلاً ایمیل ثبت‌شده را وارد کنید.');
+        setLoginError('لطفاً ایمیلی را وارد کنید که هنگام ثبت‌نام استفاده کرده‌اید.');
         return;
       }
       const authenticatedUser = await signInWithEmail(email, loginPassword);
@@ -84,7 +84,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       });
 
       if (result.emailConfirmationRequired || !result.user) {
-        setRegError('حساب ساخته شد. برای فعال‌سازی، لینک تأیید ارسال‌شده به ایمیلتان را باز کنید؛ سپس وارد شوید.');
+        setRegError('حساب ساخته شد، اما تأیید ایمیل هنوز در تنظیمات Supabase فعال است. مدیر سایت باید گزینه Confirm email را خاموش کند؛ سپس می‌توانید مستقیم وارد شوید.');
         return;
       }
 
@@ -163,13 +163,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {mode === 'login' && (
           <form onSubmit={handleLoginSubmit} className="space-y-4">
             <div>
-              <label className="text-xs text-neutral-300 block mb-1 font-medium">نام کاربری یا ایمیل:</label>
+              <label className="text-xs text-neutral-300 block mb-1 font-medium">ایمیل:</label>
               <div className="relative">
                 <User className="w-4 h-4 absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400" />
                 <input
                   type="text"
                   required
-                  placeholder="مثال: AminJodaie یا ایمیل"
+                  placeholder="email@example.com"
                   value={loginUsername}
                   onChange={(e) => setLoginUsername(e.target.value)}
                   className="w-full bg-[#202020] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl py-2.5 pr-10 pl-4 text-xs sm:text-sm text-white placeholder-neutral-500 font-mono text-right"
@@ -240,7 +240,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
 
             <div>
-              <label className="text-xs text-neutral-300 block mb-1 font-medium">ایمیل (برای تأیید حساب الزامی):</label>
+              <label className="text-xs text-neutral-300 block mb-1 font-medium">ایمیل:</label>
               <input
                 type="email"
                 required
