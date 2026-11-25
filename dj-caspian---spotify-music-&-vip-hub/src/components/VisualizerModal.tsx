@@ -71,7 +71,7 @@ export const VisualizerModal: React.FC<VisualizerModalProps> = ({
           const grad = ctx.createLinearGradient(0, height, 0, height - barHeight);
           grad.addColorStop(0, '#d6b45c');
           grad.addColorStop(0.5, '#f0d88a');
-          grad.addColorStop(1, '#38ef7d');
+          grad.addColorStop(1, '#24558a');
 
           ctx.fillStyle = grad;
           ctx.beginPath();
@@ -86,7 +86,7 @@ export const VisualizerModal: React.FC<VisualizerModalProps> = ({
         const barWidth = width / count;
         for (let i = 0; i < count; i++) {
           const barHeight = 8 + Math.sin(Date.now() / 400 + i * 0.3) * 6;
-          ctx.fillStyle = '#264e36';
+          ctx.fillStyle = '#173657';
           ctx.beginPath();
           ctx.roundRect(i * barWidth, height - barHeight, barWidth - 4, barHeight, 2);
           ctx.fill();
@@ -105,7 +105,7 @@ export const VisualizerModal: React.FC<VisualizerModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-300 select-none" dir="rtl">
-      <div className="relative w-full max-w-4xl max-h-[95vh] bg-gradient-to-b from-[#182a1e] via-[#101010] to-[#0a0a0a] border border-[#234b35]/60 rounded-3xl p-6 sm:p-10 shadow-2xl flex flex-col justify-between overflow-hidden">
+      <div className="relative w-full max-w-4xl max-h-[95vh] bg-gradient-to-b from-[#10243a] via-[#07111e] to-[#0a0a0a] border border-[#d6b45c]/25 rounded-3xl p-6 sm:p-10 shadow-2xl flex flex-col justify-between overflow-hidden">
         
         {/* Top Bar inside Visualizer */}
         <div className="flex items-center justify-between z-10">
