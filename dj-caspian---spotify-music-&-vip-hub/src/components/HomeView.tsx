@@ -1,7 +1,8 @@
 import React from 'react';
-import { 
-  Play, Pause, Heart, Download, Crown, Sparkles, ListPlus, 
-  CheckCircle2, Clock, Music, Disc3, ShieldCheck, Flame, ArrowLeft
+import {
+  Play, Pause, Heart, Download, Crown, Sparkles, ListPlus,
+  CheckCircle2, Clock3, Music2, Disc3, Headphones, ArrowUpLeft,
+  Radio, AudioLines
 } from 'lucide-react';
 import { Track, Playlist } from '../types';
 import { DJ_CASPIAN_INFO } from '../data/initialData';
@@ -24,575 +25,98 @@ interface HomeViewProps {
 }
 
 export const HomeView: React.FC<HomeViewProps> = ({
-  tracks,
-  playlists,
-  currentTrackId,
-  isPlaying,
-  likedTrackIds,
-  recentTrackIds,
-  isUserVip,
-  onPlayTrack,
-  onToggleLike,
-  onDownloadTrack,
-  onQueueTrack,
-  onNavigateToSupport,
-  onNavigateToAbout,
-  onSelectPlaylist,
+  tracks, playlists, currentTrackId, isPlaying, likedTrackIds, recentTrackIds,
+  isUserVip, onPlayTrack, onToggleLike, onDownloadTrack, onQueueTrack,
+  onNavigateToSupport, onNavigateToAbout, onSelectPlaylist,
 }) => {
-  const featuredTrack = tracks[0] || null;
+  const featured = tracks[0] || null;
+  const recent = recentTrackIds.map(id => tracks.find(t => t.id === id)).filter((t): t is Track => Boolean(t));
+  const uniqueArtists = Array.from(new Map(tracks.map(t => [t.artist, t])).values());
+  const albums = Array.from(tracks.reduce((map, track) => {
+    const key = `${track.artist || 'DJ Caspian'}::${track.album || 'Singles'}`;
+    if (!map.has(key)) map.set(key, [] as Track[]);
+    map.get(key)!.push(track);
+    return map;
+  }, new Map<string, Track[]>()).entries()).map(([key, items]) => ({ key, title: items[0].album || 'Singles', artist: items[0].artist, cover: items[0].coverUrl, tracks: items }));
+  const fmt = (seconds: number) => `${Math.floor((seconds || 0) / 60)}:${String(Math.floor((seconds || 0) % 60)).padStart(2, '0')}`;
 
-  const artists = Array.from(
-    tracks.reduce((groups, track) => {
-      const key = track.artist?.trim() || 'DJ Caspian';
-      const group = groups.get(key) || [];
-      group.push(track);
-      groups.set(key, group);
-      return groups;
-    }, new Map<string, Track[]>()).entries()
-  ).map(([name, items]) => ({ name, tracks: items, coverUrl: items[0]?.coverUrl || '' }));
-
-  const albums = Array.from(
-    tracks.reduce((groups, track) => {
-      const title = track.album?.trim() || 'Singles';
-      const key = `${track.artist || 'DJ Caspian'}::${title}`;
-      const group = groups.get(key) || [];
-      group.push(track);
-      groups.set(key, group);
-      return groups;
-    }, new Map<string, Track[]>()).entries()
-  ).map(([key, items]) => ({
-    key,
-    title: items[0]?.album?.trim() || 'Singles',
-    artist: items[0]?.artist || 'DJ Caspian',
-    tracks: items,
-    coverUrl: items[0]?.coverUrl || '',
-  }));
-
-  const recentTracks = recentTrackIds
-    .map((id) => tracks.find((track) => track.id === id))
-    .filter((track): track is Track => Boolean(track));
-
-  const formatDuration = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = Math.floor(secs % 60);
-    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  const playButton = (track: Track, large = false) => {
+    const active = currentTrackId === track.id && isPlaying;
+    return <button type="button" onClick={() => onPlayTrack(track)} aria-label={active ? 'توقف پخش' : 'پخش'} className={`flex items-center justify-center rounded-full bg-[#d6b45c] text-[#080b10] shadow-lg shadow-[#d6b45c]/20 hover:scale-105 transition-all ${large ? 'w-14 h-14' : 'w-10 h-10'}`}>
+      {active ? <Pause className={large ? 'w-6 h-6 fill-current' : 'w-4 h-4 fill-current'} /> : <Play className={large ? 'w-6 h-6 fill-current' : 'w-4 h-4 fill-current'} />}
+    </button>;
   };
 
-  return (
-    <div className="space-y-8 p-4 sm:p-8 animate-in fade-in duration-300" dir="rtl">
-      
-      {/* 1. ARTIST HERO BANNER (Caspian Premium Artist Style) */}
-      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-b from-[#12345a] via-[#0b1728] to-[#05080e] border border-[#24558a]/40 shadow-2xl">
-        {/* Background glow and subtle stage imagery */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-overlay filter blur-[1px]"
-          style={{ backgroundImage: `url(${DJ_CASPIAN_INFO.bannerUrl})` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#05080e] via-transparent to-black/30" />
-
-        <div className="relative z-10 p-6 sm:p-10 flex flex-col md:flex-row items-start md:items-end justify-between gap-6 min-h-[300px]">
-          <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 text-center sm:text-right">
-            {/* DJ Caspian Big Avatar */}
-            <div className="relative group shrink-0">
-              <img
-                src={DJ_CASPIAN_INFO.avatarUrl}
-                alt="DJ Caspian"
-                className="w-32 h-32 sm:w-44 sm:h-44 rounded-full object-cover border-4 border-[#d6b45c] shadow-2xl"
-              />
-              <div className="absolute bottom-1 right-2 bg-[#d6b45c] text-black p-1.5 rounded-full shadow-lg">
-                <CheckCircle2 className="w-5 h-5" />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-semibold">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#d6b45c]" />
-                <span>آرتیست رسمی DJ Caspian</span>
-              </div>
-
-              <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight drop-shadow-lg">
-                {DJ_CASPIAN_INFO.name}
-              </h1>
-
-              <p className="text-sm text-neutral-300 max-w-lg leading-relaxed line-clamp-2">
-                {DJ_CASPIAN_INFO.tagline}
-              </p>
-
-              <div className="flex items-center justify-center sm:justify-start gap-4 text-xs font-semibold text-neutral-300 pt-1">
-                <span>{DJ_CASPIAN_INFO.monthlyListeners}</span>
-                <span>•</span>
-                <span>{DJ_CASPIAN_INFO.followers}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Hero Action Buttons */}
-          <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-center sm:justify-start">
-            {featuredTrack && (
-              <button
-                onClick={() => onPlayTrack(featuredTrack)}
-                className="py-3 px-6 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-black text-sm flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 shadow-xl shadow-[#d6b45c]/30 cursor-pointer"
-              >
-                {currentTrackId === featuredTrack.id && isPlaying ? (
-                  <>
-                    <Pause className="w-5 h-5 fill-black" />
-                    <span>توقف پخش</span>
-                  </>
-                ) : (
-                  <>
-                    <Play className="w-5 h-5 fill-black" />
-                    <span>پخش آخرین اثر</span>
-                  </>
-                )}
-              </button>
-            )}
-
-            <button
-              onClick={onNavigateToSupport}
-              className="py-3 px-6 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black font-bold text-sm flex items-center gap-2 transition-all hover:scale-105 active:scale-95 shadow-xl shadow-amber-500/20 cursor-pointer"
-            >
-              <Crown className="w-4 h-4 fill-black" />
-              <span>حمایت مالی و دریافت VIP</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. SPOTIFY QUICK 6 CARDS (Fast Access) - Only if tracks exist */}
-      {tracks.length > 0 && (
-        <div className="space-y-3">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <span>دسترسی سریع</span>
-            <Flame className="w-4 h-4 text-amber-400" />
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {tracks.slice(0, 6).map((track) => {
-              const isCurrent = currentTrackId === track.id && isPlaying;
-              return (
-                <div
-                  key={track.id}
-                  onClick={() => onPlayTrack(track)}
-                  className="group relative flex items-center bg-[#181818] hover:bg-[#282828] rounded-xl overflow-hidden cursor-pointer transition-all border border-neutral-800/60 hover:border-neutral-700"
-                >
-                  <img
-                    src={track.coverUrl}
-                    alt={track.title}
-                    className="w-16 h-16 sm:w-20 sm:h-20 object-cover shrink-0"
-                  />
-                  <div className="p-3 min-w-0 flex-1">
-                    <div className={`font-bold text-xs sm:text-sm truncate ${isCurrent ? 'text-[#d6b45c]' : 'text-white'}`}>
-                      {track.title}
-                    </div>
-                    <div className="text-[11px] text-neutral-400 truncate mt-0.5">
-                      {track.artist}
-                    </div>
-                  </div>
-
-                  {/* Floating Play Button */}
-                  <div className="ml-3 sm:ml-4 opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-xl group-hover:translate-x-0">
-                    <div className="w-10 h-10 rounded-full bg-[#d6b45c] text-black flex items-center justify-center hover:scale-105 transition-transform">
-                      {isCurrent ? <Pause className="w-5 h-5 fill-black" /> : <Play className="w-5 h-5 fill-black mr-0.5" />}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* 3. POPULAR TRACKS TABLE (Spotify Track Listing) */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-              <Disc3 className="w-6 h-6 text-[#d6b45c]" />
-              <span>محبوب‌ترین ریمیکس‌ها و آهنگ‌های DJ Caspian</span>
-            </h2>
-            <p className="text-xs text-neutral-400 mt-0.5">
-              استریم باکیفیت و رایگان • دانلود استودیویی ۳۲۰ ویژه اعضای VIP
-            </p>
-          </div>
-          <span className="text-xs text-neutral-400 font-mono hidden sm:inline">
-            {tracks.length} قطعه اختصاصی
-          </span>
-        </div>
-
-        {/* Tracks Table Header or Empty State */}
-        {tracks.length === 0 ? (
-          <div className="bg-[#181818]/90 border border-neutral-800/80 rounded-3xl p-10 sm:p-14 text-center space-y-4">
-            <div className="w-16 h-16 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center mx-auto text-[#d6b45c]">
-              <Music className="w-8 h-8" />
-            </div>
-            <div className="space-y-1.5">
-              <h3 className="text-xl font-bold text-white">هنوز قطعه‌ای در آرشیو منتشر نشده است</h3>
-              <p className="text-sm text-neutral-400 max-w-lg mx-auto leading-relaxed">
-                دی‌جی کاسپین به زودی جدیدترین آهنگ‌ها، ریمیکس‌ها و سِت‌های اختصاصی خود را در این پلتفرم منتشر خواهد کرد. شما می‌توانید با خرید اشتراک VIP، از آرتیست حمایت نمایید.
-              </p>
-            </div>
-          </div>
-        ) : (
-          <div className="bg-[#181818]/90 border border-neutral-800/80 rounded-2xl overflow-hidden">
-            <div className="grid grid-cols-12 gap-3 px-4 py-2.5 text-xs text-neutral-400 border-b border-neutral-800 font-semibold select-none">
-              <span className="col-span-1 text-center">#</span>
-              <span className="col-span-6 sm:col-span-5">عنوان قطعه</span>
-              <span className="hidden sm:block sm:col-span-2 text-center">سبک / BPM</span>
-              <span className="hidden md:block md:col-span-2 text-center">تعداد استریم</span>
-              <span className="col-span-5 sm:col-span-2 text-left">دانلود / زمان</span>
-            </div>
-
-            <div className="divide-y divide-neutral-800/60">
-            {tracks.map((track, idx) => {
-              const isCurrent = currentTrackId === track.id && isPlaying;
-              const isLiked = likedTrackIds.includes(track.id);
-
-              return (
-                <div
-                  key={track.id}
-                  className={`grid grid-cols-12 gap-3 items-center px-4 py-3 group hover:bg-[#222222] transition-colors cursor-pointer ${
-                    isCurrent ? 'bg-[#1c2c20]' : ''
-                  }`}
-                  onClick={() => onPlayTrack(track)}
-                >
-                  {/* Number / Play Button */}
-                  <div className="col-span-1 flex items-center justify-center text-xs">
-                    <span className="group-hover:hidden text-neutral-400 font-mono">
-                      {isCurrent ? (
-                        <div className="flex items-end gap-0.5 h-3">
-                          <span className="w-0.5 bg-[#d6b45c] animate-eq-1" />
-                          <span className="w-0.5 bg-[#d6b45c] animate-eq-2" />
-                          <span className="w-0.5 bg-[#d6b45c] animate-eq-3" />
-                        </div>
-                      ) : (
-                        idx + 1
-                      )}
-                    </span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onPlayTrack(track);
-                      }}
-                      className="hidden group-hover:block text-white hover:text-[#d6b45c] cursor-pointer"
-                    >
-                      {isCurrent ? <Pause className="w-4 h-4 text-[#d6b45c]" /> : <Play className="w-4 h-4 fill-white" />}
-                    </button>
-                  </div>
-
-                  {/* Title & Cover & Artist */}
-                  <div className="col-span-6 sm:col-span-5 flex items-center gap-3 min-w-0">
-                    <img
-                      src={track.coverUrl}
-                      alt={track.title}
-                      className="w-10 h-10 rounded-lg object-cover shrink-0"
-                    />
-                    <div className="min-w-0">
-                      <div className={`font-bold text-xs sm:text-sm truncate ${isCurrent ? 'text-[#d6b45c]' : 'text-white'}`}>
-                        {track.title}
-                      </div>
-                      <div className="text-[11px] text-neutral-400 truncate flex items-center gap-1.5">
-                        <span>{track.artist}</span>
-                        {track.isVipOnlyDownload && (
-                          <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 text-[9px] font-bold border border-amber-500/30">
-                            VIP
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Genre / BPM */}
-                  <div className="hidden sm:block sm:col-span-2 text-center text-xs text-neutral-400">
-                    <span className="px-2 py-0.5 rounded-full bg-neutral-800 text-[11px]">
-                      {track.genre}
-                    </span>
-                    <span className="text-[10px] text-neutral-500 block font-mono mt-0.5">
-                      {track.bpm} BPM
-                    </span>
-                  </div>
-
-                  {/* Plays */}
-                  <div className="hidden md:block md:col-span-2 text-center text-xs font-mono text-neutral-400">
-                    {track.plays?.toLocaleString() || 0}
-                  </div>
-
-                  {/* Actions & Duration */}
-                  <div className="col-span-5 sm:col-span-2 flex items-center justify-end gap-2 text-xs">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onToggleLike(track.id);
-                      }}
-                      className={`p-1.5 rounded-full transition-colors cursor-pointer ${
-                        isLiked ? 'text-[#d6b45c]' : 'text-neutral-500 hover:text-white'
-                      }`}
-                      title="علاقه‌مندی"
-                    >
-                      <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-[#d6b45c]' : ''}`} />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onQueueTrack(track);
-                      }}
-                      className="p-1.5 rounded-full text-neutral-500 hover:text-[#d6b45c] hover:bg-[#d6b45c]/10 transition-colors cursor-pointer"
-                      title="افزودن به صف پخش"
-                      aria-label={`افزودن ${track.title} به صف پخش`}
-                    >
-                      <ListPlus className="w-4 h-4" />
-                    </button>
-
-                    {/* Download Button */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDownloadTrack(track);
-                      }}
-                      className={`py-1 px-2.5 rounded-full font-bold text-[11px] flex items-center gap-1 transition-all cursor-pointer ${
-                        isUserVip
-                          ? 'bg-[#d6b45c] hover:bg-[#f0d88a] text-black shadow-sm'
-                          : 'bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/40'
-                      }`}
-                      title={isUserVip ? 'دانلود فایل اصلی ۳۲۰' : 'دانلود قطعه (نیاز به اشتراک VIP)'}
-                    >
-                      {isUserVip ? (
-                        <>
-                          <Download className="w-3 h-3" />
-                          <span className="hidden sm:inline">دانلود</span>
-                        </>
-                      ) : (
-                        <>
-                          <Crown className="w-3 h-3 fill-amber-400" />
-                          <span>VIP</span>
-                        </>
-                      )}
-                    </button>
-
-                    <span className="font-mono text-neutral-400 text-xs w-8 text-left" dir="ltr">
-                      {formatDuration(track.duration)}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        )}
-      </div>
-
-      {/* RECENTLY PLAYED — browser-local history, no additional account data */}
-      {recentTracks.length > 0 && (
-        <section className="space-y-3">
-          <div className="flex items-end justify-between">
-            <div>
-              <p className="text-[10px] uppercase tracking-[.25em] text-[#d6b45c]/80 font-bold">YOUR RECENT ROTATION</p>
-              <h2 className="text-lg font-black text-white mt-1">اخیراً پخش‌شده</h2>
-            </div>
-            <span className="text-[10px] text-neutral-500">روی همین دستگاه</span>
-          </div>
-          <div className="flex gap-3 overflow-x-auto pb-2">
-            {recentTracks.map((track) => (
-              <div key={track.id} className="group w-36 sm:w-40 shrink-0 rounded-2xl border border-white/10 bg-white/[.035] p-2.5">
-                <button type="button" onClick={() => onPlayTrack(track)} className="w-full text-right">
-                  <div className="aspect-square rounded-xl overflow-hidden bg-[#0b1726] mb-2.5">
-                    <img src={track.coverUrl} alt={track.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  </div>
-                  <div className="text-xs font-bold text-white truncate">{track.title}</div>
-                  <div className="text-[10px] text-neutral-500 truncate mt-1">{track.artist}</div>
-                </button>
-                <button type="button" onClick={() => onQueueTrack(track)} className="mt-2 text-[10px] text-[#d6b45c] hover:text-white transition-colors">+ افزودن به صف</button>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* 4. ARTISTS & ALBUMS — derived from the live catalog, no duplicate DB records */}
-      {tracks.length > 0 && (
-        <section className="space-y-5">
-          <div className="flex items-end justify-between gap-3">
-            <div>
-              <p className="text-[10px] uppercase tracking-[.28em] text-[#d6b45c]/80 font-bold">DISCOVER THE SOUND</p>
-              <h2 className="text-xl font-black text-white mt-1">هنرمندان و آلبوم‌ها</h2>
-            </div>
-            <span className="text-[11px] text-neutral-500">{artists.length} هنرمند · {albums.length} آلبوم</span>
-          </div>
-
-          {artists.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="text-sm font-bold text-neutral-200">هنرمندان</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                {artists.slice(0, 10).map((artist) => (
-                  <button
-                    type="button"
-                    key={artist.name}
-                    onClick={() => onPlayTrack(artist.tracks[0])}
-                    className="group text-right rounded-2xl border border-white/10 bg-white/[.035] hover:bg-white/[.07] p-3 transition-all"
-                    aria-label={`پخش آثار ${artist.name}`}
-                  >
-                    <div className="aspect-square rounded-xl overflow-hidden bg-[#0b1726] mb-3">
-                      {artist.coverUrl ? (
-                        <img src={artist.coverUrl} alt={artist.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center"><Music className="w-8 h-8 text-[#d6b45c]" /></div>
-                      )}
-                    </div>
-                    <div className="text-sm font-bold text-white truncate">{artist.name}</div>
-                    <div className="text-[11px] text-neutral-500 mt-1">{artist.tracks.length} قطعه</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {albums.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="text-sm font-bold text-neutral-200">آلبوم‌ها</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                {albums.slice(0, 10).map((album) => (
-                  <button
-                    type="button"
-                    key={album.key}
-                    onClick={() => onPlayTrack(album.tracks[0])}
-                    className="group text-right rounded-2xl border border-white/10 bg-white/[.035] hover:bg-white/[.07] p-3 transition-all"
-                    aria-label={`پخش آلبوم ${album.title}`}
-                  >
-                    <div className="aspect-square rounded-xl overflow-hidden bg-[#0b1726] mb-3">
-                      {album.coverUrl ? (
-                        <img src={album.coverUrl} alt={album.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center"><Disc3 className="w-8 h-8 text-[#d6b45c]" /></div>
-                      )}
-                    </div>
-                    <div className="text-sm font-bold text-white truncate">{album.title}</div>
-                    <div className="text-[11px] text-neutral-500 mt-1 truncate">{album.artist} · {album.tracks.length} قطعه</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </section>
-      )}
-
-      {/* 5. EXCLUSIVE PLAYLISTS SECTION */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-bold text-white">پلی‌لیست‌های اختصاصی DJ Caspian</h2>
-        {playlists.length === 0 ? (
-          <div className="bg-[#181818]/60 border border-neutral-800/80 rounded-2xl p-8 text-center text-neutral-400 space-y-2">
-            <Disc3 className="w-10 h-10 text-neutral-600 mx-auto" />
-            <p className="text-xs text-neutral-400">هنوز پلی‌لیستی منتشر نشده است.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {playlists.map((pl) => (
-              <div
-                key={pl.id}
-                onClick={() => onSelectPlaylist(pl)}
-                className="group p-4 bg-[#181818] hover:bg-[#222222] border border-neutral-800 rounded-2xl cursor-pointer transition-all space-y-3"
-              >
-                <div className="relative aspect-square rounded-xl overflow-hidden shadow-lg">
-                  <img
-                    src={pl.coverUrl}
-                    alt={pl.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="w-10 h-10 rounded-full bg-[#d6b45c] text-black flex items-center justify-center shadow-xl hover:scale-105">
-                      <Play className="w-5 h-5 fill-black ml-0.5" />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="font-bold text-white text-sm group-hover:text-[#d6b45c] transition-colors">
-                    {pl.title}
-                  </h3>
-                  <p className="text-xs text-neutral-400 line-clamp-2 mt-1 leading-relaxed">
-                    {pl.description}
-                  </p>
-                  <div className="text-[11px] text-neutral-500 mt-2 font-mono">
-                    {pl.trackIds.length} قطعه
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* 6. ABOUT ARTIST & FOLLOW US FOOTER CARD */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-b from-[#181818] to-[#121212] border border-neutral-800 flex flex-col md:flex-row items-center gap-6 shadow-2xl">
-        <img
-          src={DJ_CASPIAN_INFO.avatarUrl}
-          alt={DJ_CASPIAN_INFO.name}
-          className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover border-2 border-neutral-700 shrink-0"
-        />
-        <div className="space-y-3 text-center md:text-right flex-1 min-w-0">
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
-            <h3 className="text-xl font-bold text-white">🌊 Caspian Community | درباره {DJ_CASPIAN_INFO.persianName}</h3>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 font-semibold border border-blue-500/30">
-              MTA & Music Community
-            </span>
-          </div>
-
-          <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed max-w-3xl">
-            {DJ_CASPIAN_INFO.bio}
-          </p>
-
-          {/* Quick Community & Social Badges */}
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 pt-1">
-            <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/30 font-bold" dir="ltr">
-              💎 IP TS: {DJ_CASPIAN_INFO.socials.teamspeak.serverAddress}
-            </span>
-            <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold" dir="ltr">
-              💎 IP SV: Soon ...
-            </span>
-            <a
-              href={DJ_CASPIAN_INFO.socials.discord.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-indigo-500/15 text-indigo-400 hover:bg-indigo-500/25 border border-indigo-500/30 transition-colors"
-            >
-              🔹️ Discord
-            </a>
-            <a
-              href={DJ_CASPIAN_INFO.socials.instagram.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-pink-500/15 text-pink-400 hover:bg-pink-500/25 border border-pink-500/30 transition-colors"
-            >
-              🔹️ Instagram: @caspianrp_mta
-            </a>
-            <a
-              href={DJ_CASPIAN_INFO.socials.telegram.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-sky-500/15 text-sky-400 hover:bg-sky-500/25 border border-sky-500/30 transition-colors"
-            >
-              🔹️ Telegram: t.me/CaspianRolePlayMTA
-            </a>
-          </div>
-        </div>
-
-        <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 shrink-0 w-full md:w-auto">
-          <button
-            onClick={onNavigateToAbout}
-            className="py-3 px-6 rounded-full bg-[#d6b45c] hover:bg-[#f0d88a] text-black font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-lg shadow-[#d6b45c]/20 text-center"
-          >
-            مشاهده بیوگرافی و شبکه‌ها
-          </button>
-          <button
-            onClick={onNavigateToSupport}
-            className="py-3 px-6 rounded-full bg-neutral-800 hover:bg-neutral-700 text-amber-300 font-bold text-xs sm:text-sm transition-all cursor-pointer border border-amber-500/30 text-center"
-          >
-            حمایت مالی و خرید VIP
-          </button>
-        </div>
-      </div>
+  const sectionTitle = (title: string, subtitle?: string) => (
+    <div className="flex items-end justify-between gap-3 mb-4">
+      <div><h2 className="text-lg sm:text-xl font-black text-white">{title}</h2>{subtitle && <p className="text-xs text-slate-400 mt-1">{subtitle}</p>}</div>
+      <span className="text-[10px] tracking-[.2em] text-[#d6b45c]/70 font-bold">CASPIAN SELECTS</span>
     </div>
   );
+
+  const trackCard = (track: Track, index: number) => {
+    const active = currentTrackId === track.id && isPlaying;
+    const liked = likedTrackIds.includes(track.id);
+    return <article key={track.id} className="dc-track-card group min-w-0 rounded-2xl p-3 sm:p-4">
+      <div className="relative aspect-square rounded-xl overflow-hidden bg-[#101b29] mb-3">
+        {track.coverUrl ? <img src={track.coverUrl} alt={track.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" /> : <div className="w-full h-full flex items-center justify-center text-[#d6b45c]"><Disc3 className="w-14 h-14" /></div>}
+        {track.isVipOnlyDownload && <span className="absolute top-2 right-2 flex items-center gap-1 rounded-full bg-black/75 border border-amber-400/30 px-2 py-1 text-[9px] font-bold text-amber-300"><Crown className="w-3 h-3" /> VIP</span>}
+        <div className="absolute bottom-2 left-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">{playButton(track)}</div>
+      </div>
+      <div className="min-w-0">
+        <button type="button" onClick={() => onPlayTrack(track)} className={`block w-full text-right truncate text-sm font-bold hover:text-[#f0d88a] ${active ? 'text-[#d6b45c]' : 'text-white'}`}>{track.title}</button>
+        <p className="truncate text-xs text-slate-400 mt-1">{track.artist}</p>
+        <div className="flex items-center justify-between gap-2 mt-3 text-[10px] text-slate-500">
+          <span>{track.genre || 'DJ Caspian'}</span><span>{fmt(track.duration)}</span>
+        </div>
+      </div>
+      <div className="flex items-center gap-1 border-t border-white/[.06] mt-3 pt-2">
+        <button type="button" onClick={() => onToggleLike(track.id)} aria-label="پسندیدن" className={`p-2 rounded-lg hover:bg-white/[.06] ${liked ? 'text-[#d6b45c]' : 'text-slate-500 hover:text-white'}`}><Heart className={`w-4 h-4 ${liked ? 'fill-current' : ''}`} /></button>
+        <button type="button" onClick={() => onQueueTrack(track)} aria-label="افزودن به صف پخش" className="p-2 rounded-lg text-slate-500 hover:text-white hover:bg-white/[.06]"><ListPlus className="w-4 h-4" /></button>
+        <button type="button" onClick={() => onDownloadTrack(track)} aria-label="دانلود" className="p-2 rounded-lg text-slate-500 hover:text-[#d6b45c] hover:bg-white/[.06]">{isUserVip ? <Download className="w-4 h-4" /> : <Crown className="w-4 h-4" />}</button>
+        <span className="mr-auto text-[10px] text-slate-600 font-mono">#{String(index + 1).padStart(2, '0')}</span>
+      </div>
+    </article>;
+  };
+
+  return <div className="dc-home space-y-9 sm:space-y-12 p-4 sm:p-7 lg:p-9 animate-in fade-in duration-500" dir="rtl">
+    <section className="dc-hero relative overflow-hidden rounded-[2rem] min-h-[360px] sm:min-h-[430px] flex items-end">
+      <div className="absolute inset-0">
+        <img src={DJ_CASPIAN_INFO.bannerUrl} alt="" className="w-full h-full object-cover opacity-35" />
+        <div className="absolute inset-0 bg-gradient-to-l from-[#05080e] via-[#07111e]/75 to-[#05080e]/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#05080e] via-transparent to-[#05080e]/20" />
+      </div>
+      <div className="absolute -left-20 -top-24 w-80 h-80 rounded-full bg-[#1d5a91]/20 blur-[100px]" />
+      <div className="relative z-10 w-full p-6 sm:p-10 lg:p-12">
+        <div className="flex items-center gap-2 text-[10px] sm:text-xs font-bold tracking-[.24em] text-[#f0d88a] mb-5"><AudioLines className="w-4 h-4" /> DJ CASPIAN • OFFICIAL MUSIC HUB</div>
+        <div className="flex flex-col sm:flex-row sm:items-end gap-6">
+          <img src={DJ_CASPIAN_INFO.avatarUrl} alt="DJ Caspian" className="w-24 h-24 sm:w-36 sm:h-36 rounded-2xl object-cover border border-[#d6b45c]/50 shadow-2xl shadow-black/50" />
+          <div className="min-w-0 flex-1">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-[#d6b45c]/25 bg-black/30 px-3 py-1 text-[10px] text-[#f0d88a] mb-3"><CheckCircle2 className="w-3 h-3" /> آرتیست رسمی</div>
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white">{DJ_CASPIAN_INFO.name}</h1>
+            <p className="text-sm sm:text-base text-slate-300 max-w-2xl mt-3 leading-7">{DJ_CASPIAN_INFO.tagline}</p>
+            <div className="flex flex-wrap gap-4 text-xs text-slate-400 mt-4"><span>{DJ_CASPIAN_INFO.monthlyListeners} شنونده ماهانه</span><span>{DJ_CASPIAN_INFO.followers} دنبال‌کننده</span><span>{tracks.length} قطعه منتشرشده</span></div>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            {featured && playButton(featured, true)}
+            <button type="button" onClick={onNavigateToSupport} className="inline-flex items-center gap-2 rounded-full border border-[#d6b45c]/40 bg-black/35 px-5 py-3 text-xs font-bold text-[#f0d88a] hover:bg-[#d6b45c] hover:text-black transition-all"><Crown className="w-4 h-4" /> حمایت از کاسپین</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {recent.length > 0 && <section>{sectionTitle('ادامه گوش دادن', 'برگرد به موسیقی‌هایی که اخیراً پخش کرده‌ای')}<div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">{recent.slice(0,4).map((track,i)=><button key={track.id} type="button" onClick={()=>onPlayTrack(track)} className="dc-quick-card flex items-center gap-3 text-right rounded-xl overflow-hidden"><img src={track.coverUrl} alt="" className="w-16 h-16 object-cover shrink-0" /><span className="min-w-0 flex-1 py-2"><strong className="block truncate text-xs text-white">{track.title}</strong><small className="block truncate text-[10px] text-slate-400 mt-1">{track.artist}</small></span><span className="ml-3 text-[#d6b45c]">{currentTrackId===track.id&&isPlaying?<AudioLines className="w-4 h-4"/>:<Play className="w-4 h-4 fill-current"/>}</span></button>)}</div></section>}
+
+    {tracks.length > 0 && <section>{sectionTitle('انتخاب‌شده برای تو', 'تازه‌ترین انتشارها از آرشیو رسمی DJ Caspian')}<div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">{tracks.slice(0,8).map(trackCard)}</div></section>}
+
+    {albums.length > 0 && <section>{sectionTitle('آلبوم‌ها و مجموعه‌ها', 'همه قطعه‌ها در کنار هم، با حال‌وهوای خودشان')}<div className="flex gap-4 overflow-x-auto pb-3 dc-horizontal">{albums.map(album=><button key={album.key} type="button" onClick={()=>onPlayTrack(album.tracks[0])} className="dc-media-tile text-right shrink-0 w-36 sm:w-44"><div className="aspect-square rounded-2xl overflow-hidden mb-3 bg-[#101b29]">{album.cover?<img src={album.cover} alt={album.title} loading="lazy" className="w-full h-full object-cover"/>:<Disc3 className="w-full h-full p-10 text-[#d6b45c]"/>}</div><strong className="block text-sm text-white truncate">{album.title}</strong><span className="block text-xs text-slate-400 truncate mt-1">{album.artist} · {album.tracks.length} قطعه</span></button>)}</div></section>}
+
+    {uniqueArtists.length > 0 && <section>{sectionTitle('هنرمندان', 'صداهایی که در آرشیو کاسپین حضور دارند')}<div className="flex gap-4 overflow-x-auto pb-3 dc-horizontal">{uniqueArtists.map((artist,i)=><button key={artist.artist || i} type="button" onClick={()=>{const first=tracks.find(t=>t.artist===artist.artist);if(first)onPlayTrack(first);}} className="dc-media-tile shrink-0 w-32 sm:w-40 text-center"><div className="aspect-square rounded-full overflow-hidden mb-3 mx-auto border border-white/10 bg-[#101b29]">{artist.coverUrl?<img src={artist.coverUrl} alt={artist.artist} loading="lazy" className="w-full h-full object-cover"/>:<Headphones className="w-full h-full p-9 text-[#d6b45c]"/>}</div><strong className="block text-sm text-white truncate">{artist.artist}</strong><span className="text-xs text-slate-500">هنرمند</span></button>)}</div></section>}
+
+    {playlists.length > 0 && <section>{sectionTitle('پلی‌لیست‌های کاسپین', 'مجموعه‌هایی برای هر مود و هر لحظه')}<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">{playlists.slice(0,6).map(playlist=><button key={playlist.id} type="button" onClick={()=>onSelectPlaylist(playlist)} className="dc-quick-card flex items-center gap-3 rounded-2xl p-3 text-right"><img src={playlist.coverUrl} alt="" className="w-16 h-16 rounded-xl object-cover"/><span className="min-w-0 flex-1"><strong className="block text-sm text-white truncate">{playlist.title}</strong><small className="block text-xs text-slate-400 mt-1 truncate">{playlist.description || `${playlist.trackIds.length} قطعه`}</small></span><ArrowUpLeft className="w-4 h-4 text-[#d6b45c]"/></button>)}</div></section>}
+
+    {tracks.length === 0 && <section className="dc-empty rounded-3xl p-12 text-center"><Radio className="w-12 h-12 mx-auto text-[#d6b45c] mb-4"/><h2 className="text-xl font-black text-white">آرشیو در حال آماده‌سازی است</h2><p className="text-sm text-slate-400 mt-2">به‌زودی موسیقی‌های تازه در اینجا منتشر می‌شوند.</p></section>}
+    <section className="dc-support-strip rounded-2xl p-5 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-4"><div><div className="flex items-center gap-2 text-[#f0d88a] text-xs font-bold"><Sparkles className="w-4 h-4"/> CASPIAN VIP</div><h2 className="text-lg sm:text-xl font-black text-white mt-2">تجربه کامل موسیقی با حمایت از هنرمند</h2><p className="text-xs text-slate-400 mt-1">حمایت امن و فعال‌سازی امکانات ویژه از طریق درگاه رسمی Donito</p></div><button type="button" onClick={onNavigateToSupport} className="rounded-full bg-[#d6b45c] px-6 py-3 text-xs font-black text-black hover:bg-[#f0d88a] transition-colors shrink-0">مشاهده روش‌های حمایت</button></section>
+    <button type="button" onClick={onNavigateToAbout} className="mx-auto flex items-center gap-2 text-xs text-slate-500 hover:text-[#d6b45c] transition-colors"><Clock3 className="w-3.5 h-3.5"/> درباره DJ Caspian و شبکه‌های رسمی</button>
+  </div>;
 };
