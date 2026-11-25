@@ -3,79 +3,52 @@ import { Track, VipTicket, Playlist, UserAccount } from '../types';
 export const DJ_CASPIAN_INFO = {
   name: 'DJ Caspian',
   persianName: 'دی‌جی کاسپین',
-  tagline: 'آهنگساز، دی‌جی و پرودیوسر موسیقی الکترونیک، کلوپ و ریمیکس‌های اختصاصی',
-  bio: 'دی‌جی کاسپین، پیشگام سبک تلفیقی پرشین کلاب، تکنو ملودیک و دیپ هاوس مدرن در خاورمیانه و فستیوال‌های بین‌المللی. تمامی ریمیکس‌ها و سِت‌های رادیویی به صورت انحصاری در این پلتفرم استریم می‌شوند.',
-  monthlyListeners: '۱۸۴,۳۵۰ شنونده ماهانه',
-  followers: '۸۹,۲۰۰ دنبال‌کننده',
+  tagline: 'پلتفرم رسمی موسیقی، ریمیکس‌ها و ارتباط با جامعه شنوندگان DJ CASPIAN',
+  bio: 'DJ CASPIAN فضایی برای شنیدن و دنبال‌کردن موسیقی‌ها، ریمیکس‌ها و مجموعه‌های منتشرشده است. این صفحه مسیرهای رسمی ارتباطی و اطلاعات پروژه را یک‌جا در اختیار مخاطبان قرار می‌دهد.',
   avatarUrl: `${import.meta.env.BASE_URL}dj-caspian-profile.jpg`,
   bannerUrl: `${import.meta.env.BASE_URL}dj-caspian-profile.jpg`,
-  
-  // Payment Details for Support & VIP
-  payment: {
-    tetherPriceUsdt: 10,
-    tomanPrice: 3000000,
-    tomanDisplay: '3,۰۰۰,۰۰۰ تومان',
-    card: {
-      bankName: 'بانک ملی ایران',
-      cardNumber: '6037-9973-4794-5942',
-      accountHolder: 'محمدامین جدایی (DJ Caspian)',
-      shabaNumber: '***************',
-    },
-    crypto: {
-      trc20Address: 'TXosfmykDjy7p4CqHXqnWvi37P3Y1RMYvg',
-      bep20Address: '0xe31d786cfEb6d3649Fedfc160d523D387E129639',
-      tonAddress: 'Soon',
-    }
-  },
-
-  // Social Channels & Communities (🌊 Caspian Community)
   socials: {
-    communityName: '🌊 Caspian Community',
+    communityName: 'Caspian Community',
     serverIp: {
-      title: '💎 IP SV (MTA Server)',
-      address: 'Soon ...',
-      status: 'به زودی...'
+      title: 'سرور بازی Caspian MTA',
+      address: '',
+      status: 'آدرس در انتظار اعلام رسمی',
     },
     teamspeak: {
-      title: '💎 IP TS (تیم اسپیک رسمی)',
-      serverAddress: 'Caspianrp.ts77.ir',
-      link: 'ts3server://Caspianrp.ts77.ir',
-      description: 'ارتباط صوتی با کیفیت بالا و پینگ پایین کاسپین کامیونیتی: Caspianrp.ts77.ir'
+      title: 'TeamSpeak رسمی Caspian',
+      serverAddress: 'Caspian.mta.ir',
+      link: 'ts3server://Caspian.mta.ir',
+      description: 'اتاق‌های گفت‌وگو و ارتباط صوتی اعضای کامیونیتی کاسپین.',
     },
     discord: {
-      title: '🔹️ دیسکورد رسمی Caspian',
-      id: 'discord.gg/Yv7yqcbyfF',
-      link: 'https://discord.gg/Yv7yqcbyfF',
-      description: 'سرور رسمی دیسکورد کاسپین برای چت، ایونت‌ها و ارتباط با اعضای کامیونیتی'
+      title: 'Discord رسمی Caspian',
+      id: 'discord.gg/nevmNy93pN',
+      link: 'https://discord.gg/nevmNy93pN',
+      description: 'محل ارتباط اعضا، اطلاع‌رسانی و هماهنگی‌های کامیونیتی.',
     },
     instagram: {
-      title: '🔹️ اینستاگرام رسمی Caspian RP',
-      id: '@caspianrp_mta',
-      link: 'https://instagram.com/caspianrp_mta',
-      description: 'اخبار، تیزرها، کلیپ‌های جذاب و هایلایت‌های سرور رول‌پلی کاسپین'
+      title: 'Instagram رسمی Caspian RP',
+      id: '@caspinrp_mta',
+      link: 'https://instagram.com/caspinrp_mta',
+      description: 'اخبار، اطلاعیه‌ها و محتوای تصویری مربوط به Caspian RolePlay.',
     },
     telegram: {
-      title: '🔹️ کانال تلگرام رسمی Caspian RolePlay',
+      title: 'Telegram رسمی Caspian RolePlay',
       id: '@CaspianRolePlayMTA',
       handle: 't.me/CaspianRolePlayMTA',
       link: 'https://t.me/CaspianRolePlayMTA',
-      description: 'کانال رسمی تلگرام جهت اخبار فوری، پچ‌نوت‌ها، چالش‌ها و دانلودها'
+      description: 'کانال اطلاع‌رسانی و انتشار خبرها و به‌روزرسانی‌های کاسپین.',
     },
     website: {
-      title: '🔹️ وب‌سایت رسمی Caspian',
-      url: 'Soon...',
-      link: '#',
-      description: 'پرتال رسمی و جامع کاسپین کامیونیتی (در حال آماده‌سازی و راه‌اندازی)'
-    }
-  }
+      title: 'وب‌سایت رسمی DJ CASPIAN',
+      url: 'mrsixson.github.io/dj-caspian---spotify-music---vip-hub/',
+      link: 'https://mrsixson.github.io/dj-caspian---spotify-music---vip-hub/',
+      description: 'مرکز رسمی پخش موسیقی، کتابخانه، پلی‌لیست‌ها و حساب کاربری DJ CASPIAN.',
+    },
+  },
 };
 
 export const INITIAL_TRACKS: Track[] = [];
-
 export const INITIAL_PLAYLISTS: Playlist[] = [];
-
-
-export const INITIAL_TICKETS: VipTicket[] = [
-];
-
+export const INITIAL_TICKETS: VipTicket[] = [];
 export const INITIAL_USERS: UserAccount[] = [];
