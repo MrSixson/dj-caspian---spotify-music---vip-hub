@@ -31,7 +31,7 @@ export const LyricsModal: React.FC<{ track: Track; currentTime: number; onClose:
         <header className="relative z-10 flex items-center justify-between gap-4 p-5 sm:p-7 border-b border-white/10">
           <div className="flex items-center gap-4 min-w-0">
             <img src={track.coverUrl} alt="" className="w-14 h-14 rounded-2xl object-cover shadow-xl" />
-            <div className="min-w-0"><div className="text-[10px] tracking-[.3em] text-[#d6b45c] font-black">CASPIAN LYRICS EXPERIENCE</div><h2 className="text-xl sm:text-2xl font-black text-white truncate mt-1">{track.title}</h2><p className="text-sm text-slate-400 truncate">{track.artist}</p></div>
+            <div className="min-w-0"><div className="text-[10px] tracking-[.3em] text-[#d6b45c] font-black">CASPIAN KARAOKE EXPERIENCE</div><h2 className="text-xl sm:text-2xl font-black text-white truncate mt-1">{track.title}</h2><p className="text-sm text-slate-400 truncate">{track.artist}</p></div>
           </div>
           <button onClick={onClose} className="shrink-0 rounded-full border border-white/10 bg-white/5 p-3 text-slate-300 hover:text-white hover:bg-white/10" aria-label="بستن"><X /></button>
         </header>
