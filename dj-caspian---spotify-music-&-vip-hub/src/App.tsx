@@ -33,6 +33,7 @@ import { AppUpdatePrompt } from './components/AppUpdatePrompt';
 import { NotificationPermissionPrompt } from './components/NotificationPermissionPrompt';
 import { ProfilesView } from './components/ProfilesView';
 import { ListeningHub } from './components/ListeningHub';
+import { ReleaseAnnouncement } from './components/ReleaseAnnouncement';
 
 export default function App() {
   const updateBreakEndsAt = new Date('2026-11-25T09:34:00Z').getTime();
@@ -843,6 +844,7 @@ export default function App() {
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
       <AppPromoModal />
       <NotificationPermissionPrompt />
+      <ReleaseAnnouncement />
 
       {/* Spotify Sidebar (Desktop + Mobile Drawer) */}
       <Sidebar
