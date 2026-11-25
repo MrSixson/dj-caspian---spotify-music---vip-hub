@@ -15,6 +15,7 @@ class AudioEngine {
   private gainNode: GainNode | null = null;
 
   private currentTrackId: string | null = null;
+  private currentAudioUrl: string | null = null;
   private volume = 0.8;
 
   private timeUpdateCallback?: (current: number) => void;
@@ -170,6 +171,7 @@ class AudioEngine {
     }
 
     this.currentTrackId = null;
+    this.currentAudioUrl = null;
     this.timeUpdateCallback = undefined;
     this.endedCallback = undefined;
   }
@@ -204,7 +206,7 @@ class AudioEngine {
     try {
       if (
         typeof audioUrl !== "string" ||
-        !/^https?:\/\//i.test(audioUrl)
+        !/^(https?:\/\/|blob:)/i.test(audioUrl)
       ) {
         throw new Error(
           "لینک آهنگ اصلی در دسترس نیست. پخش آهنگ متوقف شد."
@@ -237,6 +239,7 @@ class AudioEngine {
 
       if (
         this.currentTrackId === trackId &&
+        this.currentAudioUrl === audioUrl &&
         !this.audioElement.paused
       ) {
         return;
@@ -244,6 +247,7 @@ class AudioEngine {
 
       if (
         this.currentTrackId === trackId &&
+        this.currentAudioUrl === audioUrl &&
         this.audioElement.paused &&
         this.audioElement.currentSrc
       ) {
@@ -256,6 +260,7 @@ class AudioEngine {
       this.stop();
 
       this.currentTrackId = trackId;
+      this.currentAudioUrl = audioUrl;
       this.timeUpdateCallback = onTimeUpdate;
       this.endedCallback = onEnded;
 
