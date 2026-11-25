@@ -1,0 +1,24 @@
+{
+  "id": "./",
+  "name": "DJ Caspian",
+  "short_name": "DJ Caspian",
+  "description": "استودیو موسیقی DJ Caspian؛ موسیقی، پلی‌لیست‌ها و حساب کاربری شما، همیشه همراهتان.",
+  "lang": "fa-IR",
+  "dir": "rtl",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#05080e",
+  "theme_color": "#05080e",
+  "categories": ["music", "entertainment"],
+  "icons": [
+    {
+      "src": "./icons/dj-caspian-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
