@@ -66,14 +66,17 @@ jobs:
             --output resources/icon.png
           test -s resources/icon.png
 
-      - name: Generate native Android icon assets
-        run: npx --yes @capacitor/assets generate --android --iconBackgroundColor "#080d16" --iconBackgroundColorDark "#080d16"
-
       - name: Build web assets for Android
         run: npm run build:android
 
       - name: Create Android native project
         run: npx cap add android
+
+      - name: Generate native Android icon assets from official Caspian logo
+        run: |
+          test -s resources/icon.png
+          npx --yes @capacitor/assets generate --android --iconBackgroundColor "#080d16" --iconBackgroundColorDark "#080d16"
+          test -s android/app/src/main/res/mipmap-hdpi/ic_launcher.png
 
       - name: Set the installed application name
         run: |
