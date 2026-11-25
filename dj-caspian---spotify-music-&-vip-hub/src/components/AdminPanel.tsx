@@ -17,7 +17,7 @@ interface AdminPanelProps {
   tracks: Track[];
   playlists: Playlist[];
   tickets: VipTicket[];
-  onAddTrack: (input: { audioFile: File; coverFile?: File; title: string; artist: string; album: string; durationSeconds: number; genre: string; bpm: number; synthPreset?: string; isVipOnlyDownload: boolean; description?: string; coverUrl?: string }) => Promise<Track>;
+  onAddTrack: (input: { audioFile: File; coverFile?: File; title: string; artist: string; album: string; durationSeconds: number; genre: string; bpm: number; synthPreset?: string; isVipOnlyDownload: boolean; description?: string; lyrics?: string; coverUrl?: string }) => Promise<Track>;
   onDeleteTrack: (trackId: string) => void;
   onAddPlaylist: (playlist: Playlist) => Promise<void>;
   onDeletePlaylist: (playlistId: string) => void;
@@ -73,6 +73,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [newSynthPreset, setNewSynthPreset] = useState<'festival_drop' | 'deep_groove' | 'persian_club' | 'melodic_techno' | 'tech_house'>('persian_club');
   const [newIsVipOnly, setNewIsVipOnly] = useState(true);
   const [newDescription, setNewDescription] = useState('');
+  const [newLyrics, setNewLyrics] = useState('');
 
   // -------------------------------------------------------------
   // NEW PLAYLIST MODAL
@@ -178,6 +179,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         synthPreset: newSynthPreset,
         isVipOnlyDownload: newIsVipOnly,
         description: newDescription.trim() || 'قطعه اختصاصی جدید آپلود شده توسط DJ Caspian',
+        lyrics: newLyrics.trim(),
       });
     } catch (error) {
       onShowToast(error instanceof Error ? error.message : 'انتشار آهنگ ناموفق بود.', 'error');
@@ -216,6 +218,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     setNewCoverFile(undefined);
     setNewAudioFileName('');
     setNewDescription('');
+    setNewLyrics('');
     setUploadStep(1);
   };
 
@@ -1053,6 +1056,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     onChange={(e) => setNewDescription(e.target.value)}
                     className="w-full bg-[#242424] border border-neutral-700 focus:border-[#d6b45c] focus:outline-none rounded-xl px-3 py-2 text-xs text-white resize-none"
                   />
+                </div>
+
+                {/* Timed Lyrics */}
+                <div>
+                  <label className="text-xs text-neutral-300 block mb-1 font-medium">متن آهنگ (همگام با پخش):</label>
+                  <textarea
+                    rows={5}
+                    placeholder={'برای همگام‌سازی، هر خط را با زمان شروع بنویس:\n[00:12.00] متن خط اول\n[00:16.50] متن خط دوم\n\nبدون تایم‌کد هم متن کامل نمایش داده می‌شود.'}
+                    value={newLyrics}
+                    onChange={(e) => setNewLyrics(e.target.value)}
+                    className="w-full bg-[#07111e] border border-[#d6b45c]/25 focus:border-[#d6b45c] focus:outline-none rounded-xl px-3 py-2 text-xs text-white resize-y leading-7"
+                  />
+                  <p className="text-[10px] text-neutral-500 mt-1">فرمت پشتیبانی‌شده: [دقیقه:ثانیه.صدم] متن. مثال: [01:24.50] شروع بخش بعدی</p>
                 </div>
 
                 {/* Action Buttons */}
