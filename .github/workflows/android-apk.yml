@@ -1,0 +1,81 @@
+name: Build DJ Caspian Android APK
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "dj-caspian---spotify-music-&-vip-hub/**"
+      - ".github/workflows/android-apk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dj-caspian-android-apk
+  cancel-in-progress: true
+
+jobs:
+  build-apk:
+    name: Build installable Android APK
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dj-caspian---spotify-music-&-vip-hub
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Install web and Capacitor dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Download official Caspian logo for Android launcher icon
+        run: |
+          mkdir -p resources
+          curl --fail --location --silent --show-error \
+            "https://irkdzjizhwxbmnnfyqsx.supabase.co/storage/v1/object/public/brand-assets/caspian-official-logo.png" \
+            --output resources/icon.png
+          test -s resources/icon.png
+
+      - name: Generate native Android icon assets
+        run: npx @capacitor/assets generate --android --iconBackgroundColor "#080d16" --iconBackgroundColorDark "#080d16"
+
+      - name: Build web assets for Android
+        run: npm run build:android
+
+      - name: Create Android native project
+        run: npx cap add android
+
+      - name: Sync native project
+        run: npx cap sync android
+
+      - name: Build debug APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Upload installable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: DJ-Caspian-Android-APK
+          path: dj-caspian---spotify-music-&-vip-hub/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
