@@ -254,7 +254,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
         {/* LEFT (Download VIP, Visualizer, Volume in RTL) */}
         <div className="flex items-center justify-end gap-2 sm:gap-3 w-1/4 sm:w-1/3">
           <button type="button" onClick={() => setIsSleepMenuOpen(value=>!value)} className={"p-1.5 rounded-lg hover:text-[#f0d88a] " + (sleepSeconds!==null ? "text-[#d6b45c]" : "text-neutral-400")} title="تایمر خواب"><Moon className="w-4 h-4"/>{sleepSeconds!==null&&<span className="text-[9px] mr-1">{Math.floor(sleepSeconds/60)}:{String(sleepSeconds%60).padStart(2,"0")}</span>}</button>
-          <button type="button" onClick={() => setIsLyricsOpen(true)} disabled={!currentTrack.lyrics?.trim()} className="p-1.5 rounded-lg text-neutral-400 hover:text-[#f0d88a] disabled:opacity-30 disabled:cursor-not-allowed" title="نمایش متن آهنگ" aria-label="نمایش متن آهنگ"><Captions className="w-4 h-4" /></button>
+          <button type="button" onClick={() => setIsLyricsOpen(true)} disabled={!currentTrack.lyrics?.trim()} className="p-1.5 rounded-lg text-neutral-400 hover:text-[#f0d88a] disabled:opacity-30 disabled:cursor-not-allowed" title="کارائوکه و متن هماهنگ" aria-label="کارائوکه و متن هماهنگ"><Captions className="w-4 h-4" /></button>
           <button
             type="button"
             onClick={() => setIsQueueOpen((open) => !open)}
