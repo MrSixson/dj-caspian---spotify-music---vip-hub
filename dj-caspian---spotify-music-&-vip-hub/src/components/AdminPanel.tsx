@@ -8,6 +8,7 @@ import {
 import { Track, VipTicket, Playlist, UserAccount } from '../types';
 import { DJ_CASPIAN_INFO } from '../data/initialData';
 import confetti from 'canvas-confetti';
+import { AppReleaseManager } from './AppReleaseManager';
 
 interface AdminPanelProps {
   currentUser: UserAccount | null;
@@ -47,7 +48,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const isOwnerAdmin = currentUser?.role === 'admin';
 
   // Active sub-tab in Admin
-  const [activeTab, setActiveTab] = useState<'tracks' | 'playlists' | 'tickets'>('tracks');
+  const [activeTab, setActiveTab] = useState<'tracks' | 'playlists' | 'tickets' | 'updates'>('tracks');
   const [ticketFilter, setTicketFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
 
   // -------------------------------------------------------------
@@ -395,6 +396,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </button>
 
           <button
+            onClick={() => setActiveTab('updates')}
+            className={`py-2 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center gap-2 ${
+              activeTab === 'updates'
+                ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20'
+                : 'text-neutral-400 hover:text-white bg-[#181818]'
+            }`}
+          >
+            <Smartphone className="w-4 h-4" />
+            <span>نسخه و آپدیت اندروید</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('tickets')}
             className={`py-2 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center gap-2 ${
               activeTab === 'tickets'
@@ -611,6 +624,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       {/* ------------------------------------------------------------- */}
       {/* TAB 3: TICKETS REVIEW (ADMIN-EXCLUSIVE) */}
       {/* ------------------------------------------------------------- */}
+      {activeTab === 'updates' && currentUser?.id && (
+        <AppReleaseManager userId={currentUser.id} onShowToast={onShowToast} />
+      )}
+
       {activeTab === 'tickets' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-2">
