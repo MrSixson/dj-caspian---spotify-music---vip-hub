@@ -67,6 +67,8 @@ jobs:
           test -s resources/icon.png
 
       - name: Build web assets for Android
+        env:
+          VITE_ANDROID_VERSION_CODE: ${{ github.run_number }}
         run: npm run build:android
 
       - name: Create Android native project
@@ -113,6 +115,26 @@ jobs:
       - name: Sync native project
         run: npx cap sync android
 
+      - name: Set Android version from the workflow run
+        env:
+          APP_VERSION_CODE: ${{ github.run_number }}
+          APP_VERSION_NAME: 1.0.${{ github.run_number }}
+        run: |
+          python3 - <<'PY'
+          import os, re
+          from pathlib import Path
+          gradle = Path('android/app/build.gradle')
+          content = gradle.read_text()
+          code = os.environ['APP_VERSION_CODE']
+          name = os.environ['APP_VERSION_NAME']
+          content, code_count = re.subn(r'(?m)^(\s*versionCode\s+)\d+(\s*)$', rf'\g<1>{code}\g<2>', content, count=1)
+          content, name_count = re.subn(r'(?m)^(\s*versionName\s+)[\"\'][^\"\']+[\"\'](\s*)$', rf'\g<1>\"{name}\"\g<2>', content, count=1)
+          if code_count != 1 or name_count != 1:
+              raise SystemExit('Could not set Android versionCode/versionName in app/build.gradle')
+          gradle.write_text(content)
+          print(f'Android version: {name} (code {code})')
+          PY
+
       - name: Build installable Android APK
         run: |
           cd android
@@ -136,10 +158,13 @@ jobs:
       - name: Publish public APK download
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: android-v1.0.0-beta.1
-          name: DJ Caspian Android v1.0.0-beta.1
+          tag_name: android-v1.0.${{ github.run_number }}
+          name: DJ Caspian Android v1.0.${{ github.run_number }}
           body: |
-            نسخه آزمایشی قابل نصب اپلیکیشن مستقل DJ Caspian برای اندروید.
+            نسخه قابل نصب اپلیکیشن مستقل DJ Caspian برای اندروید.
+
+            نسخه: 1.0.${{ github.run_number }}
+            کد نسخه اندروید: ${{ github.run_number }}
 
             نام نمایشی برنامه پس از نصب: DJ Caspian
             نام فایل دانلود: DJ-Caspian.apk
