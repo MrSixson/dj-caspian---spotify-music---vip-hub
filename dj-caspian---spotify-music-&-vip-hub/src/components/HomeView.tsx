@@ -5,6 +5,8 @@ import {
   Radio, AudioLines, ArrowLeft, Waves, Zap, Clock3
 } from 'lucide-react';
 import { Track, Playlist } from '../types';
+import { UpcomingRelease } from './UpcomingRelease';
+import { TrackShareButton } from './TrackShareButton';
 import { DJ_CASPIAN_INFO } from '../data/initialData';
 
 interface HomeViewProps {
@@ -69,6 +71,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <div className="dc3-track-sub"><span>{track.genre || 'DJ CASPIAN'}</span><span>{fmt(track.duration)}</span></div>
       </div>
       <div className="dc3-track-actions">
+        <TrackShareButton title={track.title} artist={track.artist} coverUrl={track.coverUrl} />
         <button type="button" onClick={() => onToggleLike(track.id)} aria-label="پسندیدن" className={liked ? 'is-liked' : ''}><Heart className={liked ? 'fill-current' : ''}/></button>
         <button type="button" onClick={() => onQueueTrack(track)} aria-label="افزودن به صف"><ListPlus /></button>
         <button type="button" onClick={() => onDownloadTrack(track)} aria-label="دانلود">{isUserVip ? <Download /> : <Crown />}</button>
@@ -107,6 +110,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
     </section>
 
     <div className="dc3-content">
+      <UpcomingRelease />
       <div className="dc3-shortcuts">
         <button type="button" onClick={onNavigateToAbout}><span className="dc3-shortcut-icon"><Waves /></span><span><b>دنیای کاسپین</b><small>درباره و شبکه‌های رسمی</small></span><ArrowUpLeft /></button>
         <button type="button" onClick={onNavigateToSupport}><span className="dc3-shortcut-icon gold"><Crown /></span><span><b>حمایت و VIP</b><small>پشتیبانی از مسیر رسمی Donito</small></span><ArrowUpLeft /></button>
@@ -115,7 +119,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
       {featured && <section className="dc3-featured">
         <div className="dc3-featured-art"><img src={featured.coverUrl} alt={featured.title}/><div className="dc3-featured-glow"/><span>FEATURED SOUND</span></div>
-        <div className="dc3-featured-copy"><span className="dc3-eyebrow">THE CASPIAN SPOTLIGHT</span><h2>صدای بعدی<br/><em>از کاسپین</em></h2><p>انتخاب اول از آرشیو موسیقی DJ CASPIAN. پلی کن و وارد حال‌وهوای خودت شو.</p><div className="dc3-featured-track"><b>{featured.title}</b><span>{featured.artist} · {fmt(featured.duration)}</span></div><div className="dc3-featured-actions">{playButton(featured, true)}<button type="button" onClick={() => onToggleLike(featured.id)}><Heart className={likedTrackIds.includes(featured.id) ? 'fill-current' : ''}/>{likedTrackIds.includes(featured.id) ? 'پسندیده‌شده' : 'افزودن به علاقه‌مندی'}</button></div></div>
+        <div className="dc3-featured-copy"><span className="dc3-eyebrow">THE CASPIAN SPOTLIGHT</span><h2>صدای بعدی<br/><em>از کاسپین</em></h2><p>انتخاب اول از آرشیو موسیقی DJ CASPIAN. پلی کن و وارد حال‌وهوای خودت شو.</p><div className="dc3-featured-track"><b>{featured.title}</b><span>{featured.artist} · {fmt(featured.duration)}</span></div><div className="dc3-featured-actions">{playButton(featured, true)}<button type="button" onClick={() => onToggleLike(featured.id)}><Heart className={likedTrackIds.includes(featured.id) ? 'fill-current' : ''}/>{likedTrackIds.includes(featured.id) ? 'پسندیده‌شده' : 'افزودن به علاقه‌مندی'}</button><TrackShareButton title={featured.title} artist={featured.artist} coverUrl={featured.coverUrl} /></div></div>
       </section>}
 
       {recent.length > 0 && <section className="dc3-section">{heading('PICK UP WHERE YOU LEFT OFF','ادامه شنیدن','موسیقی‌هایی که اخیراً سراغشان رفته‌ای')}<div className="dc3-recent-grid">{recent.slice(0,4).map((track,i)=><button key={track.id} type="button" onClick={()=>onPlayTrack(track)} className="dc3-recent"><img src={track.coverUrl} alt=""/><span><b>{track.title}</b><small>{track.artist}</small></span><span className="dc3-recent-play">{currentTrackId===track.id&&isPlaying?<AudioLines/>:<Play className="fill-current"/>}</span></button>)}</div></section>}
