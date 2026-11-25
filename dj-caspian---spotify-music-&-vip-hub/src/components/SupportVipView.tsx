@@ -101,19 +101,9 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({ onShowToast, isU
                 <h3 className="mt-2 text-base sm:text-lg font-black text-white">{tool.title}</h3>
                 <p className="mt-1 text-xs leading-6 text-neutral-400">{tool.description}</p>
               </div>
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#d6b45c]/20 bg-[#d6b45c]/10 text-[#e8ca7d]"><Sparkles className="h-5 w-5" /></span>
             </div>
             <div className={"mx-3 mb-3 overflow-hidden rounded-xl border border-white/10 bg-[#05080e] sm:mx-5 " + (tool.featured ? "h-[250px] sm:h-[290px]" : "h-[260px]")}>
               <iframe title={tool.title} src={tool.url} loading="lazy" referrerPolicy="strict-origin-when-cross-origin" className="dc-donito-dark-frame h-full w-full border-0" />
-            </div>
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.07] px-4 py-3 sm:px-5">
-              <span className="text-[10px] text-neutral-500">نمایش زنده از سرویس Donito</span>
-              <div className="flex flex-wrap gap-2">
-                <a href={tool.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-lg bg-[#d6b45c] px-3 py-2 text-xs font-black text-[#101318] transition hover:brightness-110">نمایش کامل <ExternalLink className="h-3.5 w-3.5" /></a>
-                <button type="button" onClick={() => copyLink(tool.url, tool.tag, 'لینک ابزار')} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-neutral-200 transition hover:bg-white/10">
-                  {copiedKey === tool.tag ? <Check className="h-3.5 w-3.5 text-[#d6b45c]" /> : <Copy className="h-3.5 w-3.5" />}{copiedKey === tool.tag ? 'کپی شد' : 'کپی لینک'}
-                </button>
-              </div>
             </div>
           </article>)}
         </div>
