@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { Download, X } from 'lucide-react';
 
-const DISMISS_KEY = 'dj-caspian-app-promo-dismissed-v1';
+const DISMISS_KEY = 'dj-caspian-app-promo-dismissed-v2';
 const POSTER_URL = 'https://d2ol7oe51mr4n9.cloudfront.net/user_3LbkVgD4rFgZqph5aiV2BP334Pg/fb790385-60c4-4d98-8e19-36b55dc1febd.jpg';
+const APK_URL = 'https://github.com/MrSixson/dj-caspian---spotify-music---vip-hub/releases/download/android-v1.0.0-beta.1/app-debug.apk';
 
 export function AppPromoModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,14 +18,6 @@ export function AppPromoModal() {
   const dismiss = () => {
     window.localStorage.setItem(DISMISS_KEY, '1');
     setIsOpen(false);
-  };
-
-  const goToInstall = () => {
-    dismiss();
-    window.setTimeout(() => {
-      const banner = document.getElementById('pwa-install-banner');
-      banner?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 80);
   };
 
   useEffect(() => {
@@ -73,10 +66,10 @@ export function AppPromoModal() {
         </div>
 
         <div className="relative -mt-5 space-y-3 px-4 pb-5 pt-1 text-center sm:px-8 sm:pb-7">
-          <p className="text-[10px] font-extrabold tracking-[0.28em] text-[#e4c477]">DJ CASPIAN • OFFICIAL APP</p>
+          <p className="text-[10px] font-extrabold tracking-[0.28em] text-[#e4c477]">DJ CASPIAN • OFFICIAL ANDROID APP</p>
           <h2 id="app-promo-title" className="text-lg font-black text-white sm:text-2xl">موسیقی کاسپین، همیشه همراه تو 🎧</h2>
           <p className="mx-auto max-w-xl text-xs leading-6 text-slate-300 sm:text-sm">
-            تجربه DJ Caspian را به صفحه اصلی گوشی‌ات اضافه کن و هر زمان به سایت سر زدی، برنامه را هم نصب کن.
+            نسخه اندروید DJ Caspian را مستقیم دانلود و روی گوشی نصب کن.
           </p>
           <div className="flex flex-col-reverse items-center justify-center gap-2 pt-1 sm:flex-row">
             <button
@@ -86,15 +79,16 @@ export function AppPromoModal() {
             >
               ادامه بازدید از سایت
             </button>
-            <button
-              type="button"
-              onClick={goToInstall}
+            <a
+              href={APK_URL}
+              onClick={dismiss}
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#f0d58e] to-[#b9954b] px-6 py-3 text-xs font-black text-[#111827] shadow-lg shadow-black/30 transition hover:brightness-110 sm:w-auto"
             >
               <Download size={16} />
-              مشاهده راهنمای نصب برنامه
-            </button>
+              دانلود مستقیم برنامه اندروید
+            </a>
           </div>
+          <p className="text-[10px] text-slate-500">فایل نصب APK • نسخه آزمایشی اندروید</p>
         </div>
       </section>
     </div>
