@@ -429,7 +429,7 @@ export default function App() {
   const lastHistoryBucket = useRef('');
   useEffect(() => {
     if (!currentUser?.id || !currentTrack?.id || !isPlaying || currentTime < 30) return;
-    const bucket = currentTrack.id + ':' + Math.floor(currentTime / 30);
+    const bucket = currentUser.id + ':' + currentTrack.id + ':' + Math.floor(currentTime / 30);
     if (lastHistoryBucket.current === bucket) return;
     lastHistoryBucket.current = bucket;
     void supabase.from('listening_history').insert({
