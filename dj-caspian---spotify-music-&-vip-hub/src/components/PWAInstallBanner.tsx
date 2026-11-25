@@ -13,7 +13,7 @@ export function PWAInstallBanner() {
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
-  const [showIOSHelp, setShowIOSHelp] = useState(false);
+  const [showInstallHelp, setShowInstallHelp] = useState(false);
 
   useEffect(() => {
     const ua = window.navigator.userAgent;
@@ -36,12 +36,8 @@ export function PWAInstallBanner() {
   }, []);
 
   const handleInstall = async () => {
-    if (isIOS) {
-      setShowIOSHelp(true);
-      return;
-    }
-    if (!installPrompt) {
-      // Browser install UI may be available from its own menu even when no prompt event fires.
+    if (isIOS || !installPrompt) {
+      setShowInstallHelp(true);
       return;
     }
     await installPrompt.prompt();
@@ -59,12 +55,7 @@ export function PWAInstallBanner() {
   return (
     <>
       <section className="relative mx-4 mt-4 overflow-hidden rounded-2xl border border-[#b9954b]/35 bg-gradient-to-l from-[#17263a] via-[#0d1828] to-[#090e17] p-4 shadow-[0_16px_50px_rgba(0,0,0,0.28)] sm:mx-6 sm:mt-6 sm:p-5" dir="rtl" aria-label="دانلود اپلیکیشن DJ Caspian">
-        <button
-          type="button"
-          onClick={dismiss}
-          aria-label="بستن معرفی اپلیکیشن"
-          className="absolute left-3 top-3 rounded-full p-2 text-slate-400 transition hover:bg-white/10 hover:text-white"
-        >
+        <button type="button" onClick={dismiss} aria-label="بستن معرفی اپلیکیشن" className="absolute left-3 top-3 rounded-full p-2 text-slate-400 transition hover:bg-white/10 hover:text-white">
           <X size={17} />
         </button>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
@@ -83,38 +74,35 @@ export function PWAInstallBanner() {
               </p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={handleInstall}
-            disabled={!isIOS && !installPrompt}
-            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#e5c77e] to-[#b9954b] px-5 py-3 text-xs font-black text-[#101827] shadow-lg shadow-black/20 transition hover:brightness-110 disabled:cursor-default disabled:opacity-80"
-          >
+          <button type="button" onClick={handleInstall} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#e5c77e] to-[#b9954b] px-5 py-3 text-xs font-black text-[#101827] shadow-lg shadow-black/20 transition hover:brightness-110">
             <Download size={16} />
             {isIOS ? 'راهنمای نصب آیفون' : installPrompt ? 'دانلود و نصب برنامه' : 'راهنمای نصب برنامه'}
           </button>
         </div>
         {!isIOS && !installPrompt && (
           <p className="mt-2 pr-[60px] text-[10px] leading-5 text-slate-400">
-            اگر دکمه نصب خودکار نمایش داده نشد، از منوی مرورگر گزینه Install app یا Add to Home Screen را انتخاب کن.
+            اگر نصب خودکار نمایش داده نشد، از منوی مرورگر گزینه Install app یا Add to Home Screen را انتخاب کن.
           </p>
         )}
       </section>
 
-      {showIOSHelp && (
-        <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/75 p-3 backdrop-blur-sm sm:items-center" role="dialog" aria-modal="true" aria-labelledby="ios-install-title" onClick={() => setShowIOSHelp(false)}>
+      {showInstallHelp && (
+        <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/75 p-3 backdrop-blur-sm sm:items-center" role="dialog" aria-modal="true" aria-labelledby="install-help-title" onClick={() => setShowInstallHelp(false)}>
           <div className="w-full max-w-sm rounded-2xl border border-[#d8b66a]/30 bg-[#0c1728] p-5 text-right shadow-2xl" dir="rtl" onClick={(event) => event.stopPropagation()}>
             <div className="mb-4 flex items-center justify-between">
-              <h3 id="ios-install-title" className="text-lg font-black text-white">نصب روی آیفون</h3>
-              <button type="button" onClick={() => setShowIOSHelp(false)} className="rounded-full p-2 text-slate-400 hover:bg-white/10" aria-label="بستن">
-                <X size={18} />
-              </button>
+              <h3 id="install-help-title" className="text-lg font-black text-white">{isIOS ? 'نصب روی آیفون' : 'راهنمای نصب برنامه'}</h3>
+              <button type="button" onClick={() => setShowInstallHelp(false)} className="rounded-full p-2 text-slate-400 hover:bg-white/10" aria-label="بستن"><X size={18} /></button>
             </div>
-            <ol className="space-y-4 text-sm leading-7 text-slate-200">
-              <li className="flex gap-3"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/5 text-[#e1c27a]"><Share size={17} /></span><span>در مرورگر Safari، دکمه Share را بزن.</span></li>
-              <li className="flex gap-3"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/5 text-[#e1c27a]"><PlusSquare size={17} /></span><span>گزینه Add to Home Screen یا «افزودن به صفحه اصلی» را انتخاب کن.</span></li>
-              <li className="flex gap-3"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/5 text-[#e1c27a]"><Download size={17} /></span><span>روی Add بزن؛ آیکون DJ Caspian به صفحه اصلی اضافه می‌شود.</span></li>
-            </ol>
-            <p className="mt-4 rounded-xl bg-white/5 p-3 text-[11px] leading-6 text-slate-400">برای نصب PWA در آیفون از Safari استفاده کن.</p>
+            {isIOS ? (
+              <ol className="space-y-4 text-sm leading-7 text-slate-200">
+                <li className="flex gap-3"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/5 text-[#e1c27a]"><Share size={17} /></span><span>در مرورگر Safari، دکمه Share را بزن.</span></li>
+                <li className="flex gap-3"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/5 text-[#e1c27a]"><PlusSquare size={17} /></span><span>گزینه Add to Home Screen یا «افزودن به صفحه اصلی» را انتخاب کن.</span></li>
+                <li className="flex gap-3"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/5 text-[#e1c27a]"><Download size={17} /></span><span>روی Add بزن؛ آیکون DJ Caspian به صفحه اصلی اضافه می‌شود.</span></li>
+              </ol>
+            ) : (
+              <p className="text-sm leading-7 text-slate-200">منوی مرورگر را باز کن و گزینه Install app یا Add to Home Screen را انتخاب کن. در Chrome اندروید ممکن است گزینه Install app نمایش داده شود.</p>
+            )}
+            <p className="mt-4 rounded-xl bg-white/5 p-3 text-[11px] leading-6 text-slate-400">{isIOS ? 'برای نصب PWA در آیفون از Safari استفاده کن.' : 'نام گزینه نصب ممکن است بسته به مرورگر و دستگاه متفاوت باشد.'}</p>
           </div>
         </div>
       )}
