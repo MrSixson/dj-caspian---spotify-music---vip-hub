@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { Download, X } from 'lucide-react';
 
 const DISMISS_KEY = 'dj-caspian-app-promo-dismissed-v1';
@@ -35,7 +36,7 @@ export function AppPromoModal() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (Capacitor.isNativePlatform() || !isOpen) return null;
 
   return (
     <div
