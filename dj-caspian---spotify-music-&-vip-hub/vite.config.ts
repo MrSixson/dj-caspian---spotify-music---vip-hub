@@ -7,6 +7,9 @@ export default defineConfig(() => {
   return {
     base: process.env.CAPACITOR_BUILD === 'true' ? './' : '/dj-caspian---spotify-music---vip-hub/',
     plugins: [react(), tailwindcss()],
+    define: {
+      __DJ_CASPIAN_BUILD_ID__: JSON.stringify(process.env.GITHUB_SHA || process.env.GITHUB_RUN_ID || 'local-development'),
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
