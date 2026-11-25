@@ -60,12 +60,12 @@ Deno.serve(async (req: Request) => {
 
   const { data: signed, error: signError } = await admin.storage
     .from("tracks")
-    .createSignedUrl(objectPath, 86400);
+    .createSignedUrl(objectPath, 900);
 
   if (signError || !signed?.signedUrl) {
     console.error("audio-ticket signing failed:", signError?.message);
     return json({ error: "Could not authorize audio stream" }, 502);
   }
 
-  return json({ signedUrl: signed.signedUrl, expiresIn: 86400 });
+  return json({ signedUrl: signed.signedUrl, expiresIn: 900 });
 });
