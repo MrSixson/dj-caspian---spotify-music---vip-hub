@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, 
-  Volume2, VolumeX, Heart, Download, Maximize2, Crown, Sparkles, Disc, ListMusic, X, Captions
+  Volume2, VolumeX, Heart, Download, Maximize2, Crown, Sparkles, Disc, ListMusic, X, Captions, Moon
 } from 'lucide-react';
 import { Track } from '../types';
 import { LyricsModal } from './LyricsModal';
@@ -61,6 +61,15 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
 }) => {
   const [isQueueOpen, setIsQueueOpen] = React.useState(false);
   const [isLyricsOpen, setIsLyricsOpen] = React.useState(false);
+  const [isSleepMenuOpen, setIsSleepMenuOpen] = React.useState(false);
+  const [sleepSeconds, setSleepSeconds] = React.useState<number | null>(null);
+
+  React.useEffect(() => {
+    if (sleepSeconds === null) return;
+    if (sleepSeconds <= 0) { setSleepSeconds(null); if (isPlaying) onTogglePlay(); return; }
+    const timer = window.setInterval(() => setSleepSeconds(value => value === null ? null : Math.max(0, value - 1)), 1000);
+    return () => window.clearInterval(timer);
+  }, [sleepSeconds, isPlaying, onTogglePlay]);
 
   if (!currentTrack) {
     return (
@@ -82,6 +91,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-40 bg-[#121212]/95 backdrop-blur-lg border-t border-neutral-800 px-3 sm:px-6 py-2.5 sm:py-3 select-none" dir="rtl">
       {isLyricsOpen && currentTrack && <LyricsModal track={currentTrack} currentTime={currentTime} onClose={() => setIsLyricsOpen(false)} />}
+      {isSleepMenuOpen && <div className="absolute bottom-full right-3 mb-3 w-56 rounded-2xl border border-[#d6b45c]/25 bg-[#07111e] p-3 shadow-2xl"><b className="block text-xs text-white mb-2">توقف خودکار پخش</b><div className="grid grid-cols-2 gap-2">{[15,30,45,60].map(minutes=><button key={minutes} onClick={()=>{setSleepSeconds(minutes*60);setIsSleepMenuOpen(false);}} className="rounded-lg bg-white/5 px-2 py-2 text-xs text-slate-200 hover:bg-[#d6b45c]/15">{minutes} دقیقه</button>)}</div>{sleepSeconds!==null&&<button onClick={()=>{setSleepSeconds(null);setIsSleepMenuOpen(false);}} className="mt-2 w-full rounded-lg bg-red-500/10 py-2 text-xs text-red-300">لغو تایمر</button>}</div>}
       {isQueueOpen && (
         <div className="absolute bottom-full left-3 sm:left-6 mb-3 w-[min(22rem,calc(100vw-1.5rem))] max-h-80 overflow-hidden rounded-2xl border border-[#d6b45c]/25 bg-[#07111e]/[.98] shadow-2xl shadow-black/60 backdrop-blur-2xl" dir="rtl">
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
@@ -241,6 +251,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
 
         {/* LEFT (Download VIP, Visualizer, Volume in RTL) */}
         <div className="flex items-center justify-end gap-2 sm:gap-3 w-1/4 sm:w-1/3">
+          <button type="button" onClick={() => setIsSleepMenuOpen(value=>!value)} className={"p-1.5 rounded-lg hover:text-[#f0d88a] " + (sleepSeconds!==null ? "text-[#d6b45c]" : "text-neutral-400")} title="تایمر خواب"><Moon className="w-4 h-4"/>{sleepSeconds!==null&&<span className="text-[9px] mr-1">{Math.floor(sleepSeconds/60)}:{String(sleepSeconds%60).padStart(2,"0")}</span>}</button>
           <button type="button" onClick={() => setIsLyricsOpen(true)} disabled={!currentTrack.lyrics?.trim()} className="p-1.5 rounded-lg text-neutral-400 hover:text-[#f0d88a] disabled:opacity-30 disabled:cursor-not-allowed" title="نمایش متن آهنگ" aria-label="نمایش متن آهنگ"><Captions className="w-4 h-4" /></button>
           <button
             type="button"
