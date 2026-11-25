@@ -12,8 +12,8 @@ interface SupportVipViewProps {
 const DONATE_URL = 'https://donito.me/dj_caspian';
 
 const DONITO_TOOLS = [
+  { title: 'هدف حمایت مالی', description: 'میزان پیشرفت هدف مالی و فاصله تا رسیدن به آن را زنده دنبال کن.', url: 'https://donito.me/overlays/R76X5BBJ9K6JEFPRBVPNN6Y76538P9WAKDWRK55HRP68BYZ7JY6EF6RKX9J', tag: 'DONATION GOAL', featured: true },
   { title: 'بیشترین حمایت‌ها در ۲۴ ساعت گذشته', description: 'نمایش حامیان برتر روز و میزان مشارکت جامعه.', url: 'https://donito.me/overlays/6V8EJKK9XPGAPS6KAP655NZWG7SEWRVGEV6EW9E4YD9KYE5JABVE48NJBZP', tag: 'TOP SUPPORTERS' },
-  { title: 'هدف حمایت مالی', description: 'نمایش پیشرفت هدف مالی و نزدیک‌شدن به آن.', url: 'https://donito.me/overlays/R76X5BBJ9K6JEFPRBVPNN6Y76538P9WAKDWRK55HRP68BYZ7JY6EF6RKX9J', tag: 'DONATION GOAL' },
   { title: 'آخرین حمایت‌ها', description: 'نمایش حمایت‌های تازه ثبت‌شده به‌صورت فهرست عمودی.', url: 'https://donito.me/overlays/APYZKBBVAREW74RXYPRGGZ8WZ7FJZXR78BAJ5Z6CBGY55JKVG6BKFW5NJXX', tag: 'LATEST DONATIONS' },
 ];
 
@@ -32,7 +32,7 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({ onShowToast, isU
   };
 
   return (
-    <main className="p-4 sm:p-8 max-w-5xl mx-auto space-y-8 animate-in fade-in duration-300" dir="rtl">
+    <div className="w-full max-w-6xl mx-auto px-4 py-6 sm:px-8 sm:py-9 space-y-9 animate-in fade-in duration-300" dir="rtl">
       <section className="relative overflow-hidden rounded-3xl border border-[#d6b45c]/25 bg-gradient-to-br from-[#101b2a] via-[#10151e] to-[#090d13] p-6 sm:p-10 shadow-2xl">
         <div className="absolute -left-16 -top-16 h-48 w-48 rounded-full bg-[#d6b45c]/10 blur-3xl" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
@@ -81,25 +81,39 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({ onShowToast, isU
       </section>
 
       <section className="space-y-5" aria-labelledby="donito-tools-title">
-        <div>
-          <div className="inline-flex items-center gap-2 text-xs font-bold tracking-wide text-[#d6b45c]"><Sparkles className="h-4 w-4" /> DONITO • LIVE WIDGETS</div>
-          <h2 id="donito-tools-title" className="mt-2 text-2xl font-black text-white">ابزارهای حمایت زنده</h2>
-          <p className="mt-1 text-sm text-neutral-400">پیش‌نمایش ابزارها، همراه با لینک مستقیم و امکان کپی هر آدرس.</p>
+        <div className="flex flex-col gap-2 border-b border-white/10 pb-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <div className="inline-flex items-center gap-2 text-[11px] font-black tracking-widest text-[#e4c574]"><Sparkles className="h-4 w-4" /> DONITO / LIVE</div>
+            <h2 id="donito-tools-title" className="mt-2 text-2xl sm:text-3xl font-black text-white">گزارش زنده حمایت‌ها</h2>
+            <p className="mt-2 text-sm leading-6 text-neutral-400">هدف مالی، حامیان برتر و تازه‌ترین حمایت‌ها، هرکدام در جای مشخص خودشان.</p>
+          </div>
+          <span className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/5 px-3 py-2 text-[11px] font-bold text-emerald-300"><span className="h-2 w-2 rounded-full bg-emerald-400" /> ابزارهای متصل به Donito</span>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {DONITO_TOOLS.map(tool => <article key={tool.url} className="overflow-hidden rounded-2xl border border-[#d6b45c]/20 bg-[#0b1421]/85">
-            <div className="flex items-start justify-between gap-3 p-4">
-              <div><span className="text-[10px] font-black tracking-widest text-[#d6b45c]">{tool.tag}</span><h3 className="mt-1 font-bold text-white">{tool.title}</h3><p className="mt-1 text-xs leading-6 text-neutral-400">{tool.description}</p></div>
-              <Sparkles className="h-5 w-5 shrink-0 text-[#d6b45c]" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {DONITO_TOOLS.map(tool => <article key={tool.url} className={"group relative min-w-0 overflow-hidden rounded-2xl border shadow-[0_18px_55px_rgba(0,0,0,.24)] " + (tool.featured ? "lg:col-span-2 border-[#d6b45c]/35 bg-gradient-to-br from-[#14243a] via-[#0c1725] to-[#09111c]" : "border-white/10 bg-[#0b1421]/90")}>
+            <div className="h-1 w-full bg-gradient-to-l from-[#f0d88a] via-[#b48b3d] to-transparent opacity-80" />
+            <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-md border border-[#d6b45c]/25 bg-[#d6b45c]/10 px-2 py-1 text-[9px] font-black tracking-widest text-[#e8ca7d]">{tool.tag}</span>
+                  {tool.featured && <span className="rounded-md bg-[#d6b45c] px-2 py-1 text-[9px] font-black text-[#111]">بخش اصلی</span>}
+                </div>
+                <h3 className="mt-2 text-base sm:text-lg font-black text-white">{tool.title}</h3>
+                <p className="mt-1 text-xs leading-6 text-neutral-400">{tool.description}</p>
+              </div>
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#d6b45c]/20 bg-[#d6b45c]/10 text-[#e8ca7d]"><Sparkles className="h-5 w-5" /></span>
             </div>
-            <div className="mx-4 mb-3 overflow-hidden rounded-xl border border-white/10 bg-[#05080e]">
-              <iframe title={tool.title} src={tool.url} loading="lazy" referrerPolicy="strict-origin-when-cross-origin" className="h-44 w-full border-0" />
+            <div className={"mx-3 mb-3 overflow-hidden rounded-xl border border-white/10 bg-[#05080e] sm:mx-5 " + (tool.featured ? "h-[250px] sm:h-[290px]" : "h-[260px]")}>
+              <iframe title={tool.title} src={tool.url} loading="lazy" referrerPolicy="strict-origin-when-cross-origin" className="h-full w-full border-0" />
             </div>
-            <div className="flex flex-wrap gap-2 px-4 pb-4">
-              <a href={tool.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-lg bg-[#173657] px-3 py-2 text-xs font-bold text-white hover:bg-[#214b75]">باز کردن ابزار <ExternalLink className="h-3.5 w-3.5" /></a>
-              <button type="button" onClick={() => copyLink(tool.url, tool.tag, 'لینک ابزار')} className="inline-flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-xs font-bold text-neutral-200 hover:bg-white/10">
-                {copiedKey === tool.tag ? <Check className="h-3.5 w-3.5 text-[#d6b45c]" /> : <Copy className="h-3.5 w-3.5" />}{copiedKey === tool.tag ? 'کپی شد' : 'کپی لینک'}
-              </button>
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.07] px-4 py-3 sm:px-5">
+              <span className="text-[10px] text-neutral-500">نمایش زنده از سرویس Donito</span>
+              <div className="flex flex-wrap gap-2">
+                <a href={tool.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-lg bg-[#d6b45c] px-3 py-2 text-xs font-black text-[#101318] transition hover:brightness-110">نمایش کامل <ExternalLink className="h-3.5 w-3.5" /></a>
+                <button type="button" onClick={() => copyLink(tool.url, tool.tag, 'لینک ابزار')} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-neutral-200 transition hover:bg-white/10">
+                  {copiedKey === tool.tag ? <Check className="h-3.5 w-3.5 text-[#d6b45c]" /> : <Copy className="h-3.5 w-3.5" />}{copiedKey === tool.tag ? 'کپی شد' : 'کپی لینک'}
+                </button>
+              </div>
             </div>
           </article>)}
         </div>
@@ -120,6 +134,6 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({ onShowToast, isU
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 };
