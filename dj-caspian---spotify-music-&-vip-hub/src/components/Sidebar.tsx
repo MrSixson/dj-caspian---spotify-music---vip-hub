@@ -83,7 +83,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Main Navigation Links */}
       <nav className="space-y-1 mb-5">
-        {navItems.map((item) => {
+        {navItems.filter((item) => item.id !== 'community' || currentUser?.role === 'admin').map((item) => {
           const Icon = item.icon;
           const isActive = currentView === item.id;
           return (
