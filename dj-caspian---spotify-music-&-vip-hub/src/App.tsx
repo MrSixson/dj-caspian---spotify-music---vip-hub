@@ -772,7 +772,7 @@ export default function App() {
         />
 
         {/* Scrollable View Content */}
-        <main className="flex-1 overflow-y-auto pb-28">
+        <main className="flex-1 min-h-0 overflow-y-auto overscroll-contain pb-28">
           {currentView === 'home' && (
             <HomeView
               tracks={tracks}
