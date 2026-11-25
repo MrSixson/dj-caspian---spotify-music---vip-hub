@@ -1,0 +1,12 @@
+{
+  "appId": "com.caspian.dj",
+  "appName": "DJ Caspian",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}
