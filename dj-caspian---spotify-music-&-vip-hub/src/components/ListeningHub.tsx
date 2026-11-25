@@ -69,6 +69,9 @@ export const ListeningHub: React.FC<Props> = ({ tracks, recentTrackIds, likedTra
       if (active) setMessages(data || []);
     };
     void loadMessages();
+    if (room.host_user_id !== user?.id && room.track_id) {
+      onSyncPlayback(room.track_id, Number(room.position_seconds || 0), Boolean(room.is_playing));
+    }
     const channel = supabase.channel('caspian-room-' + room.id)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'listening_room_messages', filter: 'room_id=eq.' + room.id }, payload => {
         const row = payload.new as Message;
