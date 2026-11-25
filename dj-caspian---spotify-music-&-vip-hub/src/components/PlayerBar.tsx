@@ -1,9 +1,10 @@
 import React from 'react';
 import { 
   Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, 
-  Volume2, VolumeX, Heart, Download, Maximize2, Crown, Sparkles, Disc, ListMusic, X
+  Volume2, VolumeX, Heart, Download, Maximize2, Crown, Sparkles, Disc, ListMusic, X, Captions
 } from 'lucide-react';
 import { Track } from '../types';
+import { LyricsModal } from './LyricsModal';
 
 interface PlayerBarProps {
   currentTrack: Track | null;
@@ -59,6 +60,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
   onOpenVisualizer,
 }) => {
   const [isQueueOpen, setIsQueueOpen] = React.useState(false);
+  const [isLyricsOpen, setIsLyricsOpen] = React.useState(false);
 
   if (!currentTrack) {
     return (
@@ -79,6 +81,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
 
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-40 bg-[#121212]/95 backdrop-blur-lg border-t border-neutral-800 px-3 sm:px-6 py-2.5 sm:py-3 select-none" dir="rtl">
+      {isLyricsOpen && currentTrack && <LyricsModal track={currentTrack} currentTime={currentTime} onClose={() => setIsLyricsOpen(false)} />}
       {isQueueOpen && (
         <div className="absolute bottom-full left-3 sm:left-6 mb-3 w-[min(22rem,calc(100vw-1.5rem))] max-h-80 overflow-hidden rounded-2xl border border-[#d6b45c]/25 bg-[#07111e]/[.98] shadow-2xl shadow-black/60 backdrop-blur-2xl" dir="rtl">
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
@@ -238,6 +241,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
 
         {/* LEFT (Download VIP, Visualizer, Volume in RTL) */}
         <div className="flex items-center justify-end gap-2 sm:gap-3 w-1/4 sm:w-1/3">
+          <button type="button" onClick={() => setIsLyricsOpen(true)} disabled={!currentTrack.lyrics?.trim()} className="p-1.5 rounded-lg text-neutral-400 hover:text-[#f0d88a] disabled:opacity-30 disabled:cursor-not-allowed" title="نمایش متن آهنگ" aria-label="نمایش متن آهنگ"><Captions className="w-4 h-4" /></button>
           <button
             type="button"
             onClick={() => setIsQueueOpen((open) => !open)}
