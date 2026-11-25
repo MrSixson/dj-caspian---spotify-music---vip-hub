@@ -12,7 +12,7 @@ export const OfflineLibrary: React.FC<{ user: UserAccount; tracks: Track[]; onPl
   useEffect(() => { void refresh(); }, []);
   const savedIds = useMemo(() => new Set(saved.map(item => item.id)), [saved]);
   const save = async (track: Track) => {
-    if (!user.isVip) { setMessage('ذخیره فایل اصلی برای پخش آفلاین مخصوص اعضای VIP است.'); return; }
+    if (track.isVipOnlyDownload && !user.isVip) { setMessage('ذخیره آفلاین این قطعه مخصوص اعضای VIP است.'); return; }
     setBusyId(track.id); setMessage('');
     try {
       const { data } = await supabase.auth.getSession();
