@@ -1,3 +1,5 @@
+import { supabase } from "../lib/supabase";
+
 /**
  * DJ Caspian Audio Engine
  * Real audio playback only.
@@ -17,6 +19,7 @@ class AudioEngine {
 
   private timeUpdateCallback?: (current: number) => void;
   private errorCallback?: (error: Error) => void;
+  private endedCallback?: () => void;
 
   private initContext(): void {
     if (this.ctx) return;
@@ -94,6 +97,7 @@ class AudioEngine {
 
     this.audioElement.addEventListener("ended", () => {
       console.log("[DJ AUDIO] Track ended");
+      this.endedCallback?.();
     });
 
     this.audioElement.addEventListener("error", () => {
@@ -123,6 +127,11 @@ class AudioEngine {
 
   public getVolume(): number {
     return this.volume;
+  }
+
+  public getDuration(): number {
+    const duration = this.audioElement?.duration ?? 0;
+    return Number.isFinite(duration) ? duration : 0;
   }
 
   public getAnalyser(): AnalyserNode | null {
@@ -162,6 +171,7 @@ class AudioEngine {
 
     this.currentTrackId = null;
     this.timeUpdateCallback = undefined;
+    this.endedCallback = undefined;
   }
 
   public pause(): void {
@@ -175,12 +185,21 @@ class AudioEngine {
     audio.currentTime = Math.max(0, Math.min(seconds, upperBound));
   }
 
+  public async restart(): Promise<void> {
+    const audio = this.audioElement;
+    if (!audio || !audio.currentSrc) return;
+    await this.resumeContext();
+    audio.currentTime = 0;
+    await audio.play();
+  }
+
   public async playTrack(
     trackId: string,
     audioUrl?: string,
     _bpm: number = 126,
     _synthPreset: string = "festival_drop",
-    onTimeUpdate?: (current: number) => void
+    onTimeUpdate?: (current: number) => void,
+    onEnded?: () => void
   ): Promise<void> {
     try {
       if (
@@ -190,6 +209,23 @@ class AudioEngine {
         throw new Error(
           "لینک آهنگ اصلی در دسترس نیست. پخش آهنگ متوقف شد."
         );
+      }
+
+      let resolvedAudioUrl = audioUrl;
+      if (audioUrl.includes("/functions/v1/audio-gateway")) {
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError || !sessionData.session?.access_token) {
+          throw new Error("برای پخش موسیقی ابتدا وارد حساب کاربری شوید.");
+        }
+
+        const { data: ticket, error: ticketError } = await supabase.functions.invoke("audio-ticket", {
+          body: { track_id: trackId },
+          headers: { Authorization: `Bearer ${sessionData.session.access_token}` },
+        });
+        if (ticketError || typeof ticket?.signedUrl !== "string") {
+          throw new Error(ticketError?.message || "دریافت مجوز پخش آهنگ ناموفق بود.");
+        }
+        resolvedAudioUrl = ticket.signedUrl;
       }
 
       await this.resumeContext();
@@ -212,6 +248,7 @@ class AudioEngine {
         this.audioElement.currentSrc
       ) {
         this.timeUpdateCallback = onTimeUpdate;
+        this.endedCallback = onEnded;
         await this.audioElement.play();
         return;
       }
@@ -220,11 +257,12 @@ class AudioEngine {
 
       this.currentTrackId = trackId;
       this.timeUpdateCallback = onTimeUpdate;
+      this.endedCallback = onEnded;
 
       const audio = this.audioElement;
 
       audio.pause();
-      audio.src = audioUrl;
+      audio.src = resolvedAudioUrl;
       audio.volume = this.volume;
       audio.muted = false;
 
@@ -254,7 +292,7 @@ class AudioEngine {
 
       console.log("[DJ AUDIO] Loading real audio", {
         trackId,
-        urlAvailable: Boolean(audioUrl)
+        urlAvailable: Boolean(resolvedAudioUrl)
       });
 
       await audio.play();

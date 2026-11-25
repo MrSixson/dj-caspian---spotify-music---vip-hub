@@ -88,7 +88,7 @@ export const TopNav: React.FC<TopNavProps> = ({
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black text-xs font-bold transition-all shadow-md shadow-amber-500/20 hover:scale-105 active:scale-95 cursor-pointer"
           >
             <Crown className="w-3.5 h-3.5 fill-black shrink-0" />
-            <span className="hidden sm:inline">خرید VIP (۱۰ تتر)</span>
+            <span className="hidden sm:inline">حمایت و دریافت VIP</span>
             <span className="sm:hidden text-[10px]">VIP</span>
           </button>
         )}

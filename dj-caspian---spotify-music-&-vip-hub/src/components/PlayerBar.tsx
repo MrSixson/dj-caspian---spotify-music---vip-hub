@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, 
-  Volume2, VolumeX, Heart, Download, Maximize2, Crown, Sparkles, Disc
+  Volume2, VolumeX, Heart, Download, Maximize2, Crown, Sparkles, Disc, ListMusic, X
 } from 'lucide-react';
 import { Track } from '../types';
 
@@ -14,6 +14,9 @@ interface PlayerBarProps {
   isMuted: boolean;
   isShuffle: boolean;
   isRepeat: boolean;
+  queue: Track[];
+  onRemoveQueueTrack: (trackId: string) => void;
+  onPlayQueuedTrack: (track: Track) => void;
   isLiked: boolean;
   isUserVip: boolean;
   onTogglePlay: () => void;
@@ -38,6 +41,9 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
   isMuted,
   isShuffle,
   isRepeat,
+  queue,
+  onRemoveQueueTrack,
+  onPlayQueuedTrack,
   isLiked,
   isUserVip,
   onTogglePlay,
@@ -52,6 +58,8 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
   onDownloadTrack,
   onOpenVisualizer,
 }) => {
+  const [isQueueOpen, setIsQueueOpen] = React.useState(false);
+
   if (!currentTrack) {
     return (
       <footer className="fixed bottom-0 left-0 right-0 z-40 bg-[#181818] border-t border-neutral-800/80 px-4 py-3 text-center text-xs text-neutral-400 select-none">
@@ -71,6 +79,38 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
 
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-40 bg-[#121212]/95 backdrop-blur-lg border-t border-neutral-800 px-3 sm:px-6 py-2.5 sm:py-3 select-none" dir="rtl">
+      {isQueueOpen && (
+        <div className="absolute bottom-full left-3 sm:left-6 mb-3 w-[min(22rem,calc(100vw-1.5rem))] max-h-80 overflow-hidden rounded-2xl border border-[#d6b45c]/25 bg-[#07111e]/[.98] shadow-2xl shadow-black/60 backdrop-blur-2xl" dir="rtl">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+            <div>
+              <div className="text-sm font-black text-white">صف پخش</div>
+              <div className="text-[10px] text-neutral-500 mt-0.5">{queue.length} آهنگ در انتظار</div>
+            </div>
+            <button type="button" onClick={() => setIsQueueOpen(false)} className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-white/10" aria-label="بستن صف پخش">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="max-h-64 overflow-y-auto p-2">
+            {queue.length === 0 ? (
+              <div className="py-8 text-center text-xs text-neutral-500">صف پخش خالی است. از فهرست آهنگ‌ها قطعه اضافه کن.</div>
+            ) : queue.map((track, index) => (
+              <div key={track.id} className="flex items-center gap-3 rounded-xl px-2 py-2 hover:bg-white/[.05]">
+                <span className="w-5 text-center text-[10px] text-neutral-600">{index + 1}</span>
+                <button type="button" onClick={() => { onPlayQueuedTrack(track); setIsQueueOpen(false); }} className="flex items-center gap-3 min-w-0 flex-1 text-right">
+                  <img src={track.coverUrl} alt="" className="w-10 h-10 rounded-lg object-cover shrink-0" />
+                  <span className="min-w-0">
+                    <span className="block text-xs font-bold text-white truncate">{track.title}</span>
+                    <span className="block text-[10px] text-neutral-500 truncate">{track.artist}</span>
+                  </span>
+                </button>
+                <button type="button" onClick={() => onRemoveQueueTrack(track.id)} className="p-1.5 text-neutral-500 hover:text-red-400" aria-label={`حذف ${track.title} از صف`}>
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
         
         {/* RIGHT (Track Info & Artwork in RTL) */}
@@ -198,6 +238,17 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
 
         {/* LEFT (Download VIP, Visualizer, Volume in RTL) */}
         <div className="flex items-center justify-end gap-2 sm:gap-3 w-1/4 sm:w-1/3">
+          <button
+            type="button"
+            onClick={() => setIsQueueOpen((open) => !open)}
+            className={`relative p-1.5 rounded-lg transition-colors cursor-pointer ${isQueueOpen ? 'text-[#d6b45c] bg-[#d6b45c]/10' : 'text-neutral-400 hover:text-white'}`}
+            title="نمایش صف پخش"
+            aria-label="نمایش صف پخش"
+            aria-expanded={isQueueOpen}
+          >
+            <ListMusic className="w-4 h-4" />
+            {queue.length > 0 && <span className="absolute -top-1 -left-1 min-w-4 h-4 px-1 rounded-full bg-[#d6b45c] text-black text-[9px] font-black flex items-center justify-center">{queue.length}</span>}
+          </button>
           {/* THE DOWNLOAD BUTTON (KEY USER REQUIREMENT) */}
           <button
             type="button"

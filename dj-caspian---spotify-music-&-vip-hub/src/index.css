@@ -120,3 +120,174 @@ footer img { box-shadow: 0 0 0 1px rgba(214,180,92,.22), 0 8px 25px rgba(0,0,0,.
   main { padding-bottom: 7.5rem; }
   footer { padding-bottom: max(.65rem, env(safe-area-inset-bottom)); }
 }
+
+/* ==========================================================
+   DJ CASPIAN — SEASON 2 VISUAL POLISH
+   Additive presentation layer. Existing player/auth/data flows
+   remain untouched; all selectors are scoped to the current SPA.
+   ========================================================== */
+:root {
+  --dc2-bg: #05080e;
+  --dc2-surface: rgba(10, 19, 32, .78);
+  --dc2-surface-raised: rgba(15, 28, 45, .92);
+  --dc2-blue-deep: #0a1a2d;
+  --dc2-blue: #1b4772;
+  --dc2-blue-glow: rgba(42, 104, 158, .24);
+  --dc2-gold: #d6b45c;
+  --dc2-gold-bright: #f0d88a;
+  --dc2-border: rgba(214, 180, 92, .18);
+  --dc2-text: #f5f3ed;
+  --dc2-muted: #9aa9ba;
+}
+
+body {
+  background-color: var(--dc2-bg);
+  background-image:
+    radial-gradient(ellipse at 8% 4%, rgba(22, 65, 108, .24), transparent 34rem),
+    radial-gradient(ellipse at 94% 10%, rgba(214, 180, 92, .075), transparent 28rem),
+    linear-gradient(180deg, #05080e 0%, #08111d 52%, #05080e 100%);
+}
+
+#root { min-height: 100dvh; }
+#root > div { min-height: 100dvh; }
+
+main {
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #294a6a #05080e;
+}
+
+main h1, main h2, main h3 { text-wrap: balance; }
+main p { text-wrap: pretty; }
+
+main .rounded-3xl {
+  border-color: var(--dc2-border);
+  box-shadow: 0 22px 64px rgba(0, 0, 0, .28), inset 0 1px rgba(255,255,255,.025);
+}
+
+main .rounded-xl, main .rounded-2xl {
+  border-color: rgba(150, 176, 204, .12);
+}
+
+main .group {
+  transition:
+    transform .28s cubic-bezier(.2,.75,.25,1),
+    border-color .28s ease,
+    box-shadow .28s ease,
+    background-color .28s ease;
+}
+
+main .group:hover {
+  transform: translateY(-2px);
+  border-color: rgba(214, 180, 92, .34);
+  box-shadow: 0 18px 42px rgba(0,0,0,.34), 0 0 26px var(--dc2-blue-glow);
+}
+
+main button, header button, aside button {
+  touch-action: manipulation;
+}
+
+main input:not([type="range"]), header input {
+  border-color: rgba(143, 170, 199, .18);
+  background-color: rgba(4, 10, 18, .68);
+}
+
+main input:not([type="range"]):focus, header input:focus {
+  border-color: rgba(214, 180, 92, .58);
+  box-shadow: 0 0 0 3px rgba(214, 180, 92, .09);
+  outline: none;
+}
+
+aside { scrollbar-width: thin; scrollbar-color: #203b58 transparent; }
+footer { padding-bottom: max(.65rem, env(safe-area-inset-bottom)); }
+
+@media (min-width: 1024px) {
+  main > div { max-width: 1600px; margin-inline: auto; }
+}
+
+@media (max-width: 767px) {
+  main { padding-bottom: calc(8.25rem + env(safe-area-inset-bottom)); }
+  main > div { padding-inline: 1rem; }
+  footer { min-height: 5rem; }
+  footer img { border-radius: .75rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main .group:hover { transform: none; }
+}
+
+
+/* Season 2 discovery surfaces */
+.dc-home { color: var(--dc2-text); }
+.dc-hero {
+  isolation: isolate;
+  border: 1px solid rgba(214,180,92,.22);
+  background: linear-gradient(120deg, #102d4a 0%, #081321 52%, #05080e 100%);
+  box-shadow: 0 28px 90px rgba(0,0,0,.42), inset 0 1px rgba(255,255,255,.05);
+}
+.dc-track-card, .dc-quick-card, .dc-media-tile {
+  background: linear-gradient(145deg, rgba(17,31,48,.82), rgba(7,13,22,.88));
+  border: 1px solid rgba(156,180,205,.12);
+  transition: transform .25s ease, border-color .25s ease, background .25s ease, box-shadow .25s ease;
+}
+.dc-track-card:hover, .dc-quick-card:hover, .dc-media-tile:hover {
+  border-color: rgba(214,180,92,.42);
+  background: linear-gradient(145deg, rgba(25,48,72,.94), rgba(8,16,27,.96));
+  box-shadow: 0 18px 45px rgba(0,0,0,.34), 0 0 24px rgba(30,83,130,.14);
+  transform: translateY(-3px);
+}
+.dc-quick-card { padding: .5rem .75rem; }
+.dc-media-tile { padding: .75rem; border-radius: 1.25rem; }
+.dc-horizontal { scrollbar-width: thin; scrollbar-color: #294a6a transparent; }
+.dc-horizontal::-webkit-scrollbar { height: 5px; }
+.dc-horizontal::-webkit-scrollbar-track { background: transparent; }
+.dc-horizontal::-webkit-scrollbar-thumb { background: #294a6a; border-radius: 99px; }
+.dc-support-strip {
+  border: 1px solid rgba(214,180,92,.24);
+  background: radial-gradient(ellipse at 5% 50%, rgba(30,83,130,.24), transparent 55%), linear-gradient(110deg, rgba(19,38,59,.94), rgba(7,13,22,.96));
+}
+.dc-empty { border: 1px dashed rgba(214,180,92,.25); background: rgba(9,19,31,.7); }
+@media (max-width: 640px) {
+  .dc-hero { border-radius: 1.4rem; }
+  .dc-track-card { padding: .65rem; }
+  .dc-quick-card { min-height: 68px; }
+}
+
+
+/* Unified Season 2 surfaces across discovery, library and player */
+.dc-search-discovery {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid rgba(214,180,92,.16);
+  border-radius: 1.25rem;
+  background: linear-gradient(145deg, rgba(14,29,46,.82), rgba(6,12,20,.92));
+}
+.dc-search-person {
+  padding: .65rem;
+  border-radius: 1rem;
+  transition: background .2s ease, transform .2s ease;
+}
+.dc-search-person:hover { background: rgba(255,255,255,.055); transform: translateY(-2px); }
+main .bg-\[\#181818\], main .bg-\[\#101722\], main .bg-\[\#101b2a\] {
+  background-color: rgba(12,22,36,.84);
+}
+main .border-neutral-800, main .border-neutral-800\/80 {
+  border-color: rgba(147,174,202,.14);
+}
+main .rounded-2xl, main .rounded-xl { backdrop-filter: blur(12px); }
+aside nav button[aria-current="page"], aside nav button:focus-visible {
+  background: linear-gradient(90deg, rgba(214,180,92,.13), rgba(25,67,105,.3));
+}
+footer input[type="range"] { accent-color: #d6b45c; }
+@media (max-width: 767px) {
+  .dc-search-discovery { padding: .8rem; }
+  main { overflow-x: clip; }
+}
+
+
+.dc-library-hero {
+  border: 1px solid rgba(214,180,92,.2);
+  background: radial-gradient(ellipse at 12% 50%, rgba(28,76,120,.3), transparent 52%), linear-gradient(125deg, rgba(15,31,49,.96), rgba(5,10,17,.98));
+  box-shadow: 0 24px 65px rgba(0,0,0,.28);
+}
+.dc-library-hero input:focus { outline: 2px solid rgba(214,180,92,.4); outline-offset: 1px; }

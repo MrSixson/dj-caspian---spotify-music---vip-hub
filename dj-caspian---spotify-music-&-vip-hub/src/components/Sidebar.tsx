@@ -94,7 +94,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }}
               className={`w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-bold text-sm transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-neutral-800 text-white'
+                  ? 'bg-gradient-to-l from-[#173657] to-[#101d2d] border border-[#d6b45c]/20 text-white shadow-lg shadow-black/20'
                   : 'text-neutral-400 hover:text-white hover:bg-neutral-900/60'
               }`}
             >
@@ -116,7 +116,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }}
           className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-sm transition-all cursor-pointer ${
             currentView === 'dashboard'
-              ? 'bg-neutral-800 text-white'
+              ? 'bg-gradient-to-l from-[#173657] to-[#101d2d] border border-[#d6b45c]/20 text-white shadow-lg shadow-black/20'
               : 'text-neutral-400 hover:text-white hover:bg-neutral-900/60'
           }`}
         >
@@ -151,11 +151,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <span>حمایت مالی و خرید VIP</span>
             </span>
             <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300">
-              ۱۰ تتر / 3 میلیون
+              DONITO
             </span>
           </div>
           <p className="text-[11px] text-neutral-400 group-hover:text-neutral-300 leading-tight">
-            کارت به کارت و تتر جهت فعال‌سازی دانلود ۳۲۰kbps
+            حمایت امن از هنرمند و فعال‌سازی امکانات VIP فقط از طریق Donito
           </p>
         </button>
 
@@ -201,7 +201,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onCloseMobile();
           }}
           className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
-            currentView === 'liked' ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-white'
+            currentView === 'liked' ? 'bg-gradient-to-l from-[#173657] to-[#101d2d] border border-[#d6b45c]/20 text-white shadow-lg shadow-black/20' : 'text-neutral-400 hover:text-white'
           }`}
         >
           <div className="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-600 to-purple-400 flex items-center justify-center text-white shrink-0">
