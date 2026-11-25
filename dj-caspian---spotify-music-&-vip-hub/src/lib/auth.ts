@@ -83,6 +83,7 @@ export async function signUpWithEmail(input: {
     email: input.email,
     password: input.password,
     options: {
+      emailRedirectTo: 'https://mrsixson.github.io/dj-caspian---spotify-music---vip-hub/',
       data: {
         username: input.username.trim(),
         display_name: input.displayName.trim(),
