@@ -75,6 +75,14 @@ jobs:
       - name: Create Android native project
         run: npx cap add android
 
+      - name: Set the installed application name
+        run: |
+          test "$(node -p "require('./capacitor.config.json').appName")" = "DJ Caspian"
+          STRINGS_FILE="android/app/src/main/res/values/strings.xml"
+          test -f "$STRINGS_FILE"
+          sed -i 's#<string name="app_name">[^<]*</string>#<string name="app_name">DJ Caspian</string>#' "$STRINGS_FILE"
+          grep -q '<string name="app_name">DJ Caspian</string>' "$STRINGS_FILE"
+
       - name: Sync native project
         run: npx cap sync android
 
@@ -84,16 +92,17 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
 
-      - name: Verify APK output
+      - name: Name and verify APK
         run: |
-          test -s android/app/build/outputs/apk/debug/app-debug.apk
-          ls -lh android/app/build/outputs/apk/debug/app-debug.apk
+          cp android/app/build/outputs/apk/debug/app-debug.apk android/app/build/outputs/apk/debug/DJ-Caspian.apk
+          test -s android/app/build/outputs/apk/debug/DJ-Caspian.apk
+          ls -lh android/app/build/outputs/apk/debug/DJ-Caspian.apk
 
       - name: Upload APK build artifact
         uses: actions/upload-artifact@v4
         with:
           name: DJ-Caspian-Android-APK
-          path: dj-caspian---spotify-music-&-vip-hub/android/app/build/outputs/apk/debug/app-debug.apk
+          path: dj-caspian---spotify-music-&-vip-hub/android/app/build/outputs/apk/debug/DJ-Caspian.apk
           if-no-files-found: error
           retention-days: 30
 
@@ -105,9 +114,12 @@ jobs:
           body: |
             نسخه آزمایشی قابل نصب اپلیکیشن مستقل DJ Caspian برای اندروید.
 
+            نام نمایشی برنامه پس از نصب: DJ Caspian
+            نام فایل دانلود: DJ-Caspian.apk
+
             فایل APK را دانلود و روی گوشی اندرویدی نصب کنید. در صورت نمایش هشدار، نصب از این منبع را برای مرورگر/مدیریت فایل مجاز کنید.
           prerelease: true
           make_latest: false
           overwrite_files: true
           fail_on_unmatched_files: true
-          files: dj-caspian---spotify-music-&-vip-hub/android/app/build/outputs/apk/debug/app-debug.apk
+          files: dj-caspian---spotify-music-&-vip-hub/android/app/build/outputs/apk/debug/DJ-Caspian.apk
