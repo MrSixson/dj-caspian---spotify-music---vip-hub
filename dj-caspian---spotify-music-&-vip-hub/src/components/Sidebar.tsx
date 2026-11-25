@@ -2,13 +2,13 @@ import React from 'react';
 import { 
   Home, Search, Library, Crown, Heart, Clock, ShieldCheck, 
   PlusCircle, Radio, Music2, ExternalLink, X, Disc3, User, 
-  LayoutDashboard, LogIn, LogOut, Globe, Users
+  LayoutDashboard, LogIn, LogOut, Globe, Users, Radio
 } from 'lucide-react';
 import { Playlist, UserAccount } from '../types';
 
 interface SidebarProps {
   currentView: string;
-  onNavigate: (view: 'home' | 'search' | 'library' | 'support' | 'tickets' | 'admin' | 'liked' | 'dashboard' | 'about' | 'community') => void;
+  onNavigate: (view: 'home' | 'search' | 'library' | 'support' | 'tickets' | 'admin' | 'liked' | 'dashboard' | 'about' | 'community' | 'experience') => void;
   playlists: Playlist[];
   onSelectPlaylist?: (playlist: Playlist) => void;
   likedCount: number;
@@ -39,6 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'library', label: 'کتابخانه موزیک', icon: Library },
     { id: 'about', label: 'درباره و شبکه‌های ما', icon: Globe },
     { id: 'community', label: 'جامعه کاربران', icon: Users },
+    { id: 'experience', label: 'تجربه شنیدن کاسپین', icon: Radio },
   ] as const;
 
   const content = (
