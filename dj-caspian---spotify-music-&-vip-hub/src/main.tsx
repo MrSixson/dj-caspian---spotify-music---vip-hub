@@ -3,8 +3,13 @@ import { Capacitor } from '@capacitor/core';
 import App from './App.tsx';
 import './index.css';
 import {registerPwa} from './pwa';
+import {registerNativePushNotifications} from './lib/pushNotifications';
 
 createRoot(document.getElementById('root')!).render(<App />);
 
-// PWA registration is isolated so unsupported browsers keep the regular site experience.
-if (!Capacitor.isNativePlatform()) registerPwa();
+// Keep browser PWA behavior separate from the installed Android application.
+if (Capacitor.isNativePlatform()) {
+  void registerNativePushNotifications();
+} else {
+  registerPwa();
+}
