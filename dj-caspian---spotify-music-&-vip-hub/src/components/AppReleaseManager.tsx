@@ -47,7 +47,7 @@ export const AppReleaseManager: React.FC<{ userId: string; onShowToast: (text: s
         });
         if (!response.ok) throw new Error(`GitHub release lookup failed: ${response.status}`);
         const releases = await response.json() as GitHubRelease[];
-        const latest = releases.find((item) => !item.draft && /^android-v\\d+\\.\\d+\\.\\d+$/.test(item.tag_name)
+        const latest = releases.find((item) => !item.draft && /^android-v\d+\.\d+\.\d+$/.test(item.tag_name)
           && item.assets.some((asset) => asset.name === 'DJ-Caspian.apk'));
         if (!active || !latest) return;
         const version = latest.tag_name.replace(/^android-v/, '');
