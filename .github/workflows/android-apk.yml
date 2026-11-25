@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: dj-caspian-android-apk
@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   build-apk:
-    name: Build installable Android APK
+    name: Build and publish DJ Caspian Android APK
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -78,16 +78,36 @@ jobs:
       - name: Sync native project
         run: npx cap sync android
 
-      - name: Build debug APK
+      - name: Build installable Android APK
         run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
 
-      - name: Upload installable APK
+      - name: Verify APK output
+        run: |
+          test -s android/app/build/outputs/apk/debug/app-debug.apk
+          ls -lh android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload APK build artifact
         uses: actions/upload-artifact@v4
         with:
           name: DJ-Caspian-Android-APK
           path: dj-caspian---spotify-music-&-vip-hub/android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish public APK download
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-v1.0.0-beta.1
+          name: DJ Caspian Android v1.0.0-beta.1
+          body: |
+            نسخه آزمایشی قابل نصب اپلیکیشن مستقل DJ Caspian برای اندروید.
+
+            فایل APK را دانلود و روی گوشی اندرویدی نصب کنید. در صورت نمایش هشدار، نصب از این منبع را برای مرورگر/مدیریت فایل مجاز کنید.
+          prerelease: true
+          make_latest: false
+          overwrite_files: true
+          fail_on_unmatched_files: true
+          files: dj-caspian---spotify-music-&-vip-hub/android/app/build/outputs/apk/debug/app-debug.apk
