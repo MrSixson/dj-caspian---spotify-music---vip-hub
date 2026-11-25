@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Download, X, Smartphone } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 import { supabase } from '../lib/supabase';
 
 type PublishedRelease = {
@@ -11,14 +12,17 @@ type PublishedRelease = {
   is_mandatory: boolean;
 };
 
-// Current public Android build: v1.0.0-beta.1
-const INSTALLED_VERSION_CODE = 1;
+// Injected by the Android build workflow so each APK knows its own version.
+const INSTALLED_VERSION_CODE = Number(import.meta.env.VITE_ANDROID_VERSION_CODE || 1);
 
 export const AppUpdatePrompt: React.FC = () => {
   const [release, setRelease] = useState<PublishedRelease | null>(null);
   const [dismissed, setDismissed] = useState(false);
 
+  const isAndroidApp = Capacitor.getPlatform() === 'android';
+
   useEffect(() => {
+    if (!isAndroidApp) return;
     let active = true;
     const check = async () => {
       const { data, error } = await supabase.from('app_releases')
@@ -35,9 +39,10 @@ export const AppUpdatePrompt: React.FC = () => {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'app_releases' }, () => { void check(); })
       .subscribe();
     return () => { active = false; void supabase.removeChannel(channel); };
-  }, []);
+  }, [isAndroidApp]);
 
-  if (!release || (dismissed && !release.is_mandatory)) return null;
+  // Mandatory app updates must never block the ordinary website/PWA.
+  if (!isAndroidApp || !release || (dismissed && !release.is_mandatory)) return null;
   return <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4" dir="rtl">
     <div className="w-full max-w-md rounded-3xl border border-[#d6b45c]/40 bg-[#101722] p-6 shadow-2xl space-y-4">
       <div className="flex items-center justify-between">
