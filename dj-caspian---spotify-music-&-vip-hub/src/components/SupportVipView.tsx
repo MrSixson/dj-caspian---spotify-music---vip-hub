@@ -107,7 +107,7 @@ export const SupportVipView: React.FC<SupportVipViewProps> = ({ onShowToast, isU
             </div>
           </article>)}
         </div>
-        <p className="text-[11px] leading-6 text-neutral-500">اگر Donito اجازه نمایش درون‌صفحه‌ای ندهد، ابزار را با دکمه «باز کردن ابزار» در صفحه اصلی خودش ببین.</p>
+        <p className="text-[11px] leading-6 text-neutral-500">اگر Donito اجازه نمایش درون‌صفحه‌ای ندهد، ممکن است ابزار در این بخش نمایش داده نشود.</p>
       </section>
 
       <section className="rounded-2xl border border-[#d6b45c]/20 bg-[#101722] p-5 sm:p-6">
