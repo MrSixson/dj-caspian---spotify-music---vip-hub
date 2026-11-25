@@ -32,6 +32,7 @@ import { AppPromoModal } from './components/AppPromoModal';
 import { AppUpdatePrompt } from './components/AppUpdatePrompt';
 import { NotificationPermissionPrompt } from './components/NotificationPermissionPrompt';
 import { ProfilesView } from './components/ProfilesView';
+import { ListeningHub } from './components/ListeningHub';
 
 export default function App() {
   const updateBreakEndsAt = new Date('2026-11-25T09:34:00Z').getTime();
@@ -407,6 +408,37 @@ export default function App() {
       );
     }
   };
+
+  const handleRoomSync = async (trackId: string, position: number, playing: boolean) => {
+    const track = tracks.find((item) => item.id === trackId);
+    if (!track || !currentUser) return;
+    try {
+      if (currentTrack?.id !== track.id || !audioEngine.getDebugInfo().source) {
+        await audioEngine.playTrack(track.id, track.audioUrl, track.bpm, track.synthPreset || 'festival_drop',
+          (secs) => { setCurrentTime(secs); const mediaDuration = audioEngine.getDuration(); if (mediaDuration > 0) setDuration(mediaDuration); },
+          handleTrackEnded);
+      }
+      audioEngine.seek(position);
+      if (!playing) audioEngine.pause();
+      setCurrentTrack(track); setCurrentTime(position); setDuration(track.duration); setIsPlaying(playing);
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'همگام‌سازی اتاق انجام نشد.', 'error');
+    }
+  };
+
+  const lastHistoryBucket = useRef('');
+  useEffect(() => {
+    if (!currentUser?.id || !currentTrack?.id || !isPlaying || currentTime < 30) return;
+    const bucket = currentTrack.id + ':' + Math.floor(currentTime / 30);
+    if (lastHistoryBucket.current === bucket) return;
+    lastHistoryBucket.current = bucket;
+    void supabase.from('listening_history').insert({
+      user_id: currentUser.id,
+      track_id: currentTrack.id,
+      listened_seconds: 30,
+      completed: duration > 0 && currentTime >= duration - 5,
+    }).then(({ error }) => { if (error) console.warn('Listening history was not saved:', error.message); });
+  }, [currentUser?.id, currentTrack?.id, currentTime, isPlaying, duration]);
 
   const handleNextTrack = (fromEnd = false) => {
     const next = pickNextTrack({
@@ -961,6 +993,20 @@ export default function App() {
           )}
 
           {currentView === 'community' && currentUser?.role === 'admin' && <ProfilesView />}
+
+          {currentView === 'experience' && (
+            <ListeningHub
+              tracks={tracks}
+              recentTrackIds={recentTrackIds}
+              likedTrackIds={likedTrackIds}
+              currentTrack={currentTrack}
+              currentTime={currentTime}
+              isPlaying={isPlaying}
+              user={currentUser}
+              onPlayTrack={handlePlayTrack}
+              onSyncPlayback={handleRoomSync}
+            />
+          )}
 
           {currentView === 'about' && (
             <AboutView
