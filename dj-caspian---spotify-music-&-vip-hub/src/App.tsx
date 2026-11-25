@@ -30,10 +30,9 @@ import { UpdateBreak } from './components/UpdateBreak';
 import { PWAInstallBanner } from './components/PWAInstallBanner';
 import { AppPromoModal } from './components/AppPromoModal';
 import { AppUpdatePrompt } from './components/AppUpdatePrompt';
-import { registerNativePushNotifications } from './lib/pushNotifications';
+import { NotificationPermissionPrompt } from './components/NotificationPermissionPrompt';
 
 export default function App() {
-  useEffect(() => { void registerNativePushNotifications(); }, []);
   const updateBreakEndsAt = new Date('2026-11-25T09:34:00Z').getTime();
   const [clockNow, setClockNow] = useState(() => Date.now());
   useEffect(() => { const interval = window.setInterval(() => setClockNow(Date.now()), 1000); return () => window.clearInterval(interval); }, []);
@@ -798,6 +797,7 @@ export default function App() {
       {/* Toast Notifications */}
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
       <AppPromoModal />
+      <NotificationPermissionPrompt />
 
       {/* Spotify Sidebar (Desktop + Mobile Drawer) */}
       <Sidebar
