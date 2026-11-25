@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   Shield, Music, Ticket, Plus, Trash2, CheckCircle, XCircle, 
   Upload, Play, Pause, Headphones, DollarSign, Users, Sparkles, 
-  Eye, RefreshCw, Key, Lock, ArrowRight, Check, AlertCircle, 
+  Eye, RefreshCw, Key, Lock, ArrowRight, Check, AlertCircle, Smartphone, 
   FileAudio, LogIn, ListMusic, Image as ImageIcon, Volume2
 } from 'lucide-react';
 import { Track, VipTicket, Playlist, UserAccount } from '../types';
