@@ -3,9 +3,10 @@ import {
   User, Crown, Heart, ListMusic, Download, LogOut, Plus, Play, Pause,
   Trash2, Shield, Sparkles, Settings, Save, Music, Search, Headphones,
   Disc3, Clock3, ArrowUpRight, X, Check, LockKeyhole, Mail, CalendarDays,
-  AudioWaveform, CircleUserRound
+  AudioWaveform, CircleUserRound, HardDriveDownload
 } from 'lucide-react';
 import type { UserAccount, Track, Playlist, VipTicket } from '../types';
+import { OfflineLibrary } from './OfflineLibrary';
 
 interface UserDashboardProps {
   user: UserAccount;
@@ -22,7 +23,7 @@ interface UserDashboardProps {
   onUpdateUser: (updatedUser: UserAccount) => void;
 }
 
-type DashboardTab = 'overview' | 'liked' | 'playlists' | 'settings';
+type DashboardTab = 'overview' | 'liked' | 'playlists' | 'offline' | 'settings';
 
 const formatDate = (value?: string) => {
   if (!value) return 'عضو کاسپین';
@@ -99,6 +100,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
     { id: 'overview', label: 'نمای کلی', icon: <AudioWaveform /> },
     { id: 'liked', label: 'علاقه‌مندی‌ها', icon: <Heart /> },
     { id: 'playlists', label: 'پلی‌لیست‌های من', icon: <ListMusic /> },
+    { id: 'offline', label: 'آفلاین', icon: <HardDriveDownload /> },
     { id: 'settings', label: 'حساب کاربری', icon: <Settings /> },
   ];
 
@@ -256,6 +258,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
             ) : <EmptyState icon={<ListMusic />} title="اولین پلی‌لیستت را بساز" text="برای ماشین، باشگاه، مهمانی یا هر حال‌وهوایی یک مجموعه اختصاصی درست کن." action="ساخت پلی‌لیست" onAction={() => setIsNewPlaylistOpen(true)} />}
           </div>
         )}
+
+        {activeTab === 'offline' && <div className="dc-account-content"><OfflineLibrary user={user} tracks={allTracks} onPlayTrack={onPlayTrack} /></div>}
 
         {activeTab === 'settings' && (
           <div className="dc-account-content">
