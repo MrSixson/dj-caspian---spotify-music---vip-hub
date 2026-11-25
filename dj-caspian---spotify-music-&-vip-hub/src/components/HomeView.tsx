@@ -1,8 +1,8 @@
 import React from 'react';
 import {
   Play, Pause, Heart, Download, Crown, Sparkles, ListPlus,
-  CheckCircle2, Clock3, Music2, Disc3, Headphones, ArrowUpLeft,
-  Radio, AudioLines
+  CheckCircle2, Music2, Disc3, Headphones, ArrowUpLeft,
+  Radio, AudioLines, ArrowLeft, Waves, Zap, Clock3
 } from 'lucide-react';
 import { Track, Playlist } from '../types';
 import { DJ_CASPIAN_INFO } from '../data/initialData';
@@ -42,81 +42,97 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
   const playButton = (track: Track, large = false) => {
     const active = currentTrackId === track.id && isPlaying;
-    return <button type="button" onClick={() => onPlayTrack(track)} aria-label={active ? 'توقف پخش' : 'پخش'} className={`flex items-center justify-center rounded-full bg-[#d6b45c] text-[#080b10] shadow-lg shadow-[#d6b45c]/20 hover:scale-105 transition-all ${large ? 'w-14 h-14' : 'w-10 h-10'}`}>
-      {active ? <Pause className={large ? 'w-6 h-6 fill-current' : 'w-4 h-4 fill-current'} /> : <Play className={large ? 'w-6 h-6 fill-current' : 'w-4 h-4 fill-current'} />}
+    return <button type="button" onClick={() => onPlayTrack(track)} aria-label={active ? 'توقف پخش' : 'پخش'} className={`dc3-play ${large ? 'dc3-play-large' : ''}`}>
+      {active ? <Pause className="fill-current" /> : <Play className="fill-current" />}
     </button>;
   };
 
-  const sectionTitle = (title: string, subtitle?: string) => (
-    <div className="flex items-end justify-between gap-3 mb-4">
-      <div><h2 className="text-lg sm:text-xl font-black text-white">{title}</h2>{subtitle && <p className="text-xs text-slate-400 mt-1">{subtitle}</p>}</div>
-      <span className="text-[10px] tracking-[.2em] text-[#d6b45c]/70 font-bold">CASPIAN SELECTS</span>
+  const heading = (eyebrow: string, title: string, subtitle?: string) => (
+    <div className="dc3-section-heading">
+      <div><span className="dc3-eyebrow">{eyebrow}</span><h2>{title}</h2>{subtitle && <p>{subtitle}</p>}</div>
     </div>
   );
 
   const trackCard = (track: Track, index: number) => {
     const active = currentTrackId === track.id && isPlaying;
     const liked = likedTrackIds.includes(track.id);
-    return <article key={track.id} className="dc-track-card group min-w-0 rounded-2xl p-3 sm:p-4">
-      <div className="relative aspect-square rounded-xl overflow-hidden bg-[#101b29] mb-3">
-        {track.coverUrl ? <img src={track.coverUrl} alt={track.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" /> : <div className="w-full h-full flex items-center justify-center text-[#d6b45c]"><Disc3 className="w-14 h-14" /></div>}
-        {track.isVipOnlyDownload && <span className="absolute top-2 right-2 flex items-center gap-1 rounded-full bg-black/75 border border-amber-400/30 px-2 py-1 text-[9px] font-bold text-amber-300"><Crown className="w-3 h-3" /> VIP</span>}
-        <div className="absolute bottom-2 left-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">{playButton(track)}</div>
+    return <article key={track.id} className="dc3-track">
+      <div className="dc3-track-art">
+        {track.coverUrl ? <img src={track.coverUrl} alt={track.title} loading="lazy" /> : <Disc3 />}
+        {track.isVipOnlyDownload && <span className="dc3-vip-tag"><Crown /> VIP</span>}
+        <div className="dc3-track-play">{playButton(track)}</div>
+        <span className="dc3-track-index">{String(index + 1).padStart(2, '0')}</span>
       </div>
-      <div className="min-w-0">
-        <button type="button" onClick={() => onPlayTrack(track)} className={`block w-full text-right truncate text-sm font-bold hover:text-[#f0d88a] ${active ? 'text-[#d6b45c]' : 'text-white'}`}>{track.title}</button>
-        <p className="truncate text-xs text-slate-400 mt-1">{track.artist}</p>
-        <div className="flex items-center justify-between gap-2 mt-3 text-[10px] text-slate-500">
-          <span>{track.genre || 'DJ Caspian'}</span><span>{fmt(track.duration)}</span>
-        </div>
+      <div className="dc3-track-meta">
+        <button type="button" onClick={() => onPlayTrack(track)} className={active ? 'is-active' : ''}>{track.title}</button>
+        <span>{track.artist}</span>
+        <div className="dc3-track-sub"><span>{track.genre || 'DJ CASPIAN'}</span><span>{fmt(track.duration)}</span></div>
       </div>
-      <div className="flex items-center gap-1 border-t border-white/[.06] mt-3 pt-2">
-        <button type="button" onClick={() => onToggleLike(track.id)} aria-label="پسندیدن" className={`p-2 rounded-lg hover:bg-white/[.06] ${liked ? 'text-[#d6b45c]' : 'text-slate-500 hover:text-white'}`}><Heart className={`w-4 h-4 ${liked ? 'fill-current' : ''}`} /></button>
-        <button type="button" onClick={() => onQueueTrack(track)} aria-label="افزودن به صف پخش" className="p-2 rounded-lg text-slate-500 hover:text-white hover:bg-white/[.06]"><ListPlus className="w-4 h-4" /></button>
-        <button type="button" onClick={() => onDownloadTrack(track)} aria-label="دانلود" className="p-2 rounded-lg text-slate-500 hover:text-[#d6b45c] hover:bg-white/[.06]">{isUserVip ? <Download className="w-4 h-4" /> : <Crown className="w-4 h-4" />}</button>
-        <span className="mr-auto text-[10px] text-slate-600 font-mono">#{String(index + 1).padStart(2, '0')}</span>
+      <div className="dc3-track-actions">
+        <button type="button" onClick={() => onToggleLike(track.id)} aria-label="پسندیدن" className={liked ? 'is-liked' : ''}><Heart className={liked ? 'fill-current' : ''}/></button>
+        <button type="button" onClick={() => onQueueTrack(track)} aria-label="افزودن به صف"><ListPlus /></button>
+        <button type="button" onClick={() => onDownloadTrack(track)} aria-label="دانلود">{isUserVip ? <Download /> : <Crown />}</button>
       </div>
     </article>;
   };
 
-  return <div className="dc-home space-y-9 sm:space-y-12 p-4 sm:p-7 lg:p-9 animate-in fade-in duration-500" dir="rtl">
-    <section className="dc-hero relative overflow-hidden rounded-[2rem] min-h-[360px] sm:min-h-[430px] flex items-end">
-      <div className="absolute inset-0">
-        <img src={DJ_CASPIAN_INFO.bannerUrl} alt="" className="w-full h-full object-cover opacity-35" />
-        <div className="absolute inset-0 bg-gradient-to-l from-[#05080e] via-[#07111e]/75 to-[#05080e]/30" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#05080e] via-transparent to-[#05080e]/20" />
+  return <div className="dc3-home" dir="rtl">
+    <section className="dc3-hero">
+      <div className="dc3-hero-image">
+        <img src={DJ_CASPIAN_INFO.bannerUrl} alt="" />
+        <div className="dc3-hero-shade" />
       </div>
-      <div className="absolute -left-20 -top-24 w-80 h-80 rounded-full bg-[#1d5a91]/20 blur-[100px]" />
-      <div className="relative z-10 w-full p-6 sm:p-10 lg:p-12">
-        <div className="flex items-center gap-2 text-[10px] sm:text-xs font-bold tracking-[.24em] text-[#f0d88a] mb-5"><AudioLines className="w-4 h-4" /> DJ CASPIAN • OFFICIAL MUSIC HUB</div>
-        <div className="flex flex-col sm:flex-row sm:items-end gap-6">
-          <img src={DJ_CASPIAN_INFO.avatarUrl} alt="DJ Caspian" className="w-24 h-24 sm:w-36 sm:h-36 rounded-2xl object-cover border border-[#d6b45c]/50 shadow-2xl shadow-black/50" />
-          <div className="min-w-0 flex-1">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-[#d6b45c]/25 bg-black/30 px-3 py-1 text-[10px] text-[#f0d88a] mb-3"><CheckCircle2 className="w-3 h-3" /> پلتفرم رسمی موسیقی</div>
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white">{DJ_CASPIAN_INFO.name}</h1>
-            <p className="text-sm sm:text-base text-slate-300 max-w-2xl mt-3 leading-7">{DJ_CASPIAN_INFO.tagline}</p>
-            <div className="flex flex-wrap gap-4 text-xs text-slate-400 mt-4"><span>{tracks.length} قطعه در آرشیو فعلی</span><span>کتابخانه و پلی‌لیست‌های شخصی</span></div>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            {featured && playButton(featured, true)}
-            <button type="button" onClick={onNavigateToSupport} className="inline-flex items-center gap-2 rounded-full border border-[#d6b45c]/40 bg-black/35 px-5 py-3 text-xs font-bold text-[#f0d88a] hover:bg-[#d6b45c] hover:text-black transition-all"><Crown className="w-4 h-4" /> حمایت از کاسپین</button>
+      <div className="dc3-hero-orbit dc3-orbit-one" /><div className="dc3-hero-orbit dc3-orbit-two" />
+      <div className="dc3-hero-content">
+        <div className="dc3-kicker"><span className="dc3-live-dot" /> OFFICIAL MUSIC UNIVERSE <span className="dc3-kicker-line" /></div>
+        <div className="dc3-hero-title-row">
+          <div className="dc3-brand-mark"><img src={DJ_CASPIAN_INFO.avatarUrl} alt="DJ Caspian" /></div>
+          <div className="dc3-hero-copy">
+            <div className="dc3-overline">SOUND • ENERGY • IDENTITY</div>
+            <h1>DJ <span>CASPIAN</span></h1>
+            <p>{DJ_CASPIAN_INFO.tagline}</p>
           </div>
         </div>
+        <div className="dc3-hero-bottom">
+          <div className="dc3-hero-actions">
+            {featured ? playButton(featured, true) : <button type="button" className="dc3-hero-cta" onClick={onNavigateToAbout}><Headphones /> آشنایی با کاسپین</button>}
+            <button type="button" className="dc3-outline-cta" onClick={onNavigateToSupport}><Crown /> حمایت از پروژه</button>
+            <button type="button" className="dc3-text-cta" onClick={onNavigateToAbout}>درباره ما <ArrowLeft /></button>
+          </div>
+          <div className="dc3-hero-stats"><div><strong>{tracks.length.toLocaleString('fa-IR')}</strong><span>قطعه در آرشیو</span></div><i /><div><strong>{playlists.length.toLocaleString('fa-IR')}</strong><span>پلی‌لیست عمومی</span></div><i /><div><strong>24/7</strong><span>دسترسی آنلاین</span></div></div>
+        </div>
       </div>
+      <div className="dc3-hero-watermark">CASPIAN</div>
+      <div className="dc3-hero-corner">EST. DJ CASPIAN</div>
     </section>
 
-    {recent.length > 0 && <section>{sectionTitle('ادامه گوش دادن', 'برگرد به موسیقی‌هایی که اخیراً پخش کرده‌ای')}<div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">{recent.slice(0,4).map((track,i)=><button key={track.id} type="button" onClick={()=>onPlayTrack(track)} className="dc-quick-card flex items-center gap-3 text-right rounded-xl overflow-hidden"><img src={track.coverUrl} alt="" className="w-16 h-16 object-cover shrink-0" /><span className="min-w-0 flex-1 py-2"><strong className="block truncate text-xs text-white">{track.title}</strong><small className="block truncate text-[10px] text-slate-400 mt-1">{track.artist}</small></span><span className="ml-3 text-[#d6b45c]">{currentTrackId===track.id&&isPlaying?<AudioLines className="w-4 h-4"/>:<Play className="w-4 h-4 fill-current"/>}</span></button>)}</div></section>}
+    <div className="dc3-content">
+      <div className="dc3-shortcuts">
+        <button type="button" onClick={onNavigateToAbout}><span className="dc3-shortcut-icon"><Waves /></span><span><b>دنیای کاسپین</b><small>درباره و شبکه‌های رسمی</small></span><ArrowUpLeft /></button>
+        <button type="button" onClick={onNavigateToSupport}><span className="dc3-shortcut-icon gold"><Crown /></span><span><b>حمایت و VIP</b><small>پشتیبانی از مسیر رسمی Donito</small></span><ArrowUpLeft /></button>
+        <div className="dc3-shortcut-note"><Zap /><span>YOUR SOUNDTRACK<br/><b>YOUR MOMENT</b></span></div>
+      </div>
 
-    {tracks.length > 0 && <section>{sectionTitle('انتخاب‌شده برای تو', 'تازه‌ترین انتشارها از آرشیو رسمی DJ Caspian')}<div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">{tracks.slice(0,8).map(trackCard)}</div></section>}
+      {featured && <section className="dc3-featured">
+        <div className="dc3-featured-art"><img src={featured.coverUrl} alt={featured.title}/><div className="dc3-featured-glow"/><span>FEATURED SOUND</span></div>
+        <div className="dc3-featured-copy"><span className="dc3-eyebrow">THE CASPIAN SPOTLIGHT</span><h2>صدای بعدی<br/><em>از کاسپین</em></h2><p>انتخاب اول از آرشیو موسیقی DJ CASPIAN. پلی کن و وارد حال‌وهوای خودت شو.</p><div className="dc3-featured-track"><b>{featured.title}</b><span>{featured.artist} · {fmt(featured.duration)}</span></div><div className="dc3-featured-actions">{playButton(featured, true)}<button type="button" onClick={() => onToggleLike(featured.id)}><Heart className={likedTrackIds.includes(featured.id) ? 'fill-current' : ''}/>{likedTrackIds.includes(featured.id) ? 'پسندیده‌شده' : 'افزودن به علاقه‌مندی'}</button></div></div>
+      </section>}
 
-    {albums.length > 0 && <section>{sectionTitle('آلبوم‌ها و مجموعه‌ها', 'همه قطعه‌ها در کنار هم، با حال‌وهوای خودشان')}<div className="flex gap-4 overflow-x-auto pb-3 dc-horizontal">{albums.map(album=><button key={album.key} type="button" onClick={()=>onPlayTrack(album.tracks[0])} className="dc-media-tile text-right shrink-0 w-36 sm:w-44"><div className="aspect-square rounded-2xl overflow-hidden mb-3 bg-[#101b29]">{album.cover?<img src={album.cover} alt={album.title} loading="lazy" className="w-full h-full object-cover"/>:<Disc3 className="w-full h-full p-10 text-[#d6b45c]"/>}</div><strong className="block text-sm text-white truncate">{album.title}</strong><span className="block text-xs text-slate-400 truncate mt-1">{album.artist} · {album.tracks.length} قطعه</span></button>)}</div></section>}
+      {recent.length > 0 && <section className="dc3-section">{heading('PICK UP WHERE YOU LEFT OFF','ادامه شنیدن','موسیقی‌هایی که اخیراً سراغشان رفته‌ای')}<div className="dc3-recent-grid">{recent.slice(0,4).map((track,i)=><button key={track.id} type="button" onClick={()=>onPlayTrack(track)} className="dc3-recent"><img src={track.coverUrl} alt=""/><span><b>{track.title}</b><small>{track.artist}</small></span><span className="dc3-recent-play">{currentTrackId===track.id&&isPlaying?<AudioLines/>:<Play className="fill-current"/>}</span></button>)}</div></section>}
 
-    {uniqueArtists.length > 0 && <section>{sectionTitle('هنرمندان', 'صداهایی که در آرشیو کاسپین حضور دارند')}<div className="flex gap-4 overflow-x-auto pb-3 dc-horizontal">{uniqueArtists.map((artist,i)=><button key={artist.artist || i} type="button" onClick={()=>{const first=tracks.find(t=>t.artist===artist.artist);if(first)onPlayTrack(first);}} className="dc-media-tile shrink-0 w-32 sm:w-40 text-center"><div className="aspect-square rounded-full overflow-hidden mb-3 mx-auto border border-white/10 bg-[#101b29]">{artist.coverUrl?<img src={artist.coverUrl} alt={artist.artist} loading="lazy" className="w-full h-full object-cover"/>:<Headphones className="w-full h-full p-9 text-[#d6b45c]"/>}</div><strong className="block text-sm text-white truncate">{artist.artist}</strong><span className="text-xs text-slate-500">هنرمند</span></button>)}</div></section>}
+      {tracks.length > 0 && <section className="dc3-section">{heading('FRESH FROM THE STUDIO','تازه‌های آرشیو','قطعه‌هایی که ارزش شنیدن دوباره دارند')}<div className="dc3-track-grid">{tracks.slice(0,8).map(trackCard)}</div></section>}
 
-    {playlists.length > 0 && <section>{sectionTitle('پلی‌لیست‌های کاسپین', 'مجموعه‌هایی برای هر مود و هر لحظه')}<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">{playlists.slice(0,6).map(playlist=><button key={playlist.id} type="button" onClick={()=>onSelectPlaylist(playlist)} className="dc-quick-card flex items-center gap-3 rounded-2xl p-3 text-right"><img src={playlist.coverUrl} alt="" className="w-16 h-16 rounded-xl object-cover"/><span className="min-w-0 flex-1"><strong className="block text-sm text-white truncate">{playlist.title}</strong><small className="block text-xs text-slate-400 mt-1 truncate">{playlist.description || `${playlist.trackIds.length} قطعه`}</small></span><ArrowUpLeft className="w-4 h-4 text-[#d6b45c]"/></button>)}</div></section>}
+      {albums.length > 0 && <section className="dc3-section">{heading('CURATED COLLECTIONS','آلبوم‌ها و مجموعه‌ها','هر مجموعه، یک فضای متفاوت')}<div className="dc3-horizontal">{albums.map(album=><button key={album.key} type="button" onClick={()=>onPlayTrack(album.tracks[0])} className="dc3-collection"><div className="dc3-collection-art">{album.cover?<img src={album.cover} alt={album.title}/>:<Disc3/>}<span><Play className="fill-current"/></span></div><b>{album.title}</b><small>{album.artist} · {album.tracks.length} قطعه</small></button>)}</div></section>}
 
-    {tracks.length === 0 && <section className="dc-empty rounded-3xl p-12 text-center"><Radio className="w-12 h-12 mx-auto text-[#d6b45c] mb-4"/><h2 className="text-xl font-black text-white">آرشیو در حال آماده‌سازی است</h2><p className="text-sm text-slate-400 mt-2">به‌زودی موسیقی‌های تازه در اینجا منتشر می‌شوند.</p></section>}
-    <section className="dc-support-strip rounded-2xl p-5 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-4"><div><div className="flex items-center gap-2 text-[#f0d88a] text-xs font-bold"><Sparkles className="w-4 h-4"/> CASPIAN VIP</div><h2 className="text-lg sm:text-xl font-black text-white mt-2">تجربه کامل موسیقی با حمایت از هنرمند</h2><p className="text-xs text-slate-400 mt-1">حمایت امن و فعال‌سازی امکانات ویژه از طریق درگاه رسمی Donito</p></div><button type="button" onClick={onNavigateToSupport} className="rounded-full bg-[#d6b45c] px-6 py-3 text-xs font-black text-black hover:bg-[#f0d88a] transition-colors shrink-0">مشاهده روش‌های حمایت</button></section>
-    <button type="button" onClick={onNavigateToAbout} className="mx-auto flex items-center gap-2 text-xs text-slate-500 hover:text-[#d6b45c] transition-colors"><Clock3 className="w-3.5 h-3.5"/> درباره DJ Caspian و شبکه‌های رسمی</button>
+      {uniqueArtists.length > 0 && <section className="dc3-section">{heading('THE ARTISTS','هنرمندان','صداهایی که در آرشیو کاسپین حضور دارند')}<div className="dc3-horizontal">{uniqueArtists.map((artist,i)=><button key={artist.artist || i} type="button" onClick={()=>{const first=tracks.find(t=>t.artist===artist.artist);if(first)onPlayTrack(first);}} className="dc3-artist"><div>{artist.coverUrl?<img src={artist.coverUrl} alt={artist.artist}/>:<Headphones/>}</div><b>{artist.artist}</b><small>هنرمند</small></button>)}</div></section>}
+
+      {playlists.length > 0 && <section className="dc3-section">{heading('MADE FOR YOUR MOOD','پلی‌لیست‌های کاسپین','مجموعه‌هایی برای هر مود و هر لحظه')}<div className="dc3-playlist-grid">{playlists.slice(0,6).map(playlist=><button key={playlist.id} type="button" onClick={()=>onSelectPlaylist(playlist)} className="dc3-playlist"><img src={playlist.coverUrl} alt=""/><span><b>{playlist.title}</b><small>{playlist.description || `${playlist.trackIds.length} قطعه`}</small></span><ArrowUpLeft/></button>)}</div></section>}
+
+      {tracks.length === 0 && <section className="dc3-empty"><Radio/><span className="dc3-eyebrow">NEW SOUNDS ARE COMING</span><h2>آرشیو در حال آماده‌سازی است</h2><p>به‌زودی موسیقی‌های تازه در اینجا منتشر می‌شوند.</p></section>}
+
+      <section className="dc3-support"><div className="dc3-support-symbol"><Crown/></div><div><span className="dc3-eyebrow">JOIN THE INNER CIRCLE</span><h2>کاسپین با حمایت تو قوی‌تر می‌شود.</h2><p>اگر از موسیقی‌ها لذت می‌بری، از پروژه حمایت کن و از امکانات VIP باخبر شو.</p></div><button type="button" onClick={onNavigateToSupport}>ورود به بخش حمایت <ArrowLeft/></button></section>
+      <button type="button" onClick={onNavigateToAbout} className="dc3-about-link"><Music2/> درباره DJ CASPIAN و راه‌های ارتباطی رسمی</button>
+      <div className="dc3-footer-mark">DJ CASPIAN <span>•</span> MADE FOR THE MOMENT</div>
+    </div>
   </div>;
 };
