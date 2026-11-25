@@ -872,7 +872,7 @@ export default function App() {
                 <p className="text-neutral-400">برای دسترسی به داشبورد، لطفاً ابتدا وارد حساب کاربری خود شوید.</p>
                 <button
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="py-2.5 px-6 rounded-full bg-[#1db954] text-black font-bold text-xs"
+                  className="py-2.5 px-6 rounded-full bg-[#d6b45c] text-black font-bold text-xs"
                 >
                   ورود یا ثبت‌نام
                 </button>
@@ -924,7 +924,7 @@ export default function App() {
                 {!currentUser && (
                   <button
                     onClick={() => setIsAuthModalOpen(true)}
-                    className="py-2.5 px-6 rounded-full bg-[#1db954] text-black font-bold text-xs"
+                    className="py-2.5 px-6 rounded-full bg-[#d6b45c] text-black font-bold text-xs"
                   >
                     ورود به حساب ادمین
                   </button>
