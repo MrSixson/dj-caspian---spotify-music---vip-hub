@@ -28,6 +28,7 @@ import { loadCatalog, toggleTrackLike, uploadTrackAssets } from './lib/catalog';
 import confetti from 'canvas-confetti';
 import { UpdateBreak } from './components/UpdateBreak';
 import { PWAInstallBanner } from './components/PWAInstallBanner';
+import { AppPromoModal } from './components/AppPromoModal';
 
 export default function App() {
   const updateBreakEndsAt = new Date('2026-11-25T09:34:00Z').getTime();
@@ -739,6 +740,7 @@ export default function App() {
     <div className="flex h-screen bg-[#0d0d0d] text-white font-sans overflow-hidden select-none" dir="rtl">
       {/* Toast Notifications */}
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+      <AppPromoModal />
 
       {/* Spotify Sidebar (Desktop + Mobile Drawer) */}
       <Sidebar
