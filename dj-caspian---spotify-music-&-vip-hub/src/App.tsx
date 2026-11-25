@@ -27,6 +27,7 @@ import { supabase } from './lib/supabase';
 import { loadCatalog, toggleTrackLike, uploadTrackAssets } from './lib/catalog';
 import confetti from 'canvas-confetti';
 import { UpdateBreak } from './components/UpdateBreak';
+import { PWAInstallBanner } from './components/PWAInstallBanner';
 
 export default function App() {
   const updateBreakEndsAt = new Date('2026-11-25T09:34:00Z').getTime();
@@ -772,7 +773,7 @@ export default function App() {
         />
 
         {/* Scrollable View Content */}
-        <main className="flex-1 min-h-0 overflow-y-auto overscroll-contain pb-28">
+        <main className="flex-1 min-h-0 overflow-y-auto overscroll-contain pb-28">\n          <PWAInstallBanner />
           {currentView === 'home' && (
             <HomeView
               tracks={tracks}
