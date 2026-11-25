@@ -63,8 +63,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div>
             <div className="flex items-center gap-1.5">
               <span className="font-black text-lg text-white tracking-wider">CASPIAN</span>
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#d6b45c] text-black">
-                SPOTIFY
+              <span className="text-[9px] font-black tracking-widest px-1.5 py-1 rounded border border-[#d6b45c]/35 bg-[#d6b45c]/10 text-[#f0d88a]">
+                OFFICIAL
               </span>
             </div>
             <div className="text-[10px] text-neutral-400 font-medium">THE MUSIC UNIVERSE</div>
