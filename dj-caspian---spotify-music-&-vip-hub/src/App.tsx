@@ -267,6 +267,11 @@ export default function App() {
       setIsAuthModalOpen(true);
       return;
     }
+    if (view === 'community' && currentUser?.role !== 'admin') {
+      showToast('بخش جامعه کاربران فقط برای مدیر قابل مشاهده است.', 'error');
+      setCurrentView('home');
+      return;
+    }
     if (view === 'admin' && currentUser?.role !== 'admin') {
       showToast(
         currentUser ? 'دسترسی مدیریت برای این حساب فعال نیست.' : 'برای ورود به مدیریت ابتدا وارد حساب ادمین شوید.',
@@ -955,7 +960,7 @@ export default function App() {
             />
           )}
 
-          {currentView === 'community' && <ProfilesView />}
+          {currentView === 'community' && currentUser?.role === 'admin' && <ProfilesView />}
 
           {currentView === 'about' && (
             <AboutView
