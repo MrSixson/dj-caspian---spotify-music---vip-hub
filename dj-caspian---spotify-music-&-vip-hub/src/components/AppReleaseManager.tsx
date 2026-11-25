@@ -54,6 +54,17 @@ export const AppReleaseManager: React.FC<{ userId: string; onShowToast: (text: s
     setSaving(false);
     if (error) { onShowToast('ثبت نسخه ناموفق بود: ' + error.message, 'error'); return; }
     onShowToast(publishNow ? 'نسخه جدید منتشر شد و برای برنامه‌های آنلاین قابل مشاهده است.' : 'نسخه به‌صورت پیش‌نویس ذخیره شد.', 'success');
+    if (publishNow) {
+      void supabase.functions.invoke('send-push-notification', {
+        body: {
+          title: '📲 به‌روزرسانی DJ Caspian',
+          body: `نسخه ${versionName.trim()} منتشر شد. برای دریافت نسخه جدید وارد برنامه شو.`,
+          url: '/',
+        },
+      }).then(({ error }) => {
+        if (error) console.warn('[DJ Caspian] App-update push notification was not sent:', error.message);
+      });
+    }
     setVersionName(''); setVersionCode((value) => value + 1); setApkUrl(''); setNotes(''); setMandatory(false);
     await load();
   };
