@@ -55,7 +55,7 @@ jobs:
           test -s resources/icon.png
 
       - name: Generate native Android icon assets
-        run: npx @capacitor/assets generate --android --iconBackgroundColor "#080d16" --iconBackgroundColorDark "#080d16"
+        run: npx --yes @capacitor/assets generate --android --iconBackgroundColor "#080d16" --iconBackgroundColorDark "#080d16"
 
       - name: Build web assets for Android
         run: npm run build:android
