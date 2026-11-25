@@ -92,10 +92,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-end gap-6">
           <img src={DJ_CASPIAN_INFO.avatarUrl} alt="DJ Caspian" className="w-24 h-24 sm:w-36 sm:h-36 rounded-2xl object-cover border border-[#d6b45c]/50 shadow-2xl shadow-black/50" />
           <div className="min-w-0 flex-1">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-[#d6b45c]/25 bg-black/30 px-3 py-1 text-[10px] text-[#f0d88a] mb-3"><CheckCircle2 className="w-3 h-3" /> آرتیست رسمی</div>
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-[#d6b45c]/25 bg-black/30 px-3 py-1 text-[10px] text-[#f0d88a] mb-3"><CheckCircle2 className="w-3 h-3" /> پلتفرم رسمی موسیقی</div>
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white">{DJ_CASPIAN_INFO.name}</h1>
             <p className="text-sm sm:text-base text-slate-300 max-w-2xl mt-3 leading-7">{DJ_CASPIAN_INFO.tagline}</p>
-            <div className="flex flex-wrap gap-4 text-xs text-slate-400 mt-4"><span>{DJ_CASPIAN_INFO.monthlyListeners} شنونده ماهانه</span><span>{DJ_CASPIAN_INFO.followers} دنبال‌کننده</span><span>{tracks.length} قطعه منتشرشده</span></div>
+            <div className="flex flex-wrap gap-4 text-xs text-slate-400 mt-4"><span>{tracks.length} قطعه در آرشیو فعلی</span><span>کتابخانه و پلی‌لیست‌های شخصی</span></div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             {featured && playButton(featured, true)}

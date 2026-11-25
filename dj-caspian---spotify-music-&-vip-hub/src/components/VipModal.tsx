@@ -1,6 +1,5 @@
 import React from 'react';
 import { Crown, Sparkles, Download, ArrowLeft, ShieldCheck, X } from 'lucide-react';
-import { DJ_CASPIAN_INFO } from '../data/initialData';
 
 interface VipModalProps {
   isOpen: boolean;
@@ -53,40 +52,22 @@ export const VipModal: React.FC<VipModalProps> = ({ isOpen, onClose, onGoToSuppo
           )}
 
           <p className="text-neutral-300 text-sm leading-relaxed mb-6">
-            گوش دادن آنلاین به تمام قطعات و ریمیکس‌های دی‌جی کاسپین کاملاً رایگان است. اما برای <span className="text-[#d6b45c] font-bold">دانلود فایل‌های اصلی و باکیفیت استودیویی (۳۲۰kbps و FLAC)</span> نیاز به فعال‌سازی اشتراک VIP دارید.
+            دسترسی به قابلیت دانلود قطعات منتخب به وضعیت عضویت حساب کاربری وابسته است. جزئیات هر قطعه و محدودیت‌های آن داخل کتابخانه نمایش داده می‌شود.
           </p>
         </div>
 
-        {/* Pricing Card */}
-        <div className="bg-[#181818] border border-neutral-800 rounded-xl p-4 mb-6 space-y-3">
-          <div className="text-xs text-neutral-400 font-medium flex items-center justify-between">
-            <span>مبلغ حمایت مالی جهت فعال‌سازی VIP:</span>
-            <span className="text-emerald-400 font-bold">دائمی و نامحدود</span>
+        {/* Official support route */}
+        <div className="bg-[#181818] border border-[#d6b45c]/25 rounded-xl p-4 mb-6 space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-sm font-bold text-white">روش رسمی حمایت مالی</span>
+            <span className="rounded-full bg-[#d6b45c]/10 px-3 py-1 text-xs font-bold text-[#e6c978]">DONITO</span>
           </div>
-
-          <div className="grid grid-cols-2 gap-3 pt-1">
-            <div className="bg-neutral-900/90 border border-neutral-700/60 rounded-lg p-3 text-center">
-              <div className="text-xs text-neutral-400 mb-1">ارز دیجیتال تتر</div>
-              <div className="text-xl font-black text-emerald-400">۱۰ USDT</div>
-              <div className="text-[10px] text-neutral-400">شبکه‌های TRC20 / BEP20</div>
-            </div>
-
-            <div className="bg-neutral-900/90 border border-neutral-700/60 rounded-lg p-3 text-center">
-              <div className="text-xs text-neutral-400 mb-1">کارت به کارت ریالی</div>
-              <div className="text-xl font-black text-amber-400">{DJ_CASPIAN_INFO.payment.tomanDisplay}</div>
-              <div className="text-[10px] text-neutral-400">بانک ملی ایران</div>
-            </div>
-          </div>
-
-          <div className="pt-2 text-xs text-neutral-400 space-y-1.5 border-t border-neutral-800/80">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-[#d6b45c] shrink-0" />
-              <span>واریز انجام دهید و کد پیگیری یا عکس فیش را در بخش تیکت بفرستید.</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-[#d6b45c] shrink-0" />
-              <span>دی‌جی کاسپین با بررسی فیش، VIP شما را سریعاً فعال می‌کند.</span>
-            </div>
+          <p className="text-sm leading-6 text-neutral-300">
+            تمام حمایت‌های مالی فقط از طریق درگاه رسمی Donito انجام می‌شوند. هیچ شماره کارت، شبا یا آدرس کیف پولی در این سایت ارائه نمی‌شود.
+          </p>
+          <div className="flex items-start gap-2 border-t border-neutral-800 pt-3 text-xs leading-6 text-neutral-400">
+            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#d6b45c]" />
+            <span>پرداخت Donito به‌تنهایی به معنی فعال‌شدن خودکار VIP نیست؛ فعال‌سازی خودکار تا زمان اتصال و تأیید رویداد پرداخت تضمین نمی‌شود.</span>
           </div>
         </div>
 
