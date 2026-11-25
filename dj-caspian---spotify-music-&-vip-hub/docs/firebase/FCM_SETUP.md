@@ -24,3 +24,14 @@ Receiving notifications is wired into the Android app, but sending a broadcast r
 2. Allow notifications when Android asks.
 3. Open Supabase Table Editor and confirm a row appears in `device_push_tokens`.
 4. Send a test notification from Firebase Cloud Messaging and verify it appears on the phone.
+
+
+## Enable automatic push sending
+Deploy the Edge Function in `supabase/functions/send-push-notification/index.ts` to the Supabase project.
+
+In Supabase Dashboard → Project Settings → Edge Functions → Secrets, add:
+- `FIREBASE_SERVICE_ACCOUNT`: the full JSON contents of a private service-account key created in Firebase Console → Project settings → Service accounts → Generate new private key.
+
+Keep this JSON private. Do not commit it, upload it to GitHub, or place it in the Android app. Supabase supplies `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` to deployed Edge Functions.
+
+The function checks the caller's authenticated `user_roles.role = 'admin'` before sending. Publishing a new track or publishing an app release then requests a push notification automatically. If the function or secret is not deployed, publishing still succeeds but no system notification is sent.
