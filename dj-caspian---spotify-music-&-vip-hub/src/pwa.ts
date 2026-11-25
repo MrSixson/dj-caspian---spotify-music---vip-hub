@@ -5,9 +5,10 @@ export function registerPwa() {
   if (window.location.protocol !== "https:" && !isLocalhost) return;
 
   window.addEventListener("load", () => {
-    const serviceWorkerUrl = new URL("sw.js", import.meta.env.BASE_URL);
+    const appBase = new URL(import.meta.env.BASE_URL, window.location.origin);
+    const serviceWorkerUrl = new URL("sw.js", appBase);
     navigator.serviceWorker.register(serviceWorkerUrl, {
-      scope: import.meta.env.BASE_URL,
+      scope: appBase.pathname,
       type: "classic",
       updateViaCache: "none"
     }).catch((error) => {
