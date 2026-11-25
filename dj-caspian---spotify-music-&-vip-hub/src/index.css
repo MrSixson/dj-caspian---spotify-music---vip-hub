@@ -252,3 +252,34 @@ footer { padding-bottom: max(.65rem, env(safe-area-inset-bottom)); }
   .dc-track-card { padding: .65rem; }
   .dc-quick-card { min-height: 68px; }
 }
+
+
+/* Unified Season 2 surfaces across discovery, library and player */
+.dc-search-discovery {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid rgba(214,180,92,.16);
+  border-radius: 1.25rem;
+  background: linear-gradient(145deg, rgba(14,29,46,.82), rgba(6,12,20,.92));
+}
+.dc-search-person {
+  padding: .65rem;
+  border-radius: 1rem;
+  transition: background .2s ease, transform .2s ease;
+}
+.dc-search-person:hover { background: rgba(255,255,255,.055); transform: translateY(-2px); }
+main .bg-\[\#181818\], main .bg-\[\#101722\], main .bg-\[\#101b2a\] {
+  background-color: rgba(12,22,36,.84);
+}
+main .border-neutral-800, main .border-neutral-800\/80 {
+  border-color: rgba(147,174,202,.14);
+}
+main .rounded-2xl, main .rounded-xl { backdrop-filter: blur(12px); }
+aside nav button[aria-current="page"], aside nav button:focus-visible {
+  background: linear-gradient(90deg, rgba(214,180,92,.13), rgba(25,67,105,.3));
+}
+footer input[type="range"] { accent-color: #d6b45c; }
+@media (max-width: 767px) {
+  .dc-search-discovery { padding: .8rem; }
+  main { overflow-x: clip; }
+}
