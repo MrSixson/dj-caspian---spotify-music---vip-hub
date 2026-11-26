@@ -4,10 +4,24 @@ import { Download, X } from 'lucide-react';
 
 const DISMISS_KEY = 'dj-caspian-app-promo-dismissed-v2';
 const POSTER_URL = 'https://d2ol7oe51mr4n9.cloudfront.net/user_3LbkVgD4rFgZqph5aiV2BP334Pg/fb790385-60c4-4d98-8e19-36b55dc1febd.jpg';
-const APK_URL = 'https://github.com/MrSixson/dj-caspian---spotify-music---vip-hub/releases/download/android-v1.0.0-beta.1/DJ-Caspian.apk';
+const FALLBACK_APK_URL = 'https://github.com/MrSixson/dj-caspian---spotify-music---vip-hub/releases/download/android-v1.0.110/DJ-Caspian.apk';
 
 export function AppPromoModal() {
   const [isOpen, setIsOpen] = useState(false);
+  const [apkUrl, setApkUrl] = useState(FALLBACK_APK_URL);
+
+  useEffect(() => {
+    let active = true;
+    fetch('https://api.github.com/repos/MrSixson/dj-caspian---spotify-music---vip-hub/releases?per_page=30', { headers: { Accept: 'application/vnd.github+json' } })
+      .then((response) => { if (!response.ok) throw new Error('Release lookup failed'); return response.json(); })
+      .then((releases: Array<{ tag_name: string; draft: boolean; assets: Array<{ name: string; browser_download_url: string }> }>) => {
+        const latest = releases.find((release) => !release.draft && /^android-v\d+\.\d+\.\d+$/.test(release.tag_name) && release.assets.some((asset) => asset.name === 'DJ-Caspian.apk'));
+        const apk = latest?.assets.find((asset) => asset.name === 'DJ-Caspian.apk');
+        if (active && apk?.browser_download_url) setApkUrl(apk.browser_download_url);
+      })
+      .catch((error) => console.warn('[DJ Caspian] Latest APK lookup failed; using fallback:', error));
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     if (window.localStorage.getItem(DISMISS_KEY) === '1') return;
@@ -80,7 +94,7 @@ export function AppPromoModal() {
               ادامه بازدید از سایت
             </button>
             <a
-              href={APK_URL}
+              href={apkUrl}
               onClick={dismiss}
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#f0d58e] to-[#b9954b] px-6 py-3 text-xs font-black text-[#111827] shadow-lg shadow-black/30 transition hover:brightness-110 sm:w-auto"
             >
@@ -88,7 +102,7 @@ export function AppPromoModal() {
               دانلود مستقیم برنامه اندروید
             </a>
           </div>
-          <p className="text-[10px] text-slate-500">فایل نصب APK • نسخه آزمایشی اندروید</p>
+          <p className="text-[10px] text-slate-500">فایل نصب APK • نسخه اندروید DJ Caspian</p>
         </div>
       </section>
     </div>
